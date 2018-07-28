@@ -1,7 +1,11 @@
 <style>
 
 body {
-background-color:#fafafa;
+/* background-color:#fafafa; */
+/* background-image: url('./assets/band1.jpg'); */
+background-repeat: no-repeat;
+background-size: cover;
+/* background-blend-mode: ; */
 }
 
 #app {
@@ -9,9 +13,10 @@ background-color:#fafafa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* text-align: center; */
-    color: #2c3e50;
+    /* color: #2c3e50; */
     margin-top: 10px;
-    background-color: #fafafa;
+    /* background-color: #fafafa; */
+    background-color:rgba(255,255,255,0.1);
 }
 
 </style>
@@ -19,7 +24,7 @@ background-color:#fafafa;
 <template>
 
 <div id="app">
-    <b-container >
+    <b-container>
         <Menu/>
         <router-view></router-view>
         </Footer>
