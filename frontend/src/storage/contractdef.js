@@ -21,7 +21,40 @@ smartContract = [
         "type": "address"
       }
     ],
-    "name": "songsData",
+    "name": "songsData2",
+    "outputs": [
+      {
+        "name": "volume",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "i",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "songsData1",
     "outputs": [
       {
         "name": "name",
@@ -66,20 +99,6 @@ smartContract = [
       {
         "name": "contractAddress",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "i",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
       }
     ],
     "payable": false,
@@ -196,6 +215,10 @@ smartContract = [
       {
         "name": "_contractAddress",
         "type": "address"
+      },
+      {
+        "name": "_volume",
+        "type": "uint256"
       }
     ],
     "payable": false,

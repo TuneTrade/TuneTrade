@@ -27,7 +27,10 @@ Vue.use(axios)
 // }
 
 function sortFunction(a,b) {
-  return 1;
+  console.log('a.Name b.Name:',a.Name,b.Name)
+  return 0
+  if (a.Name >b.Name) return 1
+  else return -1
 }
 
 export const store = new Vuex.Store({
@@ -71,14 +74,13 @@ export const store = new Vuex.Store({
       store.state.currentStorageVersion = store.state.storageVersion
     },
     ConnectToContract (store) {
-      var myweb3 = new Web3(web3.currentProvider)
       // console.log(myweb3)
       // console.log('Definition',smartContract)
       // console.log(myweb3.eth)
       // var contractDefinition = new myweb3.eth.contract(smartContract)
       var contractDefinition =  web3.eth.contract(smartContract)
       // console.log(contractDefinition)
-      store.state.web3contract = contractDefinition.at('0x38974e98b79284de545df85d8ffd22cd29d02c12')
+      store.state.web3contract = contractDefinition.at('0x4b00b36e9af06348a83ca5bee00f6b216f017ac5')
       store.state.web3contract.GetSongs(function(err,res){
         var songList = []
         for(var i = 0;i<res.length;i++) {
@@ -108,7 +110,8 @@ export const store = new Vuex.Store({
             songList[index].Name = res[0]
             songList[index].Author = res[1]
             songList[index].Genre = res[2]
-            songList[index].Price = parseInt(res[3])
+            songList[index].Price = res[3].toString()
+            console.log('Price:',res[3].toString())
             songList[index].Created = res[4]
           })
 
@@ -126,12 +129,14 @@ export const store = new Vuex.Store({
             songList[index].TotalSupply = res[2]
             songList[index].Phase = res[3]
             songList[index].Owner = res[4]
+            songList[index].Volume = parseInt(res[6])
             songList[index].address = searchAddress
+            songList.sort(sortFunction)
 
         })
         console.log("SongList:",songList)
       }
-      store.state.songs = songList
+      store.state.songs = songList.sort(sortFunction)
       store.state.songs.sort(sortFunction)
 
     })

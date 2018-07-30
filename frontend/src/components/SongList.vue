@@ -27,6 +27,26 @@
       {{localNumber (row.item.TotalSupply)}}
     </template>
 
+    <template slot="Volume" slot-scope="row">
+      {{localNumber (row.item.Volume)}}
+    </template>
+    <template slot="Contribution" slot-scope="row">
+      {{localNumber (row.item.Contribution)}}
+    </template>
+
+    <template slot="Type" slot-scope="row">
+      {{SongOrBand (row.item.Type)}}
+    </template>
+    <template slot="Picture" slot-scope="row">
+      <div style="display:grid;grid-template-columns:1fr 2fr;">
+      <img src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px">
+      <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
+      <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe>
+      <img src="../assets/album.jpg" alt="" style="width:50px">
+    </div>
+      <!-- {{SongOrBand (row.item.Type)}} -->
+    </template>
+
     <template slot="Name" slot-scope="row">
       &quot;{{row.item.Name}}&quot;
     </template>
@@ -37,7 +57,7 @@
           <b-col sm="4">
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Type }}</b-col>
+          <b-col sm="auto" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
         </b-row>
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
@@ -49,7 +69,7 @@
         </b-row>
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Price:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Price }}</b-col>
+          <b-col sm="auto" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
         </b-row>
       </b-col>
       <b-col sm="4">
@@ -59,7 +79,7 @@
         </b-row>
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Total Supply:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.TotalSupply }}</b-col>
+          <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
         </b-row>
             <b-row class="mb-2">
               <b-col sm="5" class="text-sm-left"><b>Genre:</b></b-col>
@@ -67,13 +87,13 @@
             </b-row>
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Created }}</b-col>
+          <b-col sm="auto" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
         </b-row>
       </b-col>
       <b-col sm="4">
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Phase }}</b-col>
+          <b-col sm="auto" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
         </b-row>
         <b-row class="mb-2">
           <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
@@ -88,12 +108,16 @@
     </b-row>
     <br>
       <b-row class="mb-2">
-        <b-col sm="2" class="text-sm-left"><b>Owner:</b></b-col>
+        <b-col>
+        <b-col sm="4" class="text-sm-left"><b>Owner:</b></b-col>
         <b-col sm="auto" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A</b-col>
+        <b-col sm="4  " class="text-sm-left"><b>Contract address:</b></b-col>
+        <b-col sm="auto" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A</b-col>
+      </b-col>
+        <b-col sm="4" class="text-sm-left"><img src="../assets/album.jpg"></img></b-col>
+        <b-col><iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;color=0066cc"></iframe></b-col>
       </b-row>
       <b-row class="mb-2">
-        <b-col sm="2  " class="text-sm-left"><b>Contract address:</b></b-col>
-        <b-col sm="auto" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A</b-col>
       </b-row>
 
     <br>
@@ -108,6 +132,7 @@
 </template>
 
 <script>
+var Web3 = require('web3')
 
 const items = [
   {
@@ -178,11 +203,13 @@ export default {
       perPage: 10,
       totalRows: 20,
       fields: [
+        { key: 'Picture', sortable: false },
         { key: 'Type', sortable: false },
         { key: 'Name', sortable: true },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
         { key: 'Price', sortable: true },
+        { key: 'Volume', sortable: true },
         { key: 'Contribution', sortable: true },
         { key: 'TotalSupply', sortable: true },
         // { key: 'Created', sortable: true },
@@ -199,6 +226,9 @@ export default {
   },
   methods:
   {
+    Price: function (val) {
+      return Web3.utils.fromWei(val, 'ether')
+    },
     info (item, index, button) {
       // this.modalInfo.title = `Row index: ${index}`
       // this.modalInfo.content = JSON.stringify(item, null, 2)
@@ -206,6 +236,27 @@ export default {
     },
     resetModal () {
 
+    },
+    getLocalTime: function (val) {
+      var ts = new Date(parseInt(val) * 1000)
+      return ts.toLocaleString()
+    },
+    SongOrBand: function (val) {
+      if (val === true) return 'Band'
+      else return 'Song'
+    },
+    // uint8 phase; // 1 - pre-sale, 2 - ico1, 3 - ico2, 4 - ico 3; 5 - post ico, 6 - finished, 0 - not running.
+    PhaseToString: function (val) {
+      var number = parseInt(val)
+      switch (number) {
+        case 0: return 'not running'
+        case 1: return 'Pre sale'
+        case 2: return 'ICO 1'
+        case 3: return 'ICO 2'
+        case 4: return 'ICO 3'
+        case 5: return 'Post ICO'
+        case 6: return 'Finished'
+      }
     },
     localNumber: function (val) {
       if (isNaN(val)) return 0
@@ -230,4 +281,9 @@ export default {
 </script>
 
 <style lang="css">
+.player:hover
+{
+  filter:invert(100%) hue-rotate(120deg);
+
+}
 </style>

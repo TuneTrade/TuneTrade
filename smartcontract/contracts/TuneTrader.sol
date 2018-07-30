@@ -50,7 +50,7 @@ contract SongERC20
 
 contract TuneTrader {
 
-  struct SongStruct
+  struct SongStruct1
   {
     string name;
     string author;
@@ -63,6 +63,11 @@ contract TuneTrader {
     uint8 phase; // 1 - pre-sale, 2 - ico1, 3 - ico2, 4 - ico 3; 5 - post ico, 6 - finished, 0 - not running.
     address owner;
     address contractAddress;
+  }
+
+  struct SongStruct2
+  {
+    uint volume;
   }
 
   uint public i = 1;
@@ -87,7 +92,8 @@ contract TuneTrader {
     AddSong("The Cedar Room","Doves");
 
   }
-  mapping (address=>SongStruct) public songsData;
+  mapping (address=>SongStruct1) public songsData1;
+  mapping (address=>SongStruct2) public songsData2;
   SongERC20 [] songs;
 
   function AddSong(string _name, string _author) public
@@ -95,8 +101,11 @@ contract TuneTrader {
     SongERC20 song = new SongERC20(msg.sender);
 
     songs.push(song);
-    SongStruct memory data = SongStruct(_name,_author,"Pop",1,block.timestamp,false,35,20000,1,msg.sender,song);
-    songsData[song] = data;
+    SongStruct1 memory data1 = SongStruct1(_name,_author,"Pop",1,block.timestamp,false,35,20000,1,msg.sender,song);
+    SongStruct2 memory data2 = SongStruct2(29238);
+
+    songsData1[song] = data1;
+    songsData2[song] = data2;
 
   }
 
@@ -119,13 +128,13 @@ contract TuneTrader {
 
   function GetSongDetailsPart1(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,address _contractAddress)
   {
-    require (songsData[_song].creationTime > 0);
-    return (songsData[_song].name, songsData[_song].author, songsData[_song].genre, songsData[_song].price, songsData[_song].creationTime,_song);
+    require (songsData1[_song].creationTime > 0);
+    return (songsData1[_song].name, songsData1[_song].author, songsData1[_song].genre, songsData1[_song].price, songsData1[_song].creationTime,_song);
   }
-  function GetSongDetailsPart2(address _song) public view returns (bool _isBand, uint _contribution, uint _totalSupply, uint8 _phase, address _owner, address _contractAddress )
+  function GetSongDetailsPart2(address _song) public view returns (bool _isBand, uint _contribution, uint _totalSupply, uint8 _phase, address _owner, address _contractAddress,uint _volume )
   {
-    require (songsData[_song].creationTime > 0);
-    return (songsData[_song].isBand,songsData[_song].contribution,songsData[_song].totalSupply,songsData[_song].phase,songsData[_song].owner,_song);
+    require (songsData1[_song].creationTime > 0);
+    return (songsData1[_song].isBand,songsData1[_song].contribution,songsData1[_song].totalSupply,songsData1[_song].phase,songsData1[_song].owner,_song, songsData2[_song].volume);
   }
   /* function GetSongDetails(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,bool _band, uint _contribution, uint _totalSupply, uint8 _phase, address _owner)
   {
