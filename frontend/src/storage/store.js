@@ -80,7 +80,7 @@ export const store = new Vuex.Store({
       // var contractDefinition = new myweb3.eth.contract(smartContract)
       var contractDefinition =  web3.eth.contract(smartContract)
       // console.log(contractDefinition)
-      store.state.web3contract = contractDefinition.at('0x4b00b36e9af06348a83ca5bee00f6b216f017ac5')
+      store.state.web3contract = contractDefinition.at('0x38cb8f8995b1e811db10182b303913039ae2dacc')
       store.state.web3contract.GetSongs(function(err,res){
         var songList = []
         for(var i = 0;i<res.length;i++) {
@@ -107,6 +107,7 @@ export const store = new Vuex.Store({
               // console.log("This address in:", el.address)
               return (el.address == searchAddress)
             })
+            songList[index].OrderNum = index
             songList[index].Name = res[0]
             songList[index].Author = res[1]
             songList[index].Genre = res[2]

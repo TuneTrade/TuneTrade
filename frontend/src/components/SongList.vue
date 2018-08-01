@@ -2,7 +2,9 @@
   <div class="">
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
+      <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
     </b-modal>
+    {{currentIndex}} {{loading}}
     <b-navbar toggleable="sm" type="dark" variant="secondary">
       <b-nav-form>
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
@@ -39,10 +41,16 @@
     </template>
     <template slot="Picture" slot-scope="row">
       <div style="display:grid;grid-template-columns:1fr 2fr;">
-      <img src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px">
-      <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
-      <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe>
-      <img src="../assets/album.jpg" alt="" style="width:50px">
+        <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+      <img  src="../assets/pauseplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
+        <a v-if="isLoading(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+      <img  src="../assets/loadingplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
+
+      <a v-if="!isLoading(row.item.OrderNum) && !isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+      <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
+      <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
+      <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
+      <img v-bind:src="picLink(row.item.OrderNum)" alt="" style="width:50px">
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -54,70 +62,100 @@
     <template slot="row-details" slot-scope="row">
       <b-card style="background-color:#dadada;border-width:1px;border-style:solid;border-color:black">
         <b-row>
-          <b-col sm="4">
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
-        </b-row>
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
-        </b-row>
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Author:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Author }}</b-col>
-        </b-row>
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Price:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
-        </b-row>
-      </b-col>
-      <b-col sm="4">
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Contribution:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ row.item.Contribution }}</b-col>
-        </b-row>
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Total Supply:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
-        </b-row>
+          <b-col sm="4" class="text-sm-left"><img v-bind:src="picLink(row.item.OrderNum)" width=240px height=240px></img>
+          </b-col>
+          <b-col sm="8">
+            <b-row>
+            <b-col sm="6">
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Author:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{ row.item.Author }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Price:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
+                <b-col sm="auto" class="text-sm-left"><b-button target="_blank" href="https://soundcloud.com/kodak-black" size="sm" variant="info">Website</b-button></b-col>
+              </b-row>
+
+            </b-col>
+            <b-col sm="6">
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Contribution:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{ row.item.Contribution }}</b-col>
+              </b-row>
+            <b-row class="mb-2">
+              <b-col sm="5" class="text-sm-left"><b>Total Supply:</b></b-col>
+              <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
+            </b-row>
             <b-row class="mb-2">
               <b-col sm="5" class="text-sm-left"><b>Genre:</b></b-col>
               <b-col sm="auto" class="text-sm-left">{{ row.item.Genre }}</b-col>
             </b-row>
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
+            <b-row class="mb-2">
+              <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
+              <b-col sm="auto" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col>---
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
+              <b-col sm="auto" class="text-sm-left"><b-button  @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
+            </b-row>
+          </b-col>
         </b-row>
-      </b-col>
-      <b-col sm="4">
-        <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
-          <b-col sm="auto" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
+        <b-row>
+          <b-col style="margin:10px 0px">
+          </b-col>
         </b-row>
         <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
-          <b-col sm="auto" class="text-sm-left"><b-button size="sm" variant="info">Website</b-button></b-col>
+          <b-col sm="3" class="text-sm-left"><b>Owner:</b></b-col>
+          <b-col sm="8" class="text-sm-left"> 0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A
+            <b-link target="_blank" class="text-primary" href="https://etherscan.io/token/0xf230b790e05390fc8295f4d3f60332c93bed42e2" variant="danger">
+              Etherscan
+            </b-link>
+          </b-col>
         </b-row>
-
         <b-row class="mb-2">
-          <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
-          <b-col sm="auto" class="text-sm-left"><b-button  @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
+          <b-col sm="3" class="text-sm-left"><b>Contract address: </b></b-col>
+          <b-col sm="8" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A
+            <b-link target="_blank" class="text-primary" href="https://etherscan.io/token/0xf230b790e05390fc8295f4d3f60332c93bed42e2" variant="danger">
+              Etherscan
+            </b-link>
+          </b-col>
         </b-row>
-      </b-col>
+        </b-col>
     </b-row>
+
     <br>
+    <b-row  class="mb-2">
+      <b-col sm="6" class="text-sm-left"><b>Description:</b></b-col>
+      <b-col sm="6" class="text-sm-left"><b></b></b-col>
+    </b-row>
       <b-row class="mb-2">
-        <b-col>
-        <b-col sm="4" class="text-sm-left"><b>Owner:</b></b-col>
-        <b-col sm="auto" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A</b-col>
-        <b-col sm="4  " class="text-sm-left"><b>Contract address:</b></b-col>
-        <b-col sm="auto" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A</b-col>
-      </b-col>
-        <b-col sm="4" class="text-sm-left"><img src="../assets/album.jpg"></img></b-col>
-        <b-col><iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;color=0066cc"></iframe></b-col>
-      </b-row>
-      <b-row class="mb-2">
+
+        <b-col sm="6" class="text-sm-left" >
+          <p style="text-align:justify;">  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </b-col>
+          <b-col>
+<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/425635065&color=%231f0604&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+            </b-col>
       </b-row>
 
     <br>
@@ -200,7 +238,12 @@ export default {
       sortDesc: false,
       tablefilter: '',
       currentPage: 1,
+      picIteration: 0,
+      musicPlayerLink: '',
       perPage: 10,
+      currentIndex: -1,
+      loading: -1,
+      changing: -1,
       totalRows: 20,
       fields: [
         { key: 'Picture', sortable: false },
@@ -258,11 +301,56 @@ export default {
         case 6: return 'Finished'
       }
     },
+    onError: function () {
+      alert('error')
+    },
+    onAbort: function () {
+      alert('aborted')
+    },
+    loaded: function (index) {
+      if (this.loading >= 0) {
+        this.loading = -1
+      }
+      // alert('loaded')
+    },
+    isLoading: function (index) {
+      if (this.changing === index || this.loading === index) {
+        return true
+      } else {
+        return false
+      }
+    },
+    playMusic: function (index) {
+      var that = this
+      if (index === this.currentIndex) {
+        this.currentIndex = -1
+        this.musicPlayerLink = ''
+        return
+      }
+      this.currentIndex = index
+      this.changing = index
+      this.musicPlayerLink = ''
+      setTimeout(function () {
+        that.changing = -1
+        that.loading = index
+        that.musicPlayerLink = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/232694761&color=%231f0604&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true'
+        console.log(this.musicPlayerLink)
+      }, 100)
+    },
     localNumber: function (val) {
       if (isNaN(val)) return 0
       var entry = parseFloat(val)
       var num = entry.toLocaleString()
       return num
+    },
+    picLink: function (index) {
+      var height = 480 + (index % 20)
+      return 'https://source.unsplash.com/collection/1301616/' + height + 'x480'
+      // return 'https://source.unsplash.com/random/480x480'
+    },
+    isPlaying: function (rowNumber) {
+      if (this.currentIndex === rowNumber) return true
+      else return false
     }
   },
   computed: {
