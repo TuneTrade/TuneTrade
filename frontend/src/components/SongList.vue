@@ -4,8 +4,7 @@
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
     </b-modal>
-    {{currentIndex}} {{loading}}
-    <b-navbar toggleable="sm" type="dark" variant="secondary">
+    <b-navbar style="border-radius:5px;margin:2px" toggleable="sm" type="dark" variant="secondary">
       <b-nav-form>
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
@@ -265,7 +264,9 @@ export default {
     }
   },
   created: function () {
-    this.$store.dispatch('ConnectToContract')
+    // this.$store.dispatch('ConnectToContract')
+    console.log('Calling get songs and so on')
+    this.$store.dispatch('GetSongs')
   },
   methods:
   {
@@ -344,8 +345,12 @@ export default {
       return num
     },
     picLink: function (index) {
-      var height = 480 + (index % 20)
-      return 'https://source.unsplash.com/collection/1301616/' + height + 'x480'
+      console.log('PIC LINK:', index)
+      if (index === undefined) {
+        return ''
+      }
+      var height = 240 + (index % 20)
+      return 'https://source.unsplash.com/collection/1301616/' + height + 'x240'
       // return 'https://source.unsplash.com/random/480x480'
     },
     isPlaying: function (rowNumber) {

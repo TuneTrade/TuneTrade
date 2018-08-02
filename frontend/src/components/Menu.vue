@@ -10,20 +10,21 @@ a {
 
 <div class="">
     <!-- <b-container> -->
-    <b-alert alert-variant="danger" variant="danger" style="background-color:#d11;color:#f0f0f0" show v-if="metaMaskUninstalled"> MetaMask isn't installed. You need to install metamask in order to be able to use this application. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> Go here => MetaMask </b-link></b-alert>
+    <b-alert style="border-radius:5px;margin:20px 2px" dismissible alert-variant="warning" variant="secondary"  show v-if="metaMaskUninstalled"> MetaMask isn't installed. You need to install metamask in order to be able to use this application. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> Go here => MetaMask </b-link></b-alert>
     <b-alert style="background-color:#d11;color:#f0f0f0"  show v-if="!loggedIn && !metaMaskUninstalled">Please login to MetaMask </b-alert>
-    <b-navbar toggleable="sm" type="dark" variant="info">
+    <b-navbar style="border-radius:5px;margin:2px" toggleable="sm" type="dark" variant="info">
+      <img src="../assets/singing.jpg" class="rounded-picture">
+
         <b-navbar-brand>
-            <router-link :to="{ name: 'SongList', params: {} }">List</router-link>
+            <router-link class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
+            <router-link class="router-link" :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
+            <router-link class="router-link" :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
         </b-navbar-brand>
     </b-navbar>
-    <div>{{networkId}} {{metaMaskAccount}}</div>
     <!-- </b-container> -->
 </div>
 
@@ -40,18 +41,18 @@ export default {
     }
   },
   created: function () {
-    web3.currentProvider.network
-    var that = this
-    web3.currentProvider.publicConfigStore.on('update', function(err,res){
-      console.log('web3 metmask updated')
-      that.metaMaskAccount = web3.eth.defaultAccount
-    });
-
-    web3.version.getNetwork(function(err,res){
-      that.networkId = parseInt(res);
-    })
-
-    this.metaMaskAccount = web3.eth.defaultAccount
+    // // web3.currentProvider.network
+    // var that = this
+    // web3.currentProvider.publicConfigStore.on('update', function(err,res){
+    //   console.log('web3 metmask updated')
+    //   that.metaMaskAccount = web3.eth.defaultAccount
+    // });
+    //
+    // web3.version.getNetwork(function(err,res){
+    //   that.networkId = parseInt(res);
+    // })
+    //
+    // this.metaMaskAccount = web3.eth.defaultAccount
 
   },
   computed:
