@@ -57,6 +57,9 @@
     <template slot="Name" slot-scope="row">
       &quot;{{row.item.Name}}&quot;
     </template>
+    <template slot="Created" slot-scope="row">
+      {{ getLocalTime(row.item.Created)}}
+    </template>
 
     <template slot="row-details" slot-scope="row">
       <b-card style="background-color:#dadada;border-width:1px;border-style:solid;border-color:black">
@@ -239,15 +242,16 @@ export default {
       currentPage: 1,
       picIteration: 0,
       musicPlayerLink: '',
-      perPage: 10,
+      perPage: 20,
       currentIndex: -1,
       loading: -1,
       changing: -1,
-      totalRows: 20,
+      totalRows: 15,
       fields: [
-        { key: 'Picture', sortable: false },
-        { key: 'Type', sortable: false },
+        { key: 'Picture', sortable: false, label: '' },
+        { key: 'Type', sortable: false, label: '' },
         { key: 'Name', sortable: true },
+        { key: 'Created', sortable: true },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
         { key: 'Price', sortable: true },
@@ -258,7 +262,7 @@ export default {
         { key: 'Genre', sortable: true },
         // { key: 'Website', sortable: true },
         // { key: 'Buy', sortable: true },
-        { key: 'show_details', sortable: false }
+        { key: 'show_details', sortable: false, label: '' }
       ],
       items: items
     }
