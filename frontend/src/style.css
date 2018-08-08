@@ -18,3 +18,73 @@
   -ms-filter: "FlipH";
   margin:0px 10px 0px 0px;
 }
+
+.newContractForm
+{
+  /* padding:10px; */
+  /* margin:20px 0px; */
+}
+
+.contractTab {
+  border-style:solid;
+  border-width:1px;
+  border-color:grey;
+  background-color: #fafafa;
+  border-radius:5px;
+
+}
+.newContractFormContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 10px;
+
+}
+
+.contractTabs {
+  /* background-color:red; */
+  color:black;
+}
+
+.contractTabs a {
+  color:#020202;
+}
+.contractTabs a:hover {
+  color:#aaa;
+}
+
+
+.nav-link active {
+  background-color:red;
+}
+
+.summaryContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: 15px;
+  grid-column-gap:20px;
+}
+.summaryElement {
+  /* border-style:solid; */
+  display:grid;
+  grid-template-columns: auto auto 1fr;
+  align-items:stretch;
+}
+
+.summaryContent {
+  word-break: break-all;
+  font-size:13px;
+  font-kerning: none;
+  font-family:sans-serif;
+  font-weight:100;
+  /* border-style:solid; */
+  border-color:blue;
+}
+
+.summaryTitle {
+  font-size:13px;
+  font-weight: 600;
+  margin:0px 5px;
+  justify-self: start;
+  /* border-style:solid; */
+  border-color:red;
+}

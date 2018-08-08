@@ -312,7 +312,7 @@ export default {
     onAbort: function () {
       alert('aborted')
     },
-    loaded: function (index) {
+    loaded: function () {
       if (this.loading >= 0) {
         this.loading = -1
       }

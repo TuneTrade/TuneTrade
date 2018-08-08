@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import SongList from '../components/SongList'
 import TokenExchange from '../components/TokenExchange'
 import NewContract from '../components/NewContract'
+import ICOContract from '../components/ICOContract'
 
 Vue.use(Router)
 
@@ -24,6 +25,11 @@ export default new Router({
       path: '/newcontract',
       name: 'NewContract',
       component: NewContract
+    },
+    {
+      path: '/icocontracttest',
+      name: 'ICOContract',
+      component: ICOContract
     }
   ]
 })

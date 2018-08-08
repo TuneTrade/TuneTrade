@@ -6,6 +6,7 @@ import App from './App'
 import Menu from './components/Menu'
 import TokenExchange from './components/TokenExchange'
 import NewContract from './components/NewContract'
+import ICOContract from './components/ICOContract'
 import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -23,6 +24,7 @@ new Vue({
   components: { App,
     Menu,
     TokenExchange,
-    NewContract
+    NewContract,
+    ICOContract
   }
 })

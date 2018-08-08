@@ -3,3 +3,4 @@ config/*.js
 contractdef.js
 store.js
 Menu.vue
+src/musicGenres.js
