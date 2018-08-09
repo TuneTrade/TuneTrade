@@ -10,6 +10,8 @@
                       type="number"
                       v-model="form.presalePeriod"
                       optional
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       size="sm"
                       placeholder="0">
         </b-form-input>
@@ -21,6 +23,8 @@
         <b-form-input id="presalePeriodBonus"
                       type="number"
                       v-model="form.presalePeriodBonus"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -33,6 +37,8 @@
         <b-form-input id="firstPeriod"
                       type="number"
                       v-model="form.firstPeriod"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -45,6 +51,8 @@
         <b-form-input id="firstPeriodBonus"
                       type="number"
                       v-model="form.firstPeriodBonus"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -57,6 +65,8 @@
         <b-form-input id="secondPeriod"
                       type="number"
                       v-model="form.secondPeriod"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -69,6 +79,8 @@
         <b-form-input id="secondPeriodBonus"
                       type="number"
                       v-model="form.secondPeriodBonus"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -81,6 +93,8 @@
         <b-form-input id="thirdPeriod"
                       type="number"
                       v-model="form.thirdPeriod"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -92,6 +106,8 @@
         <b-form-input id="thirdPeriodBonus"
                       type="number"
                       v-model="form.thirdPeriodBonus"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="0">
@@ -127,6 +143,14 @@ export default {
     /* global musicGenres */
   },
   methods: {
+    UnSave () {
+      for (var key in this.form) {
+        console.log('form[' + key + '] = ' + this.form[key])
+        this.$store.state.form[key] = this.form[key]
+      }
+      // this.$store.state.form = this.form
+      console.log('Stored form: ', this.$store.state.form)
+    },
     onSubmit (evt) {
       evt.preventDefault()
       alert(JSON.stringify(this.form))

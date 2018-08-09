@@ -114,35 +114,35 @@
         <b-card-body   class="summaryContainer contractTab">
           <div class="summaryElement">
             <div class="summaryTitle">Presale Period [days]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.presalePeriod}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">Presale Period Bonus [%]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.presalePeriodBonus}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">First Period [days]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.firstPeriod}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">First Period Bonus [%]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.firstPeriodBonus}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">Second Period [days]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.secondPeriod}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">Second Period Bonus [%]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.secondPeriodBonus}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">Third Period [days]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.thirdPeriod}}</div>
           </div>
           <div class="summaryElement">
             <div class="summaryTitle">Third Period Bonus[%]:</div>
-            <div class="summaryContent">{{lorem}}</div>
+            <div class="summaryContent">{{form.thirdPeriodBonus}}</div>
           </div>
 
         </b-card-body>
@@ -212,16 +212,6 @@ var musicGenres = [
 export default {
   data () {
     return {
-      form: {
-        email: '',
-        name: '',
-        food: null,
-        checked: [],
-        genre: null,
-        author: null,
-        website: null,
-        type: null
-      },
       show: true,
       genres: musicGenres,
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
@@ -235,6 +225,14 @@ export default {
     /* global musicGenres */
     this.genres = musicGenres
     console.log('Music Genres:', this.genres)
+  },
+  destroyed: function () {
+    console.log('Destroyed')
+  },
+  computed: {
+    form: function () {
+      return this.$store.state.form
+    }
   },
   methods: {
     onSubmit (evt) {

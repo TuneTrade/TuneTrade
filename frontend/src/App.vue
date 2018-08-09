@@ -24,12 +24,14 @@ background-size: cover;
 <template>
 
 <div id="app">
-    <b-container>
+    <b-container fluid style="padding:0px;" class="test">
         <Menu/>
         <transition name="fade" mode="out-in">
+        <b-container style="margin-top:120px">
         <router-view></router-view>
-      </transition>
-        </Footer>
+        </b-container>
+        </transition>
+        <Footer/>
     </b-container>
 </div>
 

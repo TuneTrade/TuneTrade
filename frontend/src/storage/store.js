@@ -42,7 +42,8 @@ export const store = new Vuex.Store({
     web3contract: {},
     web3account: '',
     owner: '',
-    songs: []
+    songs: [],
+    form: {}
   },
   getters: {
     getCountryList: state => {

@@ -1,5 +1,6 @@
 <template>
   <div>
+    Name:{{form.name}}
     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
 
@@ -11,6 +12,8 @@
                       v-model="form.wallet"
                       required
                       size="sm"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       placeholder="0xAb778A157dEC26bc3eF341d0De042FD2A2F38E1d">
         </b-form-input>
       </b-form-group>
@@ -22,7 +25,9 @@
         <b-form-input id="teamtokens"
                       type="number"
                       v-model="form.teamtokens"
+                      @change = "UnSave()"
                       optional
+                      @keydown.native = "UnSave()"
                       size="sm"
                       step="0.1"
                       placeholder="Enter name">
@@ -35,6 +40,8 @@
         <b-form-input id="minpersale"
                       type="number"
                       v-model="form.minpresale"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Minimum presale">
@@ -48,6 +55,8 @@
         <b-form-input id="minmainsale"
                       type="number"
                       v-model="form.minmainsale"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Minimum main sale">
@@ -61,6 +70,8 @@
         <b-form-input id="maxETH"
                       type="number"
                       v-model="form.maxETH"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Enter Maximum Contribution"
@@ -73,6 +84,8 @@
                     label-for="maxcap">
         <b-form-input id="maxcap"
                       type="number"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       v-model="form.maxcap"
                       optional
                       size="sm"
@@ -87,6 +100,8 @@
         <b-form-input id="mincap"
                       type="number"
                       v-model="form.mincap"
+                      @keydown.native = "UnSave()"
+                      @change = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Minimum Cap"
@@ -101,6 +116,8 @@
         <b-form-input id="priceETH"
                       type="number"
                       v-model="form.priceETH"
+                      @keydown.native = "UnSave()"
+                      @change="UnSave()"
                       optional
                       size="sm"
                       placeholder="Enter Token Price"
@@ -115,6 +132,8 @@
         <b-form-input id="campaignDuration"
                       type="number"
                       v-model="form.campaignDuration"
+                      @change="UnSave()"
+                      @keydown.native = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Enter Campaign Duration Days"
@@ -160,6 +179,9 @@ export default {
   created: function () {
   },
   methods: {
+    UnSave () {
+      console.log('ICOContract Unsaved')
+    },
     onSubmit (evt) {
       evt.preventDefault()
       alert(JSON.stringify(this.form))

@@ -1,35 +1,64 @@
+body {
+  background:
+  /* url('./assets/background2.png')  no-repeat; */
+  url('./assets/background2.jpg')  no-repeat;
+  /* background-repeat:space; */
+  background-size:     cover;
+   background-repeat:   no-repeat;
+   background-position: left center;
+   background-attachment: fixed;
+   font-family: 'Raleway';
+      font-size: 16px;
+
+}
+content
+{
+  overflow:auto;
+  position:relative;
+}
+.app {
+  /* background-color:  */
+}
+
 .router-link-active{
   color:yellow;
 }
 
 .router-link{
-  color: #fafafa;
+  color: #f5f5f5;
 }
 
 .rounded-picture {
-  border-radius: 50%;
-  width:50px;
-  height:50px;
+  border-radius: 100%;
+  opacity:1;
+  overflow: visible;
+  width:150px;
+  height:150px;
+  margin:20px 40px 0px 0px;
+}
+
+.invert
+{
+  transform: scaleX(-1);
   -moz-transform: scaleX(-1);
   -o-transform: scaleX(-1);
   -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
   filter: FlipH;
   -ms-filter: "FlipH";
-  margin:0px 10px 0px 0px;
-}
 
+}
 .newContractForm
 {
-  /* padding:10px; */
+  padding:40px;
   /* margin:20px 0px; */
+  background-color:rgba(200,200,200,0.4);
 }
 
 .contractTab {
   border-style:solid;
   border-width:1px;
   border-color:grey;
-  background-color: #fafafa;
+  background-color:rgba(240,240,240,0.6);
   border-radius:5px;
 
 }
@@ -37,12 +66,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-column-gap: 10px;
+  background-color:rgba(0,0,0,0);
+  /* padding:40px; */
 
 }
 
 .contractTabs {
   /* background-color:red; */
   color:black;
+  background-color:rgba(0,0,0,0);
+  margin:30px 0px 0px 0px;
 }
 
 .contractTabs a {
@@ -87,4 +120,9 @@
   justify-self: start;
   /* border-style:solid; */
   border-color:red;
+}
+
+.test {
+  /* background-image: url('./assets/singing3.jpg'); */
+
 }

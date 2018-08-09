@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-tabs  card class="contractTabs">
+    <b-tabs card class="contractTabs"   @input="test()" v-model="index">
       <b-tab title="General" class="contractTab">
     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
@@ -12,7 +12,8 @@
                     buttons
                     button-variant="outline-primary"
                     size="sm"
-                    required
+                    optional
+                    @change="UnSave()"
                     v-model="form.type"
                     :options="['Song', 'Band']"
                     name="radioBtnOutline" />
@@ -23,7 +24,8 @@
         <b-form-input id="nameInput"
                       type="text"
                       v-model="form.name"
-                      required
+                      @keydown.native = "UnSave()"
+                      optional
                       size="sm"
                       placeholder="Enter name">
         </b-form-input>
@@ -34,7 +36,8 @@
         <b-form-input size="sm" id="authorName"
                       type="text"
                       v-model="form.author"
-                      required
+                      @keydown.native = "UnSave()"
+                      optional
                       placeholder="Enter author's name">
         </b-form-input>
       </b-form-group>
@@ -44,7 +47,8 @@
         <b-form-input id="website"
                       type="text"
                       v-model="form.website"
-                      required
+                      optional
+                      @keydown.native = "UnSave()"
                       size="sm"
                       placeholder="Enter website link">
         </b-form-input>
@@ -55,8 +59,9 @@
                     label-for="symbol">
         <b-form-input id="symbol"
                       type="text"
+                      @keydown.native = "UnSave()"
                       v-model="form.symbol"
-                      required
+                      optional
                       size="sm"
                       placeholder="Enter symbol">
         </b-form-input>
@@ -68,6 +73,7 @@
       <b-form-file id="picture"
                       v-model="form.picture"
                       optional
+                      @change = "UnSave()"
                       style="font-size:12px; font-weight:600;height:30px"
                       placeholder="Please provide album image">
         </b-form-file>
@@ -78,10 +84,11 @@
                     label-for="exampleInput3">
         <b-form-select id="exampleInput3"
                       :options="genres"
-                      required
+                      optional
                       v-model="form.genre"
                       size="sm"
-                      select-size=8
+                      @change="UnSave()"
+                      select-size="selectSize"
                       placeholder="Select genre">
 
         </b-form-select>
@@ -93,20 +100,21 @@
         <!-- </b-form-checkbox-group> -->
       <!-- </b-form-group> -->
     </div>
-      <b-button type="submit" variant="primary">Save</b-button>
+      <b-button v-bind:disabled="!unsaved" type="submit" variant="primary">Save</b-button>
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </b-tab>
-  <b-tab title="ICO Contract"  class="contractTab">
+  <b-tab  title="ICO Contract"  class="contractTab">
     <ICOContract/>
   </b-tab>
-  <b-tab title="Bonuses"  class="contractTab">
+  <b-tab  title="Bonuses"  class="contractTab">
     <Bonuses/>
   </b-tab>
-  <b-tab title="Summary & Create"  class="contractTab">
+  <b-tab title="Summary & Create" class="contractTab">
     <SummaryNewContract/>
   </b-tab>
 </b-tabs>
+{{unsaved}}
   </div>
 </template>
 
@@ -166,17 +174,17 @@ export default {
   data () {
     return {
       form: {
-        email: '',
         name: '',
-        food: null,
-        checked: [],
         genre: null,
         author: null,
         website: null,
-        type: null
+        type: null,
+        picture: null
       },
       show: true,
-      genres: musicGenres
+      genres: musicGenres,
+      unsaved: false,
+      index: ''
     }
   },
   components: {
@@ -189,10 +197,27 @@ export default {
     this.genres = musicGenres
     console.log('Music Genres:', this.genres)
   },
+  watch: {
+    form: function (val) {
+      console.log('Form:', val)
+    }
+  },
+  computed: {
+    selectSize: function () {
+      return parseInt('8')
+    }
+  },
   methods: {
+    test () {
+      console.log('test: ', this.index)
+    },
+    UnSave () {
+      this.unsaved = true
+    },
     onSubmit (evt) {
+      this.unsaved = false
       evt.preventDefault()
-      alert(JSON.stringify(this.form))
+      // alert(JSON.stringify(this.form))
     },
     onReset (evt) {
       evt.preventDefault()
@@ -205,7 +230,7 @@ export default {
       this.form.symbol = ''
       this.form.website = ''
       this.form.type = ''
-      this.form.checked = []
+      this.unsaved = false
       /* Trick to reset/clear native browser form validation state */
       this.show = false
       this.$nextTick(() => { this.show = true })

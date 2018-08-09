@@ -2,7 +2,11 @@
 
 a {
   color:#fafafa;
+  /* font-family:'Gothic'; */
+  /* font-size:32px; */
+  /* font-stretch:  expanded; */
 }
+
 
 </style>
 
@@ -12,8 +16,11 @@ a {
     <!-- <b-container> -->
     <b-alert style="border-radius:5px;margin:20px 2px" dismissible alert-variant="warning" variant="secondary"  show v-if="metaMaskUninstalled"> MetaMask isn't installed. You need to install metamask in order to be able to use this application. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> Go here => MetaMask </b-link></b-alert>
     <b-alert style="background-color:#d11;color:#f0f0f0"  show v-if="!loggedIn && !metaMaskUninstalled">Please login to MetaMask </b-alert>
-    <b-navbar style="border-radius:5px;margin:2px" toggleable="sm" type="dark" variant="info">
-      <img src="../assets/singing.jpg" class="rounded-picture">
+    <b-navbar fixed="top" style="border-radius:-10px;margin:0px;height:100px" toggleable="sm" type="dark" variant="info">
+      <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
+      <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
+      <img src="../assets/singing3.jpg" class="rounded-picture">
+      <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
 
         <b-navbar-brand>
             <router-link class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>

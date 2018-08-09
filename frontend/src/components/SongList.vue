@@ -4,12 +4,12 @@
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
     </b-modal>
-    <b-navbar style="border-radius:5px;margin:2px" toggleable="sm" type="dark" variant="secondary">
+    <b-navbar  style="border-radius:5px;margin:110px 0px 0px 0px;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
       <b-nav-form>
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
       </b-nav-form>
-      <b-nav-item-dropdown text="Type" right style="list-style:none;">
+      <b-nav-item-dropdown text="Type" right style="list-style:none;opacity:1;z-index:2,overflow:visible">
         <b-dropdown-item href="#">Song</b-dropdown-item>
         <b-dropdown-item href="#">Band</b-dropdown-item>
         <b-dropdown-item href="#">All</b-dropdown-item>
@@ -62,7 +62,7 @@
     </template>
 
     <template slot="row-details" slot-scope="row">
-      <b-card style="background-color:#dadada;border-width:1px;border-style:solid;border-color:black">
+      <b-card style="background-color:rgba(0,0,0,0.2);border-width:1px;border-style:solid;border-color:black;">
         <b-row>
           <b-col sm="4" class="text-sm-left"><img v-bind:src="picLink(row.item.OrderNum)" width=240px height=240px></img>
           </b-col>
