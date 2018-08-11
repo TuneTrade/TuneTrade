@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-tabs card class="contractTabs"   @input="test()" v-model="index">
+    <b-tabs card class="contractTabs"   v-model="index">
       <b-tab title="General" class="contractTab">
     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
@@ -51,6 +51,19 @@
                       @keydown.native = "UnSave()"
                       size="sm"
                       placeholder="Enter website link">
+        </b-form-input>
+      </b-form-group>
+
+      <b-form-group id="websiteLink"
+                    label="Soundcloud:"
+                    label-for="soundcloud">
+        <b-form-input id="soudncloud"
+                      type="text"
+                      v-model="form.soundcloud"
+                      optional
+                      @keydown.native = "UnSave()"
+                      size="sm"
+                      placeholder="Enter soundcloud link">
         </b-form-input>
       </b-form-group>
 
@@ -179,7 +192,8 @@ export default {
         author: null,
         website: null,
         type: null,
-        picture: null
+        picture: null,
+        symbol: ''
       },
       show: true,
       genres: musicGenres,
@@ -212,6 +226,12 @@ export default {
       console.log('test: ', this.index)
     },
     UnSave () {
+      for (var key in this.form) {
+        console.log('form[' + key + '] = ' + this.form[key])
+        this.$store.state.form[key] = this.form[key]
+      }
+      this.$store.state.form = this.form
+      console.log('Stored form: ', this.$store.state.form)
       this.unsaved = true
     },
     onSubmit (evt) {

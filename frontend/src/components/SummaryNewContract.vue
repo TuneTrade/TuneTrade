@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="newContractForm">
     <h4>Contract Summary</h4>
-    <b-button type="submit" variant="primary">Create Contract</b-button>
+    <b-button type="submit" @click="onSubmit()" variant="primary">Create Contract</b-button>
     <b-button type="reset" variant="danger">Reset All</b-button>
-          <b-card no-body class="mb-1">
+          <b-card no-body class="mb-1 aCard">
             <b-card-header header-tag="header" class="p-1" role="tab" style="padding:10px;">
               <b-btn block href="#" v-b-toggle.accordion1 variant="info">General</b-btn>
             </b-card-header>
@@ -12,45 +12,45 @@
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Type:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.type}}</div>
                 </div>
 
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Name:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.name}}</div>
                 </div>
 
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Author:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.author}}</div>
                 </div>
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Website:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.website}}</div>
                 </div>
 
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Token symbol:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.symbol}}</div>
                 </div>
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Image:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{pictureName}}</div>
                 </div>
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Genre:</div>
-                  <div class="summaryContent">{{lorem}}</div>
+                  <div class="summaryContent">{{form.genre}}</div>
                 </div>
               </b-card-body>
             </b-collapse>
           </b-card>
-          <b-card no-body class="mb-1">
+          <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
               <b-btn block href="#" v-b-toggle.accordion2 variant="info">ICO Contract</b-btn>
             </b-card-header>
@@ -106,7 +106,7 @@
         </b-card-body>
       </b-collapse>
       </b-card>
-          <b-card no-body class="mb-1">
+          <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
               <b-btn block href="#" v-b-toggle.accordion3 variant="info">Bonuses</b-btn>
             </b-card-header>
@@ -230,14 +230,24 @@ export default {
     console.log('Destroyed')
   },
   computed: {
+    formLocal: function () {
+      return this.$store.state.form.type
+    },
     form: function () {
       return this.$store.state.form
+    },
+    pictureName: function () {
+      // return 'dupa'
+      if (this.form.picture !== null && this.form.picture !== undefined) {
+        return this.form.picture.name
+      } else return 'Undefined'
     }
   },
   methods: {
-    onSubmit (evt) {
-      evt.preventDefault()
-      alert(JSON.stringify(this.form))
+    onSubmit () {
+      // evt.preventDefault()
+      // alert(JSON.stringify(this.form))
+      this.$store.state.web3contract.AddSong('test', 'test')
     },
     onReset (evt) {
       evt.preventDefault()
@@ -258,5 +268,11 @@ export default {
   }
 }
 </script>
+<style lang="css">
+.aCard {
+  opacity:1;
+  border-style:solid;
+}
 
+</style>
 <!-- b-form-1.vue -->

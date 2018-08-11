@@ -1,14 +1,13 @@
 body {
   background:
-  /* url('./assets/background2.png')  no-repeat; */
-  url('./assets/background2.jpg')  no-repeat;
+  url('./assets/background.png')  no-repeat;
+  /* url('./assets/background2.jpg')  no-repeat; */
   /* background-repeat:space; */
   background-size:     cover;
    background-repeat:   no-repeat;
    background-position: left center;
    background-attachment: fixed;
    font-family: 'Raleway';
-      font-size: 16px;
 
 }
 content
@@ -21,11 +20,15 @@ content
 }
 
 .router-link-active{
-  color:yellow;
+  color: #aaaaaa;
 }
 
 .router-link{
-  color: #f5f5f5;
+  color: yellow;
+}
+
+.router-link:hover {
+  color:pink;
 }
 
 .rounded-picture {
@@ -122,7 +125,36 @@ content
   border-color:red;
 }
 
-.test {
-  /* background-image: url('./assets/singing3.jpg'); */
+.menuLogo {
+  align-items: flex-end;
+  text-align: right;
+  width:100%;
+}
 
+.tunetradeMenu
+{
+  background-color:rgba(255,43,32,1);
+  /* position:relative; */
+  height:120px;
+  position:fixed;
+  top:0px;
+  width:100%;
+  z-index:100;
+  font-family: monospace;
+  font-weight: 600;
+  padding:30px;
+  opacity:1;
+}
+
+.tunetradeMenu a {
+  margin:8px;
+}
+
+.contentContainer {
+  /* position:absolute; */
+  padding:0% 15%;
+  padding-top:20px;
+  padding-bottom:80px;
+  /* height:2000px; */
+  /* width:100%; */
 }

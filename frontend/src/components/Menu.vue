@@ -16,21 +16,31 @@ a {
     <!-- <b-container> -->
     <b-alert style="border-radius:5px;margin:20px 2px" dismissible alert-variant="warning" variant="secondary"  show v-if="metaMaskUninstalled"> MetaMask isn't installed. You need to install metamask in order to be able to use this application. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> Go here => MetaMask </b-link></b-alert>
     <b-alert style="background-color:#d11;color:#f0f0f0"  show v-if="!loggedIn && !metaMaskUninstalled">Please login to MetaMask </b-alert>
-    <b-navbar fixed="top" style="border-radius:-10px;margin:0px;height:100px" toggleable="sm" type="dark" variant="info">
+    <b-navbar  toggleable="sm"  class="tunetradeMenu">
       <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
       <img src="../assets/singing3.jpg" class="rounded-picture">
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
 
         <b-navbar-brand>
-            <router-link class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
+            <router-link exact  :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link class="router-link" :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
+            <router-link exact   :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link class="router-link" :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
+            <router-link exact   :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
         </b-navbar-brand>
+        <b-navbar-brand>
+            <router-link  exact  :to="{ name: 'About', params: {} }">About</router-link>
+        </b-navbar-brand>
+        <div class="menuLogo">
+          {{metaMaskUninstalled}}
+          {{metaMaskAccount}}
+          {{contractAddress}}
+          {{loggedIn}}
+          <img src="../assets/logotunetradesmall.png" style="width:100px"></img>
+        </div>
     </b-navbar>
     <!-- </b-container> -->
 </div>
@@ -48,18 +58,17 @@ export default {
     }
   },
   created: function () {
-    // // web3.currentProvider.network
-    // var that = this
-    // web3.currentProvider.publicConfigStore.on('update', function(err,res){
-    //   console.log('web3 metmask updated')
-    //   that.metaMaskAccount = web3.eth.defaultAccount
-    // });
-    //
-    // web3.version.getNetwork(function(err,res){
-    //   that.networkId = parseInt(res);
-    // })
-    //
-    // this.metaMaskAccount = web3.eth.defaultAccount
+    var that = this
+    web3.currentProvider.publicConfigStore.on('update', function(err,res){
+      console.log('web3 metmask updated')
+      that.metaMaskAccount = web3.eth.defaultAccount
+    });
+
+    web3.version.getNetwork(function(err,res){
+      that.networkId = parseInt(res);
+    })
+
+    this.metaMaskAccount = web3.eth.defaultAccount
 
   },
   computed:
@@ -68,6 +77,9 @@ export default {
       console.log(this.metaMaskAccount)
       if(typeof this.metaMaskAccount=== 'undefined') return false
       else return true
+    },
+    contractAddress: function () {
+      return this.$store.state.web3contract.address
     },
     metaMaskUninstalled: function () {
       if (typeof web3 === 'undefined')

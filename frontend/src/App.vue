@@ -16,7 +16,7 @@ background-size: cover;
     /* color: #2c3e50; */
     margin-top: 10px;
     /* background-color: #fafafa; */
-    background-color:rgba(255,255,255,0.1);
+    /* background-color:rgba(255,255,255,0.1); */
 }
 
 </style>
@@ -24,13 +24,11 @@ background-size: cover;
 <template>
 
 <div id="app">
-    <b-container fluid style="padding:0px;" class="test">
+    <b-container fluid style="margin:0px;padding:0px;">
         <Menu/>
-        <transition name="fade" mode="out-in">
-        <b-container style="margin-top:120px">
-        <router-view></router-view>
-        </b-container>
-        </transition>
+        <!-- <transition name="fade" mode="out-in"> -->
+        <router-view class="contentContainer"></router-view>
+        <!-- </transition> -->
         <Footer/>
     </b-container>
 </div>

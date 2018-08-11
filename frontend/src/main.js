@@ -26,5 +26,8 @@ new Vue({
     TokenExchange,
     NewContract,
     ICOContract
+  },
+  created: function () {
+    store.dispatch('ConnectToContract')
   }
 })

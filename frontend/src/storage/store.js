@@ -136,9 +136,11 @@ export const store = new Vuex.Store({
 
       }).catch(function(err){console.log(err)})
     },
-    // ConnectToContract (store) {
-    //   var contractDefinition =  web3.eth.contract(smartContract)
-    //   store.state.web3contract = contractDefinition.at('0x38cb8f8995b1e811db10182b303913039ae2dacc')
+    ConnectToContract (store) {
+      var contractDefinition =  web3.eth.contract(smartContract)
+      store.state.web3contract = contractDefinition.at('0xbd8bed5e8427b0d9aec6897d53839439d1fa83a9')
+      console.log('Web3Contract Data:', store.state.web3contract)
+    }
     //   store.state.web3contract.GetSongs(function(err,res){
     //     var songList = []
     //     for(var i = 0;i<res.length;i++) {

@@ -6,6 +6,7 @@ import SongList from '../components/SongList'
 import TokenExchange from '../components/TokenExchange'
 import NewContract from '../components/NewContract'
 import ICOContract from '../components/ICOContract'
+import About from '../components/About'
 
 Vue.use(Router)
 
@@ -15,6 +16,11 @@ export default new Router({
       path: '/SongList',
       name: 'SongList',
       component: SongList
+    },
+    {
+      path: '/',
+      name: 'About',
+      component: About
     },
     {
       path: '/tokenexchange',
