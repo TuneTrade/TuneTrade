@@ -23,16 +23,16 @@ a {
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
 
         <b-navbar-brand>
-            <router-link exact  :to="{ name: 'SongList', params: {} }">List</router-link>
+            <router-link exact class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link exact   :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
+            <router-link  exact  class="router-link"   :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link exact   :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
+            <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
-            <router-link  exact  :to="{ name: 'About', params: {} }">About</router-link>
+            <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
         <div class="menuLogo">
           {{metaMaskUninstalled}}

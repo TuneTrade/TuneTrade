@@ -1,6 +1,26 @@
 <template>
   <div class="newContractForm">
+
+    <b-modal hide-header ref="AddSongModal"  size="lg" centered  ok-only ok-title="Close">
+    <center>
+      <img style="height:50px" src="../assets/metamask.png"></img><br><br>
+      <p v-if='!txNumberShow&&!errMsg' style="color:grey"> PLEASE ACCEPT YOUR TRANSACTION IN METAMASK </p>
+      <div v-if=errMsg>
+        {{errMsg}}
+      </div>
+   </center>
+   <div v-if=txNumberShow>
+   <h5 style="border-radius:5px;background-color:#aaa;padding:10px"> Transaction details: </h5>
+
+    Tx Number: {{txNumberShow}} <br>
+    Block number: {{blockNumber}} <br>
+    Gas Used: {{gasUsed}}<br>
+
+    <p v-bind:class=statusClass>Tx Status: {{status}}</p>
+  </div>
+    </b-modal >
     <h4>Contract Summary</h4>
+
     <b-button type="submit" @click="onSubmit()" variant="primary">Create Contract</b-button>
     <b-button type="reset" variant="danger">Reset All</b-button>
           <b-card no-body class="mb-1 aCard">
@@ -36,6 +56,11 @@
                 <div class="summaryElement">
                   <div class="summaryTitle">Token symbol:</div>
                   <div class="summaryContent">{{form.symbol}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="summaryTitle">Total supply:</div>
+                  <div class="summaryContent">{{form.totalSupply}}</div>
                 </div>
 
                 <div class="summaryElement">
@@ -154,6 +179,7 @@
       <p>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
       </p>
+      {{information}}
 
   </div>
 </template>
@@ -162,6 +188,8 @@
 // import musicGenres from '../musicGenres'
 import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
+var Web3 = require('web3')
+
 // require('../musicGenres')
 var musicGenres = [
   {value: null, text: 'Please select genre', disabled: true},
@@ -214,7 +242,15 @@ export default {
     return {
       show: true,
       genres: musicGenres,
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'
+      lorem: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
+      information: '',
+      txNumber: null,
+      txNumberShow: null,
+      intervalNumber: null,
+      status: '',
+      errMsg: null,
+      blockNumber: 0,
+      gasUsed: ''
     }
   },
   components: {
@@ -225,11 +261,18 @@ export default {
     /* global musicGenres */
     this.genres = musicGenres
     console.log('Music Genres:', this.genres)
+    this.intervalNumber = setInterval(this.checkTransaction, 1000)
   },
   destroyed: function () {
     console.log('Destroyed')
+    clearInterval(this.intervalNumber)
   },
   computed: {
+    statusClass: function () {
+      if (this.status === 'Successful') return 'successfulStatus'
+      if (this.status === 'Failed') return 'failedStatus'
+      return 'neutralStatus'
+    },
     formLocal: function () {
       return this.$store.state.form.type
     },
@@ -240,14 +283,67 @@ export default {
       // return 'dupa'
       if (this.form.picture !== null && this.form.picture !== undefined) {
         return this.form.picture.name
-      } else return 'Undefined'
+      } else return '---'
     }
   },
   methods: {
+    checkTransaction () {
+      console.log('Standby')
+      var that = this
+      if (this.txNumber !== null) {
+        console.log('Checking transaction:', this.txNumber)
+        web3.eth.getTransactionReceipt(this.txNumber,function(err,res) {
+          console.log('Checking transaction receipt err:', err)
+          console.log('Checking transaction receipt res:', res)
+          if (parseInt(res.status,16) === 1) {
+            console.log('Good')
+            that.status="Successful"
+            that.txNumber = null
+            that.blockNumber = that.localNumber(res.blockNumber)
+            that.gasUsed = that.localNumber(res.gasUsed)
+
+          } else {
+            console.log('Bad')
+            that.status = 'Failed'
+            that.txNumber = null
+            that.blockNumber = that.localNumber(res.blockNumber)
+            that.gasUsed = that.localNumber(res.gasUsed)
+          }
+        })
+
+      }
+    },
     onSubmit () {
       // evt.preventDefault()
       // alert(JSON.stringify(this.form))
-      this.$store.state.web3contract.AddSong('test', 'test')
+      var that = this
+      this.errMsg = ''
+      this.status ="Confirm in Metamask"
+      this.txNumberShow=null
+      this.$refs.AddSongModal.show()
+      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, true, this.form.website, 100, this.form.totalSupply, false, function (err, res) {
+        if (res !== undefined) {
+          that.status = 'Mining'
+          that.txNumberShow = res
+          that.txNumber = res
+          that.errMsg = null
+        } else {
+          that.status = 'Cancelled'
+          that.txNumberShow = null
+          that.txNumber = null
+          that.errMsg = err.message
+        }
+
+        console.log('Err:', err)
+        console.log('Res:', res)
+      })
+
+    },
+    localNumber: function (val) {
+      if (isNaN(val)) return 0
+      var entry = parseFloat(val)
+      var num = entry.toLocaleString()
+      return num
     },
     onReset (evt) {
       evt.preventDefault()

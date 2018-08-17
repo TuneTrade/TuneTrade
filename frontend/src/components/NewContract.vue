@@ -7,7 +7,7 @@
       <b-form-group id="typeGroup"
                     label="Type:"
                     label-for="typeGroup"
-                    description="Decide if you are adding a song or a band contract.">
+                    description="Song, Band or Influencer ?">
         <b-form-radio-group id="typeGroup"
                     buttons
                     button-variant="outline-primary"
@@ -15,7 +15,7 @@
                     optional
                     @change="UnSave()"
                     v-model="form.type"
-                    :options="['Song', 'Band']"
+                    :options="['Song', 'Band','Influencer']"
                     name="radioBtnOutline" />
       </b-form-group>
       <b-form-group id="nameInputGroup"
@@ -27,7 +27,9 @@
                       @keydown.native = "UnSave()"
                       optional
                       size="sm"
-                      placeholder="Enter name">
+                      placeholder="Enter name"
+
+                      >
         </b-form-input>
       </b-form-group>
       <b-form-group id="authorNameGroup"
@@ -75,6 +77,19 @@
                       @keydown.native = "UnSave()"
                       v-model="form.symbol"
                       optional
+                      size="sm"
+                      placeholder="Enter symbol">
+        </b-form-input>
+      </b-form-group>
+      <b-form-group id="supplyGroup"
+                    label="Total Supply:"
+                    label-for="totalSupply">
+        <b-form-input id="totalSupply"
+                      type="number"
+                      step="1"
+                      @keydown.native = "UnSave()"
+                      v-model="form.totalSupply"
+                      required
                       size="sm"
                       placeholder="Enter symbol">
         </b-form-input>
@@ -187,13 +202,14 @@ export default {
   data () {
     return {
       form: {
-        name: '',
-        genre: null,
-        author: null,
-        website: null,
-        type: null,
+        name: 'Test Token',
+        genre: 'Electronic',
+        author: 'Test Author',
+        website: 'www.test.com',
+        type: 'Band',
         picture: null,
-        symbol: ''
+        symbol: 'TTT',
+        totalSupply: 10000
       },
       show: true,
       genres: musicGenres,

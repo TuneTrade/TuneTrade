@@ -36,6 +36,7 @@ function sortFunction(a,b) {
 }
 
 const API = 'https://tunetrade-backend.herokuapp.com'
+// const API = 'http://127.0.0.1:5000'
 
 export const store = new Vuex.Store({
   state: {
@@ -138,7 +139,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xbd8bed5e8427b0d9aec6897d53839439d1fa83a9')
+      store.state.web3contract = contractDefinition.at('0xdAC48d403dC478ecCE36280BE59664140fb566aC')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

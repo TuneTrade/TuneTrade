@@ -2,5 +2,8 @@ build/*.js
 config/*.js
 contractdef.js
 store.js
+./src/components/SummaryNewContract.vue
 Menu.vue
 src/musicGenres.js
+SummaryNewContract.vue
+./src/components/NewContract.vue

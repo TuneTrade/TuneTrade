@@ -1,10 +1,10 @@
 <template lang="html">
-  <div class="">
+  <div class="" style="margin:80px 0px;">
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
     </b-modal>
-    <b-navbar  style="border-radius:5px;margin:30px 0px;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
+    <b-navbar  style="border-radius:5px;margin:30px 0px;box-shadow:2px 2px 5px black;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
       <b-nav-form>
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
@@ -15,7 +15,7 @@
         <b-dropdown-item href="#">All</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar>
-  <b-table :sort-by.sync="sortBy" :current-page="currentPage" :per-page="perPage" :sort-desc.sync="sortDesc"striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter">
+  <b-table :sort-by.sync="sortBy" :current-page="currentPage" :per-page="perPage" :sort-desc.sync="sortDesc"striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
@@ -165,7 +165,7 @@
       </b-card>
     </template>
   </b-table>
-  <b-pagination size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
+  <b-pagination style="box-shadow:2px 2px 2px; width:120px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
   </b-pagination>
   <div>We have {{songsCounter}} songs.</div>
   </div>
@@ -246,7 +246,6 @@ export default {
       currentIndex: -1,
       loading: -1,
       changing: -1,
-      totalRows: 15,
       fields: [
         { key: 'Picture', sortable: false, label: '' },
         { key: 'Type', sortable: false, label: '' },
@@ -365,6 +364,9 @@ export default {
   computed: {
     songs: function () {
       return this.$store.state.songs
+    },
+    totalRows: function () {
+      return this.songs.length
     },
     songsCounter: function () {
       if (this.$store.state.songs !== undefined) {

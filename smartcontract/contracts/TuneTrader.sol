@@ -96,6 +96,19 @@ contract TuneTrader {
   mapping (address=>SongStruct2) public songsData2;
   SongERC20 [] songs;
 
+  function AddSongFull(string _name, string _author,string _genre, bool _isBand,string _website,uint _price,uint _totalSupply,bool _withICO)
+  {
+    SongERC20 song = new SongERC20(msg.sender);
+    songs.push(song);
+
+    SongStruct1 memory data1 = SongStruct1(_name,_author,_genre,_price,block.timestamp,_isBand,35,_totalSupply,1,msg.sender,song);
+    SongStruct2 memory data2 = SongStruct2(29238);
+
+    songsData1[song] = data1;
+    songsData2[song] = data2;
+
+  }
+
   function AddSong(string _name, string _author) public
   {
     SongERC20 song = new SongERC20(msg.sender);
