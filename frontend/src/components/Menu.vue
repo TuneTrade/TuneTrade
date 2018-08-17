@@ -35,11 +35,13 @@ a {
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
         <div class="menuLogo">
+          <img src="../assets/logotunetradesmall.png" style="width:60px"></img>
+          <div class="debug">
           {{metaMaskUninstalled}}
           {{metaMaskAccount}}
           {{contractAddress}}
           {{loggedIn}}
-          <img src="../assets/logotunetradesmall.png" style="width:100px"></img>
+        </div>
         </div>
     </b-navbar>
     <!-- </b-container> -->

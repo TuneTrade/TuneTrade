@@ -31,7 +31,9 @@ export default {
   z-index:999;
   color:white;
   height:80px;
-  box-shadow: -1px -5px 2px black;
+  /* box-shadow: -1px -2px 10px black; */
+  /* box-shadow: 0px -2px 2px black; */
+
 
   /* position:relative; */
 }

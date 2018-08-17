@@ -12,6 +12,7 @@
       <b-nav-item-dropdown text="Type" right style="list-style:none;opacity:1;z-index:2,overflow:visible">
         <b-dropdown-item href="#">Song</b-dropdown-item>
         <b-dropdown-item href="#">Band</b-dropdown-item>
+        <b-dropdown-item href="#">Influencer</b-dropdown-item>
         <b-dropdown-item href="#">All</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar>
