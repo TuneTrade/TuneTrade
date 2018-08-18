@@ -122,6 +122,7 @@ export const store = new Vuex.Store({
             songsList[index].Phase = res.data[9]
             songsList[index].Owner = res.data[10]
             songsList[index].Volume = parseInt(res.data[12])
+            songsList[index].Description = res.data[13]
             songsList[index].address = searchAddress
             if (index == sList.length -1 ) {
               songsList.sort(sortFunction)
@@ -139,7 +140,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xdAC48d403dC478ecCE36280BE59664140fb566aC')
+      store.state.web3contract = contractDefinition.at('0xa385aeaab87e7f8bb153e38cd3e3144111880a68')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

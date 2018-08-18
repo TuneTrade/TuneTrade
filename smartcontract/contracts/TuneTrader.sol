@@ -1,33 +1,27 @@
 pragma solidity ^0.4.24;
 /* pragma experimental ABIEncoderV2; */
 
-contract SongERC20
+
+import "./StandardToken.sol";
+import "./DetailedERC20.sol";
+
+contract SongERC20 is StandardToken, DetailedERC20
 {
-  string public name;
+  enum Type {Song,Band,Influencer}
   string public author;
   address public owner;
   string public genre;
-  bool public isBand; //true - band, false - song
+  Type public entryType; //true - band, false - song
   uint public price;
   uint public creationTime;
   string public website;
 
 
-  constructor (address _owner)
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals)  DetailedERC20(_name,_symbol,_decimals) public
   {
     owner = _owner;
+    totalSupply_ = _supply;
   }
-  /* constructor(string _name, string _author, address _owner,string _genre)
-  {
-    name = _name;
-    author = _author;
-    owner = _owner;
-    genre = _genre;
-    price = 1 finney;
-    creationTime = block.timestamp;
-    website = "https://google.com";
-    isBand = false;
-  } */
 
   /// Returns information how much tokens were already bought and how much fans contributed to this contract
   function getContribution () public view returns (uint8)
@@ -35,10 +29,6 @@ contract SongERC20
     return 55;
   }
 
-  function totalSupply() public returns (uint)
-  {
-    return 1200;
-  }
 
   function getGenre() public view returns (string)
   {
@@ -50,6 +40,7 @@ contract SongERC20
 
 contract TuneTrader {
 
+  enum Type {Song,Band,Influencer}
   struct SongStruct1
   {
     string name;
@@ -57,7 +48,7 @@ contract TuneTrader {
     string genre;
     uint price;
     uint creationTime;
-    bool isBand;
+    Type entryType;
     uint contribution;
     uint totalSupply;
     uint8 phase; // 1 - pre-sale, 2 - ico1, 3 - ico2, 4 - ico 3; 5 - post ico, 6 - finished, 0 - not running.
@@ -68,6 +59,7 @@ contract TuneTrader {
   struct SongStruct2
   {
     uint volume;
+    string description;
   }
 
   uint public i = 1;
@@ -96,13 +88,13 @@ contract TuneTrader {
   mapping (address=>SongStruct2) public songsData2;
   SongERC20 [] songs;
 
-  function AddSongFull(string _name, string _author,string _genre, bool _isBand,string _website,uint _price,uint _totalSupply,bool _withICO)
+  function AddSongFull(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _price,uint _totalSupply,bool _withICO,string _symbol,string description)
   {
-    SongERC20 song = new SongERC20(msg.sender);
+    SongERC20 song = new SongERC20(msg.sender,_totalSupply,_name,_symbol,0);
     songs.push(song);
 
-    SongStruct1 memory data1 = SongStruct1(_name,_author,_genre,_price,block.timestamp,_isBand,35,_totalSupply,1,msg.sender,song);
-    SongStruct2 memory data2 = SongStruct2(29238);
+    SongStruct1 memory data1 = SongStruct1(_name,_author,_genre,_price,block.timestamp,Type(_entryType),35,_totalSupply,1,msg.sender,song);
+    SongStruct2 memory data2 = SongStruct2(29238,description);
 
     songsData1[song] = data1;
     songsData2[song] = data2;
@@ -111,11 +103,12 @@ contract TuneTrader {
 
   function AddSong(string _name, string _author) public
   {
-    SongERC20 song = new SongERC20(msg.sender);
+    SongERC20 song = new SongERC20(msg.sender,1234567,_name,"_symbol",0);
+
 
     songs.push(song);
-    SongStruct1 memory data1 = SongStruct1(_name,_author,"Pop",1,block.timestamp,false,35,20000,1,msg.sender,song);
-    SongStruct2 memory data2 = SongStruct2(29238);
+    SongStruct1 memory data1 = SongStruct1(_name,_author,"Pop",1,block.timestamp,Type.Song,35,20000,1,msg.sender,song);
+    SongStruct2 memory data2 = SongStruct2(29238, 'Description. Max 200 Characters');
 
     songsData1[song] = data1;
     songsData2[song] = data2;
@@ -139,15 +132,15 @@ contract TuneTrader {
   address owner;
   address contractAddress; */
 
-  function GetSongDetailsPart1(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,address _contractAddress)
+  function GetSongDetailsPart1(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,address _contractAddress,uint8 _type)
   {
     require (songsData1[_song].creationTime > 0);
-    return (songsData1[_song].name, songsData1[_song].author, songsData1[_song].genre, songsData1[_song].price, songsData1[_song].creationTime,_song);
+    return (songsData1[_song].name, songsData1[_song].author, songsData1[_song].genre, songsData1[_song].price, songsData1[_song].creationTime,_song,uint8(songsData1[_song].entryType));
   }
-  function GetSongDetailsPart2(address _song) public view returns (bool _isBand, uint _contribution, uint _totalSupply, uint8 _phase, address _owner, address _contractAddress,uint _volume )
+  function GetSongDetailsPart2(address _song) public view returns (uint _contribution, uint _totalSupply, uint8 _phase, address _owner, address _contractAddress,uint _volume,string _description )
   {
     require (songsData1[_song].creationTime > 0);
-    return (songsData1[_song].isBand,songsData1[_song].contribution,songsData1[_song].totalSupply,songsData1[_song].phase,songsData1[_song].owner,_song, songsData2[_song].volume);
+    return (songsData1[_song].contribution,songsData1[_song].totalSupply,songsData1[_song].phase,songsData1[_song].owner,_song, songsData2[_song].volume,songsData2[_song].description);
   }
   /* function GetSongDetails(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,bool _band, uint _contribution, uint _totalSupply, uint8 _phase, address _owner)
   {

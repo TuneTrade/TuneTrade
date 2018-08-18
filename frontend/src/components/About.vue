@@ -76,7 +76,7 @@ body {
     /* left:-300px; */
     width:100%;
     height:100%;
-    margin:2% 0%;
+    /* margin:2% 0%; */
     /* text-align: justify; */
     line-height: 1.8;
     /* border-style:solid; */

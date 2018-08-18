@@ -32,7 +32,7 @@
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Type:</div>
-                  <div class="summaryContent">{{form.type}}</div>
+                  <div class="summaryContent">{{SongOrBand(form.type)}}</div>
                 </div>
 
 
@@ -60,7 +60,7 @@
 
                 <div class="summaryElement">
                   <div class="summaryTitle">Total supply:</div>
-                  <div class="summaryContent">{{form.totalSupply}}</div>
+                  <div class="summaryContent">{{localNumber(form.totalSupply)}}</div>
                 </div>
 
                 <div class="summaryElement">
@@ -72,14 +72,18 @@
                   <div class="summaryTitle">Genre:</div>
                   <div class="summaryContent">{{form.genre}}</div>
                 </div>
+                <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
+                  <div class="summaryTitle">Description:</div>
+                  <div class="summaryContent">{{form.description}}</div>
+                </div>
               </b-card-body>
             </b-collapse>
           </b-card>
           <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn block href="#" v-b-toggle.accordion2 variant="info">ICO Contract</b-btn>
+              <b-btn disabled block href="#" v-b-toggle.accordion2 variant="info">ICO Contract</b-btn>
             </b-card-header>
-      <b-collapse id="accordion2" visible accordions="my-accordion" role="tabpanel">
+      <b-collapse id="accordion2"  accordions="my-accordion" role="tabpanel">
         <b-card-body  class="summaryContainer contractTab">
 
 
@@ -133,9 +137,9 @@
       </b-card>
           <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn block href="#" v-b-toggle.accordion3 variant="info">Bonuses</b-btn>
+              <b-btn disabled block href="#" v-b-toggle.accordion3 variant="info">Bonuses</b-btn>
             </b-card-header>
-      <b-collapse id="accordion3" visible accordions="my-accordion" role="tabpanel">
+      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel">
         <b-card-body   class="summaryContainer contractTab">
           <div class="summaryElement">
             <div class="summaryTitle">Presale Period [days]:</div>
@@ -287,6 +291,20 @@ export default {
     }
   },
   methods: {
+  localNumber: function (val) {
+    if (isNaN(val)) return 0
+    var entry = parseFloat(val)
+    var num = entry.toLocaleString()
+    return num
+  },
+  SongOrBand: function (val) {
+      switch (parseInt(val)) {
+        case 0: return 'Song'
+        case 1: return 'Band'
+        case 2: return 'Influencer'
+        default: return 'Error'
+      }
+    },
     checkTransaction () {
       console.log('Standby')
       var that = this
@@ -321,7 +339,7 @@ export default {
       this.status ="Confirm in Metamask"
       this.txNumberShow=null
       this.$refs.AddSongModal.show()
-      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, true, this.form.website, 100, this.form.totalSupply, false, function (err, res) {
+      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, this.form.type, this.form.website, 100, this.form.totalSupply,false, this.form.symbol, this.form.description, function (err, res) {
         if (res !== undefined) {
           that.status = 'Mining'
           that.txNumberShow = res

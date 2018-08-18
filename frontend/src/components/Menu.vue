@@ -14,7 +14,12 @@ a {
 
 <div class="">
     <!-- <b-container> -->
-    <b-alert style="border-radius:5px;margin:20px 2px" dismissible alert-variant="warning" variant="secondary"  show v-if="metaMaskUninstalled"> MetaMask isn't installed. You need to install metamask in order to be able to use this application. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> Go here => MetaMask </b-link></b-alert>
+    <b-modal style="border-radius:5px;margin:0px 0px;" dismissible alert-variant="warning" variant="secondary" :visible="metaMaskUninstalled" ok-title="Understood" centered ok-only size="lg" hide-header :show="metaMaskUninstalled">
+    <center style="padding:40px;">  MetaMask isn't installed. You need to install metamask in order to fully  use this application. You are still able to browse all entries, but you can't create new contract. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> <br><br>
+      <img src="../assets/metamask.png" style="height:50px;"></img>
+      <br><br>Go here to install => MetaMask  </b-link>
+    </center>
+    </b-modal>
     <b-alert style="background-color:#d11;color:#f0f0f0"  show v-if="!loggedIn && !metaMaskUninstalled">Please login to MetaMask </b-alert>
     <b-navbar  toggleable="sm"  class="tunetradeMenu">
       <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
@@ -35,7 +40,7 @@ a {
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
         <div class="menuLogo">
-          <img src="../assets/logotunetradesmall.png" style="width:60px"></img>
+          <img src="../assets/logotunetradesmall.png" style="width:68px;margin-top:0px;"></img>
           <div class="debug">
           {{metaMaskUninstalled}}
           {{metaMaskAccount}}

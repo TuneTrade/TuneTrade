@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="" style="margin:80px 0px;">
+  <div class="" style="margin:0px 0px;">
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
@@ -16,7 +16,7 @@
         <b-dropdown-item href="#">All</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar>
-  <b-table :sort-by.sync="sortBy" :current-page="currentPage" :per-page="perPage" :sort-desc.sync="sortDesc"striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
+  <b-table sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
@@ -129,17 +129,17 @@
         </b-row>
         <b-row class="mb-2">
           <b-col sm="3" class="text-sm-left"><b>Owner:</b></b-col>
-          <b-col sm="8" class="text-sm-left"> 0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A
-            <b-link target="_blank" class="text-primary" href="https://etherscan.io/token/0xf230b790e05390fc8295f4d3f60332c93bed42e2" variant="danger">
+          <b-col sm="8" class="text-sm-left"> {{row.item.Owner}}
+            <b-link target="_blank" class="text-primary" v-bind:href="etherscanAddress(row.item.Owner)" variant="danger">
               Etherscan
             </b-link>
           </b-col>
         </b-row>
         <b-row class="mb-2">
           <b-col sm="3" class="text-sm-left"><b>Contract address: </b></b-col>
-          <b-col sm="8" class="text-sm-left">0xFb8E385876ca18d15308E8e0e2b6d026dDF6995A
-            <b-link target="_blank" class="text-primary" href="https://etherscan.io/token/0xf230b790e05390fc8295f4d3f60332c93bed42e2" variant="danger">
-              Etherscan
+          <b-col sm="8" class="text-sm-left">{{row.item.address}}
+            <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
+              Etherscasn
             </b-link>
           </b-col>
         </b-row>
@@ -154,7 +154,7 @@
       <b-row class="mb-2">
 
         <b-col sm="6" class="text-sm-left" >
-          <p style="text-align:justify;">  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <p style="text-align:justify; word-wrap: break-word;width:90%">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
 <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/425635065&color=%231f0604&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
@@ -166,7 +166,7 @@
       </b-card>
     </template>
   </b-table>
-  <b-pagination style="box-shadow:2px 2px 2px; width:120px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
+  <b-pagination style="box-shadow:2px 2px 2px; width:117px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
   </b-pagination>
   <div>We have {{songsCounter}} songs.</div>
   </div>
@@ -236,9 +236,10 @@ const items = [
 export default {
   data () {
     return {
-      sortBy: 'age',
+      sortBy: 'Created',
       modalInfo: { title: '', content: '' },
       sortDesc: false,
+
       tablefilter: '',
       currentPage: 1,
       picIteration: 0,
@@ -251,7 +252,7 @@ export default {
         { key: 'Picture', sortable: false, label: '' },
         { key: 'Type', sortable: false, label: '' },
         { key: 'Name', sortable: true },
-        { key: 'Created', sortable: true },
+        { key: 'Created', sortable: true, sortDirection: 'asc' },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
         { key: 'Price', sortable: true },
@@ -274,6 +275,12 @@ export default {
   },
   methods:
   {
+    etherscanToken: function (address) {
+      return 'https://rinkeby.etherscan.io/token/' + address
+    },
+    etherscanAddress: function (address) {
+      return 'https://rinkeby.etherscan.io/address/' + address
+    },
     Price: function (val) {
       return Web3.utils.fromWei(val, 'ether')
     },
@@ -290,8 +297,13 @@ export default {
       return ts.toLocaleString()
     },
     SongOrBand: function (val) {
-      if (val === true) return 'Band'
-      else return 'Song'
+      console.log('Song Or Band:', val)
+      switch (parseInt(val)) {
+        case 0: return 'Song'
+        case 1: return 'Band'
+        case 2: return 'Influencer'
+        default: return 'Error'
+      }
     },
     // uint8 phase; // 1 - pre-sale, 2 - ico1, 3 - ico2, 4 - ico 3; 5 - post ico, 6 - finished, 0 - not running.
     PhaseToString: function (val) {

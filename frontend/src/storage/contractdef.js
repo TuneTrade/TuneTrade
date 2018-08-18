@@ -1,79 +1,4 @@
-smartContract =[
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "GetSongs",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_author",
-				"type": "string"
-			}
-		],
-		"name": "AddSong",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_song",
-				"type": "address"
-			}
-		],
-		"name": "GetSongDetailsPart2",
-		"outputs": [
-			{
-				"name": "_isBand",
-				"type": "bool"
-			},
-			{
-				"name": "_contribution",
-				"type": "uint256"
-			},
-			{
-				"name": "_totalSupply",
-				"type": "uint256"
-			},
-			{
-				"name": "_phase",
-				"type": "uint8"
-			},
-			{
-				"name": "_owner",
-				"type": "address"
-			},
-			{
-				"name": "_contractAddress",
-				"type": "address"
-			},
-			{
-				"name": "_volume",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
+smartContract = [
 	{
 		"constant": true,
 		"inputs": [],
@@ -101,6 +26,10 @@ smartContract =[
 			{
 				"name": "volume",
 				"type": "uint256"
+			},
+			{
+				"name": "description",
+				"type": "string"
 			}
 		],
 		"payable": false,
@@ -115,87 +44,6 @@ smartContract =[
 			{
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_author",
-				"type": "string"
-			},
-			{
-				"name": "_genre",
-				"type": "string"
-			},
-			{
-				"name": "_isBand",
-				"type": "bool"
-			},
-			{
-				"name": "_website",
-				"type": "string"
-			},
-			{
-				"name": "_price",
-				"type": "uint256"
-			},
-			{
-				"name": "_totalSupply",
-				"type": "uint256"
-			},
-			{
-				"name": "_withICO",
-				"type": "bool"
-			}
-		],
-		"name": "AddSongFull",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_song",
-				"type": "address"
-			}
-		],
-		"name": "GetSongDetailsPart1",
-		"outputs": [
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_author",
-				"type": "string"
-			},
-			{
-				"name": "_genre",
-				"type": "string"
-			},
-			{
-				"name": "_price",
-				"type": "uint256"
-			},
-			{
-				"name": "_creationTime",
-				"type": "uint256"
-			},
-			{
-				"name": "_contractAddress",
-				"type": "address"
 			}
 		],
 		"payable": false,
@@ -233,8 +81,8 @@ smartContract =[
 				"type": "uint256"
 			},
 			{
-				"name": "isBand",
-				"type": "bool"
+				"name": "entryType",
+				"type": "uint8"
 			},
 			{
 				"name": "contribution",
@@ -266,5 +114,173 @@ smartContract =[
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_author",
+				"type": "string"
+			},
+			{
+				"name": "_genre",
+				"type": "string"
+			},
+			{
+				"name": "_entryType",
+				"type": "uint8"
+			},
+			{
+				"name": "_website",
+				"type": "string"
+			},
+			{
+				"name": "_price",
+				"type": "uint256"
+			},
+			{
+				"name": "_totalSupply",
+				"type": "uint256"
+			},
+			{
+				"name": "_withICO",
+				"type": "bool"
+			},
+			{
+				"name": "_symbol",
+				"type": "string"
+			},
+			{
+				"name": "description",
+				"type": "string"
+			}
+		],
+		"name": "AddSongFull",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_author",
+				"type": "string"
+			}
+		],
+		"name": "AddSong",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "GetSongs",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_song",
+				"type": "address"
+			}
+		],
+		"name": "GetSongDetailsPart1",
+		"outputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_author",
+				"type": "string"
+			},
+			{
+				"name": "_genre",
+				"type": "string"
+			},
+			{
+				"name": "_price",
+				"type": "uint256"
+			},
+			{
+				"name": "_creationTime",
+				"type": "uint256"
+			},
+			{
+				"name": "_contractAddress",
+				"type": "address"
+			},
+			{
+				"name": "_type",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_song",
+				"type": "address"
+			}
+		],
+		"name": "GetSongDetailsPart2",
+		"outputs": [
+			{
+				"name": "_contribution",
+				"type": "uint256"
+			},
+			{
+				"name": "_totalSupply",
+				"type": "uint256"
+			},
+			{
+				"name": "_phase",
+				"type": "uint8"
+			},
+			{
+				"name": "_owner",
+				"type": "address"
+			},
+			{
+				"name": "_contractAddress",
+				"type": "address"
+			},
+			{
+				"name": "_volume",
+				"type": "uint256"
+			},
+			{
+				"name": "_description",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	}
 ]

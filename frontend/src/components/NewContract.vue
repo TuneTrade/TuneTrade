@@ -15,7 +15,7 @@
                     optional
                     @change="UnSave()"
                     v-model="form.type"
-                    :options="['Song', 'Band','Influencer']"
+                    :options="entryTypeOptions"
                     name="radioBtnOutline" />
       </b-form-group>
       <b-form-group id="nameInputGroup"
@@ -116,11 +116,28 @@
                       v-model="form.genre"
                       size="sm"
                       @change="UnSave()"
-                      select-size="selectSize"
                       placeholder="Select genre">
 
         </b-form-select>
       </b-form-group>
+      <div style="grid-column:1/4;">
+      <b-form-group  id="descriptionGroup"
+                    label="Description:"
+                    label-for="description"
+                    v-bind:description="numCharacters">
+        <b-form-textarea id="description"
+                      v-model="form.description"
+                      @input="LimitText()"
+                      rows=3
+                      no-resize
+                      wrap
+                      max-rows = 6
+                      placeholder="Description (Max: 200 characters)">
+
+        </b-form-textarea>
+
+      </b-form-group>
+    </div>
       <!-- <b-form-group id="exampleGroup4"> -->
         <!-- <b-form-checkbox-group v-model="form.checked" id="exampleChecks"> -->
           <!-- <b-form-checkbox value="me">Check me out</b-form-checkbox> -->
@@ -132,10 +149,10 @@
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </b-tab>
-  <b-tab  title="ICO Contract"  class="contractTab">
+  <b-tab  disabled title="ICO Contract (Disabled)"  class="contractTab">
     <ICOContract/>
   </b-tab>
-  <b-tab  title="Bonuses"  class="contractTab">
+  <b-tab  disabled title="Bonuses (Disabled)"  class="contractTab">
     <Bonuses/>
   </b-tab>
   <b-tab title="Summary & Create" class="contractTab">
@@ -153,7 +170,7 @@ import Bonuses from './Bonuses'
 import SummaryNewContract from './SummaryNewContract'
 // require('../musicGenres')
 var musicGenres = [
-  {value: null, text: 'Please select genre', disabled: true},
+  {value: -1, text: 'Please select genre', disabled: true},
   'Alternative',
   'Ambient',
   'Anime',
@@ -206,15 +223,21 @@ export default {
         genre: 'Electronic',
         author: 'Test Author',
         website: 'www.test.com',
-        type: 'Band',
+        type: 0,
         picture: null,
         symbol: 'TTT',
-        totalSupply: 10000
+        totalSupply: 10000,
+        description: ''
       },
       show: true,
       genres: musicGenres,
       unsaved: false,
-      index: ''
+      index: '',
+      entryTypeOptions: [
+        {text: 'Song', value: 0},
+        {text: 'Band', value: 1},
+        {text: 'Influencer', value: 2}
+      ]
     }
   },
   components: {
@@ -226,6 +249,7 @@ export default {
     /* global musicGenres */
     this.genres = musicGenres
     console.log('Music Genres:', this.genres)
+    this.UnSave()
   },
   watch: {
     form: function (val) {
@@ -235,11 +259,18 @@ export default {
   computed: {
     selectSize: function () {
       return parseInt('8')
+    },
+    numCharacters: function () {
+      return 'Characters:' + this.form.description.length
     }
   },
   methods: {
     test () {
       console.log('test: ', this.index)
+    },
+    LimitText () {
+      this.form.description = this.form.description.substring(0, 200)
+      // this.UnSave()
     },
     UnSave () {
       for (var key in this.form) {
