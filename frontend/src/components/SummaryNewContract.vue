@@ -52,7 +52,6 @@
                   <div class="summaryContent">{{form.website}}</div>
                 </div>
 
-
                 <div class="summaryElement">
                   <div class="summaryTitle">Token symbol:</div>
                   <div class="summaryContent">{{form.symbol}}</div>
@@ -64,6 +63,16 @@
                 </div>
 
                 <div class="summaryElement">
+                  <div class="summaryTitle">Price:</div>
+                  <div class="summaryContent">{{localNumber(form.price)}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="summaryTitle">Decimals:</div>
+                  <div class="summaryContent">{{localNumber(form.decimals)}}</div>
+                </div>
+
+                <div class="summaryElement">
                   <div class="summaryTitle">Image:</div>
                   <div class="summaryContent">{{pictureName}}</div>
                 </div>
@@ -72,10 +81,18 @@
                   <div class="summaryTitle">Genre:</div>
                   <div class="summaryContent">{{form.genre}}</div>
                 </div>
+
                 <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
                   <div class="summaryTitle">Description:</div>
                   <div class="summaryContent">{{form.description}}</div>
                 </div>
+
+                <div class="summaryElement"  style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px;">
+                  <div class="summaryTitle">Soundcloud link:</div>
+                  <div style="width:100%"class="summaryContent" v-html="embedHtml"> {{embedHtml}}</div>
+                  <!-- <div style="grid-column:1/4;" >{{form.soundcloud}}</div> -->
+                </div>
+
               </b-card-body>
             </b-collapse>
           </b-card>
@@ -194,6 +211,9 @@ import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
 var Web3 = require('web3')
 
+var SC = require('soundcloud')
+SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+
 // require('../musicGenres')
 var musicGenres = [
   {value: null, text: 'Please select genre', disabled: true},
@@ -254,7 +274,8 @@ export default {
       status: '',
       errMsg: null,
       blockNumber: 0,
-      gasUsed: ''
+      gasUsed: '',
+      embedHtml: null
     }
   },
   components: {
@@ -264,14 +285,25 @@ export default {
   created: function () {
     /* global musicGenres */
     this.genres = musicGenres
+    var that = this
     console.log('Music Genres:', this.genres)
     this.intervalNumber = setInterval(this.checkTransaction, 1000)
+    this.loadEmbed()
+
   },
   destroyed: function () {
     console.log('Destroyed')
     clearInterval(this.intervalNumber)
   },
+  watch: {
+    soundCloudLink: function(val) {
+        this.loadEmbed()
+    }
+  },
   computed: {
+    soundCloudLink: function () {
+      return this.form.soundcloud
+    },
     statusClass: function () {
       if (this.status === 'Successful') return 'successfulStatus'
       if (this.status === 'Failed') return 'failedStatus'
@@ -291,6 +323,16 @@ export default {
     }
   },
   methods: {
+    loadEmbed: function () {
+      var that = this
+      SC.oEmbed(this.form.soundcloud, {auto_play: false,height: 166, maxheight: 81}).then(function (embed) {
+        console.log('Embed: ',embed)
+        that.embedHtml = embed.html
+      }).catch(function (err) {
+        that.embedHtml= that.form.soundcloud + " - link is invalid"
+        // console.log('Embed: ',err)
+      })
+    },
   localNumber: function (val) {
     if (isNaN(val)) return 0
     var entry = parseFloat(val)
@@ -339,7 +381,18 @@ export default {
       this.status ="Confirm in Metamask"
       this.txNumberShow=null
       this.$refs.AddSongModal.show()
-      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, this.form.type, this.form.website, 100, this.form.totalSupply,false, this.form.symbol, this.form.description, function (err, res) {
+      for (var key in this.form) {
+        console.log('form[' + key + '] = ' + this.form[key])
+      }
+      console.log(this.form.name)
+      console.log(this.form['name'])
+      console.log(this.form['symbol'])
+      console.log(this.form['decimals'])
+      console.log(this.form['totalSupply'])
+      console.log(this.form['name'])
+      var price = Web3.utils.toWei(this.form.price, 'ether')
+      console.log('Price:', price)
+      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, this.form.type, this.form.website, price, this.form.totalSupply,false, this.form.symbol, this.form.description, this.form.soundcloud, function (err, res) {
         if (res !== undefined) {
           that.status = 'Mining'
           that.txNumberShow = res

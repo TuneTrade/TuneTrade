@@ -13,8 +13,19 @@
 </div>
 </div>
 </template>
-
 <script>
+
+var SC = require('soundcloud')
+SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+console.log(SC.oEmbed('http://soundcloud.com/forss/flickermood', {auto_play: true}).then(function (embed) {
+  console.log(embed.html)
+}))
+// SC.initiallize(client_id: 'rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P', redirect_uri: 'http://127.0.0.1:8080/callback.html')
+// var client = SC.new('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+
+// var trackUrl = 'https://soundcloud.com/iamcardib/i-like-it'
+// var embedInfo = client.get('/oembed', trackUrl)
+
 export default {
   data () {
     return {
@@ -32,6 +43,7 @@ export default {
   },
   created: function () {
     var that = this
+    // console.log(embedInfo['html'])
     that.numb = (parseInt(Math.random() * 1000) % 19) + 1
     // setInterval(function () {
       // that.numb = (parseInt(Math.random() * 1000) % 19) + 1

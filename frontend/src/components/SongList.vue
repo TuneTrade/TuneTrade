@@ -32,6 +32,10 @@
     <template slot="Volume" slot-scope="row">
       {{localNumber (row.item.Volume)}}
     </template>
+
+    <template slot="Price" slot-scope="row">
+      {{Price(row.item.Price)}}
+    </template>
     <template slot="Contribution" slot-scope="row">
       {{localNumber (row.item.Contribution)}}
     </template>
@@ -99,7 +103,11 @@
             <b-col sm="6">
               <b-row class="mb-2">
                 <b-col sm="5" class="text-sm-left"><b>Contribution:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ row.item.Contribution }}</b-col>
+                <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.Contribution) }}</b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col sm="5" class="text-sm-left"><b>Volume:</b></b-col>
+                <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.Volume) }}</b-col>
               </b-row>
             <b-row class="mb-2">
               <b-col sm="5" class="text-sm-left"><b>Total Supply:</b></b-col>
@@ -119,7 +127,7 @@
             </b-row>
             <b-row class="mb-2">
               <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
-              <b-col sm="auto" class="text-sm-left"><b-button  @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
+              <b-col sm="auto" class="text-sm-left"><b-button disabled @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -157,7 +165,7 @@
           <p style="text-align:justify; word-wrap: break-word;width:90%">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
-<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/425635065&color=%231f0604&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+            <div v-html="row.item.iFrameEmbed"> </div>
             </b-col>
       </b-row>
 
@@ -173,6 +181,10 @@
 </template>
 
 <script>
+
+var SC = require('soundcloud')
+SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+
 var Web3 = require('web3')
 
 const items = [
@@ -270,6 +282,7 @@ export default {
   },
   created: function () {
     // this.$store.dispatch('ConnectToContract')
+
     console.log('Calling get songs and so on')
     this.$store.dispatch('GetSongs')
   },
@@ -307,6 +320,7 @@ export default {
     },
     // uint8 phase; // 1 - pre-sale, 2 - ico1, 3 - ico2, 4 - ico 3; 5 - post ico, 6 - finished, 0 - not running.
     PhaseToString: function (val) {
+      if (isNaN(val)) return val
       var number = parseInt(val)
       switch (number) {
         case 0: return 'not running'
@@ -355,7 +369,7 @@ export default {
       }, 100)
     },
     localNumber: function (val) {
-      if (isNaN(val)) return 0
+      if (isNaN(val)) return val
       var entry = parseFloat(val)
       var num = entry.toLocaleString()
       return num

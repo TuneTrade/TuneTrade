@@ -7,3 +7,4 @@ Menu.vue
 src/musicGenres.js
 SummaryNewContract.vue
 ./src/components/NewContract.vue
+./src/components/About.vue

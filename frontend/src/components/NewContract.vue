@@ -87,11 +87,41 @@
         <b-form-input id="totalSupply"
                       type="number"
                       step="1"
+                      min=0
                       @keydown.native = "UnSave()"
                       v-model="form.totalSupply"
                       required
                       size="sm"
                       placeholder="Enter symbol">
+        </b-form-input>
+      </b-form-group>
+      <b-form-group id="priceGroup"
+                    label="Price [ETH]:"
+                    label-for="priceInput">
+        <b-form-input id="priceInput"
+                      type="number"
+                      step="0.0001"
+                      pattern="^\d+(?:\.\d{1,2})?$"
+                      min=0
+                      @keydown.native = "UnSave()"
+                      v-model="form.price"
+                      required
+                      size="sm"
+                      placeholder="Enter price">
+        </b-form-input>
+      </b-form-group>
+      <b-form-group id="decimalsGroup"
+                    label="Decimals:"
+                    label-for="decimalsInput">
+        <b-form-input id="decimalsInput"
+                      type="number"
+                      step="1"
+                      min=0
+                      @keydown.native = "UnSave()"
+                      v-model="form.decimals"
+                      required
+                      size="sm"
+                      placeholder="Enter decimals">
         </b-form-input>
       </b-form-group>
 
@@ -227,7 +257,9 @@ export default {
         picture: null,
         symbol: 'TTT',
         totalSupply: 10000,
-        description: ''
+        description: '',
+        decimals: 0,
+        price: 0
       },
       show: true,
       genres: musicGenres,

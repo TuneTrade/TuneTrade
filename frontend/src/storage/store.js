@@ -35,8 +35,8 @@ function sortFunction(a,b) {
   else return -1
 }
 
-const API = 'https://tunetrade-backend.herokuapp.com'
-// const API = 'http://127.0.0.1:5000'
+// const API = 'https://tunetrade-backend.herokuapp.com'
+const API = 'http://127.0.0.1:5000'
 
 export const store = new Vuex.Store({
   state: {
@@ -117,11 +117,25 @@ export const store = new Vuex.Store({
             songsList[index].Price = res.data[3].toString()
             songsList[index].Created = res.data[4]
             songsList[index].Type = res.data[6]
-            songsList[index].Contribution = parseInt(res.data[7])
+            songsList[index].Contribution ='---'
+            songsList[index].soundcloud = res.data[14]
+            var searcher =tmp.address
+            SC.oEmbed(res.data[14], {auto_play: false,height: 166, maxheight: 166}).then(function (embed) {
+              console.log('RM: ', embed, searcher)
+              var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
+                return (el.address == searcher)
+              })
+              console.log('songList[' + indexSoundCloud + ']')
+              songsList[indexSoundCloud].iFrameEmbed = embed.html
+            })
+
+            // songsList[index].Contribution = parseInt(res.data[7])
             songsList[index].TotalSupply = res.data[8]
-            songsList[index].Phase = res.data[9]
+            // songsList[index].Phase = res.data[9]
+            songsList[index].Phase = '---'
             songsList[index].Owner = res.data[10]
-            songsList[index].Volume = parseInt(res.data[12])
+            // songsList[index].Volume = parseInt(res.data[12])
+            songsList[index].Volume = '---'
             songsList[index].Description = res.data[13]
             songsList[index].address = searchAddress
             if (index == sList.length -1 ) {
@@ -140,7 +154,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xa385aeaab87e7f8bb153e38cd3e3144111880a68')
+      store.state.web3contract = contractDefinition.at('0xbd8bed5e8427b0d9aec6897d53839439d1fa83a9')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

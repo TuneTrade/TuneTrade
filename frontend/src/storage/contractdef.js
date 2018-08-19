@@ -30,6 +30,10 @@ smartContract = [
 			{
 				"name": "description",
 				"type": "string"
+			},
+			{
+				"name": "soundcloud",
+				"type": "string"
 			}
 		],
 		"payable": false,
@@ -157,6 +161,10 @@ smartContract = [
 			{
 				"name": "description",
 				"type": "string"
+			},
+			{
+				"name": "_soundcloud",
+				"type": "string"
 			}
 		],
 		"name": "AddSongFull",
@@ -276,6 +284,25 @@ smartContract = [
 			},
 			{
 				"name": "_description",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_song",
+				"type": "address"
+			}
+		],
+		"name": "GetSongDetailsPart3",
+		"outputs": [
+			{
+				"name": "_soundcloud",
 				"type": "string"
 			}
 		],

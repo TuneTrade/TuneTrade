@@ -17,6 +17,7 @@ contract SongERC20 is StandardToken, DetailedERC20
   string public website;
 
 
+
   constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals)  DetailedERC20(_name,_symbol,_decimals) public
   {
     owner = _owner;
@@ -60,6 +61,7 @@ contract TuneTrader {
   {
     uint volume;
     string description;
+    string soundcloud;
   }
 
   uint public i = 1;
@@ -88,13 +90,13 @@ contract TuneTrader {
   mapping (address=>SongStruct2) public songsData2;
   SongERC20 [] songs;
 
-  function AddSongFull(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _price,uint _totalSupply,bool _withICO,string _symbol,string description)
+  function AddSongFull(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _price,uint _totalSupply,bool _withICO,string _symbol,string description,string _soundcloud)
   {
     SongERC20 song = new SongERC20(msg.sender,_totalSupply,_name,_symbol,0);
     songs.push(song);
 
     SongStruct1 memory data1 = SongStruct1(_name,_author,_genre,_price,block.timestamp,Type(_entryType),35,_totalSupply,1,msg.sender,song);
-    SongStruct2 memory data2 = SongStruct2(29238,description);
+    SongStruct2 memory data2 = SongStruct2(29238,description,_soundcloud);
 
     songsData1[song] = data1;
     songsData2[song] = data2;
@@ -105,10 +107,9 @@ contract TuneTrader {
   {
     SongERC20 song = new SongERC20(msg.sender,1234567,_name,"_symbol",0);
 
-
     songs.push(song);
-    SongStruct1 memory data1 = SongStruct1(_name,_author,"Pop",1,block.timestamp,Type.Song,35,20000,1,msg.sender,song);
-    SongStruct2 memory data2 = SongStruct2(29238, 'Description. Max 200 Characters');
+    SongStruct1 memory data1 = SongStruct1(_name,_author,"Pop",0.005 ether,block.timestamp,Type.Song,35,20000,1,msg.sender,song);
+    SongStruct2 memory data2 = SongStruct2(29238, 'Description. Max 200 Characters','http://soundcloud.com/forss/flickermood');
 
     songsData1[song] = data1;
     songsData2[song] = data2;
@@ -142,6 +143,13 @@ contract TuneTrader {
     require (songsData1[_song].creationTime > 0);
     return (songsData1[_song].contribution,songsData1[_song].totalSupply,songsData1[_song].phase,songsData1[_song].owner,_song, songsData2[_song].volume,songsData2[_song].description);
   }
+  function GetSongDetailsPart3(address _song) public view returns (string _soundcloud )
+  {
+    require (songsData1[_song].creationTime > 0);
+    return songsData2[_song].soundcloud;
+  }
+
+
   /* function GetSongDetails(address _song) public view returns (string _name, string _author, string _genre, uint _price, uint _creationTime,bool _band, uint _contribution, uint _totalSupply, uint8 _phase, address _owner)
   {
     require (songsData[_song].creationTime > 0);
