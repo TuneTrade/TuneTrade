@@ -20,7 +20,6 @@ a {
       <br><br>Go here to install => MetaMask  </b-link>
     </center>
     </b-modal>
-    <b-alert style="background-color:#d11;color:#f0f0f0"  show v-if="!loggedIn && !metaMaskUninstalled">Please login to MetaMask </b-alert>
     <b-navbar  toggleable="sm"  class="tunetradeMenu">
       <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
@@ -39,6 +38,7 @@ a {
         <b-navbar-brand>
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
+        <div style="font-family:Sans-serif;font-size:14px;width:100%;text-align:right;color:red"v-if="!loggedIn && !metaMaskUninstalled"><b>PLEASE LOGIN TO METAMASK</b></div>
         <div class="menuLogo">
           <img src="../assets/logotunetradesmall.png" style="width:68px;margin-top:0px;"></img>
           <div class="debug">

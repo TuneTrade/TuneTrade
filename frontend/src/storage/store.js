@@ -102,8 +102,8 @@ export const store = new Vuex.Store({
           console.log('Checking song')
           axios.get(API+'/getSongInformation?song='+sList[i]).then(function(res){
             var tmp = {}
-
-            tmp.address = res.data[5]
+            console.log('Song Information: ',res.data.address)
+            tmp.address = res.data.address
             var searchAddress = tmp.address
             var index = songsList.findIndex(function(el,el1,el2){
               console.log("AddressIn:", searchAddress)
@@ -111,16 +111,17 @@ export const store = new Vuex.Store({
             })
             console.log('Index:',index)
             songsList[index].OrderNum = index + 1
-            songsList[index].Name = res.data[0]
-            songsList[index].Author = res.data[1]
-            songsList[index].Genre = res.data[2]
-            songsList[index].Price = res.data[3].toString()
-            songsList[index].Created = res.data[4]
-            songsList[index].Type = res.data[6]
-            songsList[index].Contribution ='---'
-            songsList[index].soundcloud = res.data[14]
+            songsList[index].Name = res.data.name
+            songsList[index].Author = res.data.author
+            songsList[index].Genre = res.data.genre
+            songsList[index].Price = res.data.price
+            songsList[index].Created = res.data.creationTime
+            songsList[index].Type = res.data.entryType
+            songsList[index].Contribution = res.data.contribution
+            songsList[index].soundcloud = res.data.soundcloud
+            songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
             var searcher =tmp.address
-            SC.oEmbed(res.data[14], {auto_play: false,height: 166, maxheight: 166}).then(function (embed) {
+            SC.oEmbed(res.data.soundcloud, {auto_play: false,height: 166, maxheight: 166}).then(function (embed) {
               console.log('RM: ', embed, searcher)
               var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
                 return (el.address == searcher)
@@ -130,20 +131,18 @@ export const store = new Vuex.Store({
             })
 
             // songsList[index].Contribution = parseInt(res.data[7])
-            songsList[index].TotalSupply = res.data[8]
+            songsList[index].TotalSupply = res.data.totalSupply
             // songsList[index].Phase = res.data[9]
-            songsList[index].Phase = '---'
-            songsList[index].Owner = res.data[10]
+            songsList[index].Phase = res.data.phase
+            songsList[index].Owner = res.data.owner
             // songsList[index].Volume = parseInt(res.data[12])
-            songsList[index].Volume = '---'
-            songsList[index].Description = res.data[13]
+            songsList[index].Volume = res.data.volume
+            songsList[index].Description = res.data.description
             songsList[index].address = searchAddress
             if (index == sList.length -1 ) {
               songsList.sort(sortFunction)
             }
 
-            console.log('Price:',res[3].toString())
-            console.log('Song:',res.data)
             // console.log(res.data)
           })
         }
@@ -154,7 +153,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xbd8bed5e8427b0d9aec6897d53839439d1fa83a9')
+      store.state.web3contract = contractDefinition.at('0xa89da6fa0bb35cab22fdd310aafb8c68b7a4414d')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

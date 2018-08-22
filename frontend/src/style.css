@@ -179,7 +179,6 @@ content
   padding:0% 15%;
   padding-top:20px;
   padding-bottom:80px;
-
   /* height:2000px; */
   /* width:100%; */
 }
@@ -207,4 +206,9 @@ songsTable tbody
 
 .successfulStatus {
   color:green;
+}
+
+.errorMessage {
+  color:red;
+  font-weight:600;
 }

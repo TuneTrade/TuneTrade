@@ -1,9 +1,21 @@
 <template>
   <div>
-    Name:{{form.name}}
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
+    <b-form disabled @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
-
+        <b-form-group id="ICOYesNoGroup"
+                      label="Create ICO Contract ?"
+                      label-for="ICOYesNoGroup"
+                      >
+          <b-form-radio-group id="ICOYesNoGroup"
+                      button-variant="outline-primary"
+                      buttons
+                      size="sm"
+                      required
+                      @change="UnSave()"
+                      v-model="form.ico"
+                      :options="['Yes','No']"
+                      name="" />
+        </b-form-group>
       <b-form-group id="nameInputGroup"
                     label="Contribution Wallet Address:"
                     label-for="wallet">
@@ -11,26 +23,29 @@
                       type="text"
                       v-model="form.wallet"
                       required
+                      :disabled="ICODisabled"
                       size="sm"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
-                      placeholder="0xAb778A157dEC26bc3eF341d0De042FD2A2F38E1d">
+                      placeholder="Wallet address">
         </b-form-input>
       </b-form-group>
 
 
       <b-form-group id="teamtokensInputGroup"
                     label="Tokens for a team:"
-                    label-for="teamtokens">
+                    label-for="teamtokens"
+                    :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
                       type="number"
                       v-model="form.teamtokens"
                       @change = "UnSave()"
+                      :disabled="ICODisabled"
                       optional
                       @keydown.native = "UnSave()"
                       size="sm"
                       step="0.1"
-                      placeholder="Enter name">
+                      placeholder="Enter number of tokens for a team">
         </b-form-input>
       </b-form-group>
 
@@ -40,6 +55,7 @@
         <b-form-input id="minpersale"
                       type="number"
                       v-model="form.minpresale"
+                      :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
                       optional
@@ -55,6 +71,7 @@
         <b-form-input id="minmainsale"
                       type="number"
                       v-model="form.minmainsale"
+                      :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
                       optional
@@ -70,6 +87,7 @@
         <b-form-input id="maxETH"
                       type="number"
                       v-model="form.maxETH"
+                      :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
                       optional
@@ -85,6 +103,7 @@
         <b-form-input id="maxcap"
                       type="number"
                       @keydown.native = "UnSave()"
+                      :disabled="ICODisabled"
                       @change = "UnSave()"
                       v-model="form.maxcap"
                       optional
@@ -101,6 +120,7 @@
                       type="number"
                       v-model="form.mincap"
                       @keydown.native = "UnSave()"
+                      :disabled="ICODisabled"
                       @change = "UnSave()"
                       optional
                       size="sm"
@@ -117,6 +137,7 @@
                       type="number"
                       v-model="form.priceETH"
                       @keydown.native = "UnSave()"
+                      :disabled="ICODisabled"
                       @change="UnSave()"
                       optional
                       size="sm"
@@ -133,10 +154,27 @@
                       type="number"
                       v-model="form.campaignDuration"
                       @change="UnSave()"
+                      :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
                       optional
                       size="sm"
                       placeholder="Enter Campaign Duration Days"
+                      >
+        </b-form-input>
+      </b-form-group>
+
+      <b-form-group id="presaledurationDaysGroup"
+                    label="Presale Duration Days"
+                    label-for="presalecampaignDuration">
+        <b-form-input id="presalecampaignDuration"
+                      type="number"
+                      v-model="form.presaleDuration"
+                      @change="UnSave()"
+                      :disabled="ICODisabled"
+                      @keydown.native = "UnSave()"
+                      optional
+                      size="sm"
+                      placeholder="Enter Pre-Sale Duration Days"
                       >
         </b-form-input>
       </b-form-group>
@@ -152,8 +190,6 @@
         <!-- </b-form-checkbox-group> -->
       <!-- </b-form-group> -->
     </div>
-      <b-button type="submit" variant="primary">Save</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </div>
 </template>
@@ -164,27 +200,52 @@ export default {
     return {
       form: {
         wallet: '',
-        teamtokens: '',
-        minpresale: '',
-        minmainsale: '',
+        ico: 'No',
+        teamtokens: 0,
+        minpresale: 0,
+        minmainsale: 0,
         maxcontributioneth: '',
         maxcap: '',
-        mincap: '',
+        mincap: 0,
         priceETH: '',
-        campaignDuration: ''
+        campaignDuration: '',
+        presaleDuration: ''
       },
-      show: true
+      show: true,
+      test: false
     }
   },
   created: function () {
   },
+  computed: {
+
+    totalSupplyInfo: function () {
+      return 'Total supply: ' + this.localNumber(this.$store.state.form.totalSupply)
+    },
+    ICODisabled: function () {
+      if (this.form.ico === 'Yes') return false
+      else return true
+    }
+  },
   methods: {
     UnSave () {
-      console.log('ICOContract Unsaved')
+      for (var key in this.form) {
+        console.log('form[' + key + '] = ' + this.form[key])
+        this.$store.state.form[key] = this.form[key]
+      }
+      this.$store.state.form = this.form
+      console.log('Stored form: ', this.$store.state.form)
+      this.unsaved = true
     },
     onSubmit (evt) {
       evt.preventDefault()
       alert(JSON.stringify(this.form))
+    },
+    localNumber: function (val) {
+      if (isNaN(val)) return 0
+      var entry = parseFloat(val)
+      var num = entry.toLocaleString()
+      return num
     },
     onReset (evt) {
       evt.preventDefault()
@@ -205,5 +266,7 @@ export default {
   }
 }
 </script>
+<style lang="css">
 
+</style>
 <!-- b-form-1.vue -->

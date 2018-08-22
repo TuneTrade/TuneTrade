@@ -162,7 +162,7 @@
       <b-row class="mb-2">
 
         <b-col sm="6" class="text-sm-left" >
-          <p style="text-align:justify; word-wrap: break-word;width:90%">  {{row.item.Description}}</p>
+          <p style="text-align:justify; height:100%;word-wrap: break-word;width:100%;border-style:solid;border-width:1px;border-color:#aaa;padding:20px;border-radius:5px">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
             <div v-html="row.item.iFrameEmbed"> </div>

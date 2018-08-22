@@ -66,6 +66,7 @@ body {
     /* width:100%; */
     background-attachment: fixed;
     background-position: left;
+    background-blend-mode:  luminosity;
     background-repeat: no-repeat;
     /* background-size: 75% 100%; */
     background-size: cover;
@@ -75,6 +76,7 @@ body {
     margin:0px;
     /* padding:21%; */
     border-color:red;
+    /* border-style:solid; */
     /* top:100px; */
 
     z-index:1;

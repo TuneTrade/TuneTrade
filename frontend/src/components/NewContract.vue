@@ -175,11 +175,9 @@
         <!-- </b-form-checkbox-group> -->
       <!-- </b-form-group> -->
     </div>
-      <b-button v-bind:disabled="!unsaved" type="submit" variant="primary">Save</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </b-tab>
-  <b-tab  disabled title="ICO Contract (Disabled)"  class="contractTab">
+  <b-tab   :title="ICOTitle"  class="contractTab">
     <ICOContract/>
   </b-tab>
   <b-tab  disabled title="Bonuses (Disabled)"  class="contractTab">
@@ -253,13 +251,14 @@ export default {
         genre: 'Electronic',
         author: 'Test Author',
         website: 'www.test.com',
-        type: 0,
+        type: '2',
         picture: null,
         symbol: 'TTT',
-        totalSupply: 10000,
+        totalSupply: '1000',
         description: '',
-        decimals: 0,
-        price: 0
+        decimals: '0',
+        price: '0',
+        soundcloud: ''
       },
       show: true,
       genres: musicGenres,
@@ -291,6 +290,11 @@ export default {
   computed: {
     selectSize: function () {
       return parseInt('8')
+    },
+    ICOTitle: function () {
+      var isICO = 'No'
+      if (this.$store.state.form.ico === 'Yes') isICO = 'Yes'
+      return 'ICO Contract (' + isICO + ')'
     },
     numCharacters: function () {
       return 'Characters:' + this.form.description.length
