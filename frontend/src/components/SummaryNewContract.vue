@@ -18,16 +18,24 @@
 
     <p v-bind:class=statusClass>Tx Status: {{status}}</p>
   </div>
+  <div v-for="transaction in transactions">
+    Title: {{transaction.title}}<br>
+    Number: {{transaction.txNumber}} <br>
+    Status: {{transaction.status}}<br>
+    Details: {{transaction.msg}}<br>
+    Index: {{transaction.index}}<br>
+    Block number: {{transaction.blockNumber}}<br>
+    Gas Used: {{transaction.gasUsed}} <br>
+  </div>
     </b-modal >
     <h4>Contract Summary</h4>
 
-    <b-button type="submit" @click="onSubmit()" variant="primary">Create Contract</b-button>
-    <b-button type="reset" variant="danger">Reset All</b-button>
+    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px" variant="primary">Create Contract</b-button>
           <b-card no-body class="mb-1 aCard">
             <b-card-header header-tag="header" class="p-1" role="tab" style="padding:10px;">
               <b-btn block href="#" v-b-toggle.accordion1 variant="info">General</b-btn>
             </b-card-header>
-            <b-collapse id="accordion1"  accordions="my-accordion" role="tabpanel">
+            <b-collapse  id="accordion1"  accordions="my-accordion" role="tabpanel">
               <b-card-body class="summaryContainer contractTab">
 
                 <div class="summaryElement">
@@ -63,18 +71,8 @@
                 </div>
 
                 <div class="summaryElement">
-                  <div class="summaryTitle">Price:</div>
-                  <div class="summaryContent">{{localNumber(form.price)}}</div>
-                </div>
-
-                <div class="summaryElement">
                   <div class="summaryTitle">Decimals:</div>
                   <div class="summaryContent">{{localNumber(form.decimals)}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Image:</div>
-                  <div class="summaryContent">{{pictureName}}</div>
                 </div>
 
                 <div class="summaryElement">
@@ -82,23 +80,29 @@
                   <div class="summaryContent">{{form.genre}}</div>
                 </div>
 
-                <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
-                  <div class="summaryTitle">Description:</div>
-                  <div class="summaryContent">{{form.description}}</div>
+                <div class="summaryElement" style="grid-column:1/2;">
+                  <div class="summaryTitle" ></div>
+                  <div class="summaryContent"> <img style="border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img></div>
                 </div>
 
-                <div class="summaryElement"  style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px;">
-                  <div class="summaryTitle">Soundcloud link:</div>
+                <div class="summaryElement"  style="grid-column:2/4;margin-top:10px;padding:0px 10px 0px 0px;">
+                  <div class="summaryTitle"></div>
                   <div style="width:100%"class="summaryContent" v-html="embedHtml"> {{embedHtml}}</div>
                   <!-- <div style="grid-column:1/4;" >{{form.soundcloud}}</div> -->
                 </div>
+
+                <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
+                  <div class="summaryTitle">Description:</div>
+                  <div class="summaryContent">s{{form.description}}</div>
+                </div>
+
 
               </b-card-body>
             </b-collapse>
           </b-card>
           <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn  block href="#" v-b-toggle.accordion2 variant="info">ICO Contract ({{form.ico}}) <span v-if="!isICOValid" style="color:red"> (Invalid data) </span></b-btn>
+              <b-btn :disabled="form.ico=='No'"  block href="#" v-b-toggle.accordion2 variant="info">ICO Contract ({{form.ico}}) <span v-if="!isICOValid" style="color:red"> (Invalid data) </span></b-btn>
             </b-card-header>
       <b-collapse id="accordion2"  accordions="my-accordion" role="tabpanel" :visible="form.ico=='Yes'">
         <b-card-body  class="summaryContainer contractTab">
@@ -128,7 +132,7 @@
 
           <div class="summaryElement">
             <div class="summaryTitle">Maximum Contribution Ether:</div>
-            <div class="summaryContent">{{form.maxcontributioneth}}</div>
+            <div class="summaryContent">{{form.maxETH}}</div>
           </div>
 
           <div class="summaryElement">
@@ -142,18 +146,17 @@
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Token Price ETH:</div>
+            <div class="summaryTitle"  v-bind:class="{errorMessage: !isPriceValid}">Token Price ETH:</div>
             <div class="summaryContent">{{form.priceETH}}
-              <span v-if="!isPriceValid" class="errorMessage">  Invalid price</span>
             </div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Campaign Duration Days:</div>
+            <div class="summaryTitle"  v-bind:class="{errorMessage: !isCampaignDurationValid}">Campaign Duration Days:</div>
             <div class="summaryContent">{{form.campaignDuration}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Pre-sale duration Days:</div>
+            <div class="summaryTitle" v-bind:class="{errorMessage: !isPreSaleDurationValid}">Pre-sale duration Days:</div>
             <div class="summaryContent">{{form.presaleDuration}}</div>
           </div>
 
@@ -163,9 +166,9 @@
       </b-card>
           <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn disabled block href="#" v-b-toggle.accordion3 variant="info">Bonuses</b-btn>
+              <b-btn  :disabled="form.bonuses=='No'" block href="#" v-b-toggle.accordion3 variant="info">Bonuses ({{form.bonuses}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></b-btn>
             </b-card-header>
-      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel">
+      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel" :visible="form.bonuses=='Yes'">
         <b-card-body   class="summaryContainer contractTab">
           <div class="summaryElement">
             <div class="summaryTitle">Presale Period [days]:</div>
@@ -205,11 +208,8 @@
       </b-card>
 
 <!-- </b-card-group> -->
+Transactions length: {{transactions.length}}
 
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      {{information}}
 
   </div>
 </template>
@@ -223,58 +223,11 @@ var Web3 = require('web3')
 var SC = require('soundcloud')
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 
-// require('../musicGenres')
-var musicGenres = [
-  {value: null, text: 'Please select genre', disabled: true},
-  'Alternative',
-  'Ambient',
-  'Anime',
-  'Blues',
-  'Children’s Music',
-  'Classical',
-  'Comedy',
-  'Commercial',
-  'Country',
-  'Dance',
-  'Disney',
-  'Easy Listening',
-  'Electronic',
-  'Enka',
-  'French Pop',
-  'German Folk',
-  'German Pop',
-  'Fitness & Workout',
-  'Hip-Hop/Rap',
-  'Holiday',
-  'Indie Pop',
-  'Industrial',
-  'Inspirational – Christian & Gospel',
-  'Instrumental',
-  'J-Pop',
-  'Jazz',
-  'K-Pop',
-  'Karaoke',
-  'Kayokyoku',
-  'Latin',
-  'New Age',
-  'Opera',
-  'Polish Folk',
-  'Polish Rock',
-  'Pop',
-  'R&B/Soul',
-  'Reggae',
-  'Rock',
-  'Soundtrack',
-  'Tex-Mex',
-  'Vocal',
-  'World'
-]
 
 export default {
   data () {
     return {
       show: true,
-      genres: musicGenres,
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
       information: '',
       txNumber: null,
@@ -284,7 +237,10 @@ export default {
       errMsg: null,
       blockNumber: 0,
       gasUsed: '',
-      embedHtml: null
+      embedHtml: null,
+      txNumberShow: null,
+      transactions: [],
+      index: 0
     }
   },
   components: {
@@ -292,10 +248,7 @@ export default {
     Bonuses
   },
   created: function () {
-    /* global musicGenres */
-    this.genres = musicGenres
     var that = this
-    console.log('Music Genres:', this.genres)
     this.intervalNumber = setInterval(this.checkTransaction, 1000)
     this.loadEmbed()
 
@@ -310,6 +263,25 @@ export default {
     }
   },
   computed: {
+    pictureHtml: function () {
+      return 'https://source.unsplash.com/qX9Ie7ieb1E/200x200'
+    },
+    isPreSaleDurationValid: function () {
+      if (isNaN(parseInt(this.form.presaleDuration))) {
+        return false
+      }
+      if (this.form.presaleDuration <=0) return false
+      return true
+    },
+
+    isCampaignDurationValid: function () {
+      if (isNaN(parseInt(this.form.campaignDuration))) {
+        return false
+      }
+      if (this.form.campaignDuration <=0) return false
+      return true
+    },
+
     isValidWalletAddress: function () {
       return Web3.utils.isAddress(this.form.wallet)
     },
@@ -320,10 +292,29 @@ export default {
       return true
     },
     isICOValid: function () {
+      if (this.form.ico == 'No') return true
       if (!this.isValidWalletAddress) return false
       if (this.form.teamtokens < 0 ) return false
       if (!this.isPriceValid) return false
+      if (this.form.campaignDuration <= 0) return false
+      if (!this.isPreSaleDurationValid) return false
       return true;
+    },
+    isFormValid: function () {
+      return this.isICOValid && this.isBonusValid
+    },
+    isBonusValid: function () {
+      if (this.form.bonuses == 'No') return true
+      if (isNaN(parseInt(this.form.presalePeriod))) return false
+      if (isNaN(parseInt(this.form.presalePeriodBonus))) return false
+      if (isNaN(parseInt(this.form.firstPeriod))) return false
+      if (isNaN(parseInt(this.form.firstPeriodBonus))) return false
+      if (isNaN(parseInt(this.form.secondPeriod))) return false
+      if (isNaN(parseInt(this.form.secondPeriodBonus))) return false
+      if (isNaN(parseInt(this.form.thirdPeriod))) return false
+      if (isNaN(parseInt(this.form.thirdPeriodBonus))) return false
+
+      return true
     },
     soundCloudLink: function () {
       return this.form.soundcloud
@@ -337,7 +328,18 @@ export default {
       return this.$store.state.form.type
     },
     form: function () {
-      return this.$store.state.form
+      var lForm = {}
+      for (var key in this.$store.state.formI) {
+        lForm[key] = this.$store.state.formI[key]
+      }
+
+      for (var key in this.$store.state.formG) {
+        lForm[key] = this.$store.state.formG[key]
+      }
+      for (var key in this.$store.state.formB) {
+        lForm[key] = this.$store.state.formB[key]
+      }
+      return lForm
     },
     pictureName: function () {
       // return 'dupa'
@@ -361,8 +363,10 @@ export default {
           that.embedHtml= that.form.soundcloud + " - link is invalid"
           // console.log('Embed: ',err)
         })
+      } else if (this.form.soundcloud.length > 0) {
+        this.embedHtml = 'Inccorect Link s- \'' + this.form.soundcloud + '\''
       } else {
-        this.embedHtml = 'Inccorect Link - \'' + this.form.soundcloud + '\''
+        this.embedHtml='s'
       }
     },
   localNumber: function (val) {
@@ -372,6 +376,8 @@ export default {
     return num
   },
   SongOrBand: function (val) {
+    console.log('SongOrBand val: ', val)
+    console.log('SongOrBand val:', this.form)
       switch (parseInt(val)) {
         case 0: return 'Song'
         case 1: return 'Band'
@@ -382,64 +388,111 @@ export default {
     checkTransaction () {
       console.log('Standby')
       var that = this
-      if (this.txNumber !== null) {
-        console.log('Checking transaction:', this.txNumber)
-        web3.eth.getTransactionReceipt(this.txNumber,function(err,res) {
+      for (var i in this.transactions) {
+        var tx = this.transactions[i]
+        if (tx.id == 2) {
+          console.log(tx.title)
+          console.log('Checking transaction:', tx.txNumber)
+          web3.eth.getTransactionReceipt(tx.txNumber,function(err,res) {
           console.log('Checking transaction receipt err:', err)
           console.log('Checking transaction receipt res:', res)
-          if (parseInt(res.status,16) === 1) {
-            console.log('Good')
-            that.status="Successful"
-            that.txNumber = null
-            that.blockNumber = that.localNumber(res.blockNumber)
-            that.gasUsed = that.localNumber(res.gasUsed)
+            if (parseInt(res.status,16) === 1) {
+              console.log('Good')
+              tx.status="Successful"
+              tx.id = 4 // 4 - mined transaction
+              tx.blockNumber = that.localNumber(res.blockNumber)
+              tx.gasUsed = that.localNumber(res.gasUsed)
+              that.transactions.sort(function (a,b) {
+                return 1
+              })
 
-          } else {
-            console.log('Bad')
-            that.status = 'Failed'
-            that.txNumber = null
-            that.blockNumber = that.localNumber(res.blockNumber)
-            that.gasUsed = that.localNumber(res.gasUsed)
-          }
-        })
-
+            } else {
+              console.log('Bad')
+              tx.status = 'Failed'
+              tx.id = 5 // 5 - failed Add New Song
+              tx.blockNumber = that.localNumber(res.blockNumber)
+              tx.gasUsed = that.localNumber(res.gasUsed)
+            }
+          })
+        }
       }
     },
     onSubmit () {
       // evt.preventDefault()
       // alert(JSON.stringify(this.form))
       var that = this
+      var contract = this.$store.state.web3contract
+      var form = this.form
       this.errMsg = ''
-      this.status ="Confirm in Metamask"
-      this.txNumberShow=null
+      // this.status ="Confirm in Metamask"
       this.$refs.AddSongModal.show()
+
       for (var key in this.form) {
         console.log('form[' + key + '] = ' + this.form[key])
       }
-      console.log(this.form.name)
-      console.log(this.form['name'])
-      console.log(this.form['symbol'])
-      console.log(this.form['decimals'])
-      console.log(this.form['totalSupply'])
-      console.log(this.form['name'])
-      var price = Web3.utils.toWei(this.form.price, 'ether')
-      console.log('Price:', price)
-      this.$store.state.web3contract.AddSongFull(this.form.name, this.form.author, this.form.genre, this.form.type, this.form.website, price, this.form.totalSupply,false, this.form.symbol, this.form.description, this.form.soundcloud, function (err, res) {
-        if (res !== undefined) {
-          that.status = 'Mining'
-          that.txNumberShow = res
-          that.txNumber = res
-          that.errMsg = null
-        } else {
-          that.status = 'Cancelled'
-          that.txNumberShow = null
-          that.txNumber = null
-          that.errMsg = err.message
-        }
+      console.log(form.name)
+      console.log(form['name'])
+      console.log(form['author'])
+      console.log(form['genre'])
+      console.log(form['type'])
+      console.log(form['website'])
+      console.log(form['totalSupply'])
+      console.log(form['symbol'])
+      console.log(form['description'])
+      console.log(form['soundcloud'])
+      console.log(form['decimals'])
+      console.log(form['totalSupply'])
+      console.log(form['name'])
 
-        console.log('Err:', err)
-        console.log('Res:', res)
+      for (var key in form) {
+        console.log('form[' + key + ']=' + form[key] + ' type=' + typeof(form[key]))
+      }
+
+      var tx = {}
+      tx.title = "Adding New Song in Blockchain"
+      tx.status = "Waiting for user confirmation"
+      tx.txNumber = 'N/A'
+      tx.id = 1 // 1 - AddSong awaiting for confirmation for confirmation
+      tx.index = this.index ++
+      this.transactions.push(tx)
+      this.transactions.sort(function (a,b) {
+        if (a.index > b.index) return -1
+        else return 1
       })
+      contract.AddSongFull(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, function (err, res) {
+        if (res !== undefined) {
+          var tx = {}
+          // console.log('magier ok')
+          // console.log(res)
+          tx.title='Adding New Song to Blokchain'
+          tx.status = 'Mining'
+          tx.txNumber = res
+          var i = that.transactions.findIndex(function(el,el1,el2){
+            return (el.id == 1)
+          })
+          tx.index = that.transactions[i].index
+          tx.id = 2 // 2 - add song transaction awaiting for mining
+          that.transactions[i] = tx
+
+          that.transactions.sort(function (a,b) {
+            return 1
+          })
+
+        } else {
+          var tx = {}
+          tx.title='Adding New Song to Blokchain'
+          tx.status = 'Cancelled in Metamask'
+          tx.txNumber = 'N/A'
+          tx.msg = err.message
+          that.transactions.push(tx)
+
+        }
+        // console.log('Err:', err)
+        // console.log('Res:', res)
+      })
+      // function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
+
+      // contract.AddICO(form.wallet, forrm.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration)
 
     },
     localNumber: function (val) {

@@ -2,7 +2,21 @@
   <div>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
-
+        <b-form-group id="BonusesYesNoGroup"
+                      label="Add bonuses ?"
+                      label-for="BonusesYesNoGroup"
+                      >
+          <b-form-radio-group id="BonusesYesNoGroup"
+                      button-variant="outline-info"
+                      buttons
+                      size="sm"
+                      required
+                      @change="UnSave()"
+                      v-model="form.bonuses"
+                      v-on:click.native.stop="SwitchRadio"
+                      :options="radioOptions"
+                      name="" />
+        </b-form-group>
       <b-form-group id="presalePeriodGroup"
                     label="Presale Period [days]:"
                     label-for="presalePeriod">
@@ -10,10 +24,12 @@
                       type="number"
                       v-model="form.presalePeriod"
                       optional
+                      min=0
                       @keydown.native = "UnSave()"
+                      :disabled="BonusesDisabled"
                       @change = "UnSave()"
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter presale duration in days">
         </b-form-input>
       </b-form-group>
 
@@ -25,9 +41,11 @@
                       v-model="form.presalePeriodBonus"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      min=0
+                      :disabled="BonusesDisabled"
                       optional
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter presale bonus">
         </b-form-input>
       </b-form-group>
 
@@ -39,9 +57,11 @@
                       v-model="form.firstPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
                       optional
+                      min=0
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter first period duration in days">
         </b-form-input>
       </b-form-group>
 
@@ -53,9 +73,11 @@
                       v-model="form.firstPeriodBonus"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
                       optional
+                      min=0
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter first period bonus">
         </b-form-input>
       </b-form-group>
 
@@ -67,9 +89,11 @@
                       v-model="form.secondPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
                       optional
                       size="sm"
-                      placeholder="0">
+                      min=0
+                      placeholder="Enter second period duration">
         </b-form-input>
       </b-form-group>
 
@@ -81,9 +105,11 @@
                       v-model="form.secondPeriodBonus"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
                       optional
+                      min=0
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter second period bonus">
         </b-form-input>
       </b-form-group>
 
@@ -95,9 +121,11 @@
                       v-model="form.thirdPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
                       optional
+                      min=0
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter third period duration in days">
         </b-form-input>
       </b-form-group>
       <b-form-group id="thirdPeriodBonusGroup"
@@ -108,48 +136,70 @@
                       v-model="form.thirdPeriodBonus"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :disabled="BonusesDisabled"
+                      min=0
                       optional
                       size="sm"
-                      placeholder="0">
+                      placeholder="Enter third period bonus value">
         </b-form-input>
       </b-form-group>
 
     </div>
-      <b-button type="submit" variant="primary">Save</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
   </div>
 </template>
 
 <script>
+var radioOptions = ['No', 'Yes']
 
 export default {
   data () {
     return {
       form: {
-        presalePeriod: '',
-        presalePeriodBonus: '',
-        firstPeriod: '',
-        firstPeriodBonus: '',
-        secondPeriod: '',
-        secondPeriodBonus: '',
-        thirdPeriod: '',
-        thirdPeriodBonus: ''
+        bonuses: 'No',
+        presalePeriod: 0,
+        presalePeriodBonus: 0,
+        firstPeriod: 0,
+        firstPeriodBonus: 0,
+        secondPeriod: 0,
+        secondPeriodBonus: 0,
+        thirdPeriod: 0,
+        thirdPeriodBonus: 0
       },
+      radioOptions: radioOptions,
       show: true
     }
   },
   created: function () {
     /* global musicGenres */
+    this.UnSave()
+  },
+  computed: {
+    BonusesDisabled: function () {
+      if (this.form.bonuses === 'Yes') return false
+      else return true
+    }
   },
   methods: {
+    SwitchRadio: function (evt) {
+      evt.preventDefault()
+      console.log('Switch Radio Magier')
+      if (this.form.bonuses === 'No') {
+        this.radioOptions = ['No', 'Yes']
+        this.form.bonuses = 'Yes'
+      } else {
+        this.form.bonuses = 'No'
+        this.radioOptions = ['No', 'Yes']
+      }
+      this.UnSave()
+    },
     UnSave () {
       for (var key in this.form) {
         console.log('form[' + key + '] = ' + this.form[key])
-        this.$store.state.form[key] = this.form[key]
+        this.$store.state.formB[key] = this.form[key]
       }
-      // this.$store.state.form = this.form
-      console.log('Stored form: ', this.$store.state.form)
+      this.$store.state.formB = this.form
+      this.unsaved = true
     },
     onSubmit (evt) {
       evt.preventDefault()

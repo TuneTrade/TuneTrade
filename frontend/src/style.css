@@ -212,3 +212,7 @@ songsTable tbody
   color:red;
   font-weight:600;
 }
+.testRadio:hover {
+  color:red;
+  font-size:20px;
+}

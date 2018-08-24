@@ -44,7 +44,9 @@ export const store = new Vuex.Store({
     web3account: '',
     owner: '',
     songs: [],
-    form: {}
+    formI: {},
+    formB: {},
+    formG: {}
   },
   getters: {
     getCountryList: state => {
@@ -153,7 +155,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xa89da6fa0bb35cab22fdd310aafb8c68b7a4414d')
+      store.state.web3contract = contractDefinition.at('0x2e14f5db3a78c8c82a31c5bfb74566a556e8aafc')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

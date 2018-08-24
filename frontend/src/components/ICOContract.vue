@@ -2,18 +2,28 @@
   <div>
     <b-form disabled @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
+<!--
+        <b-form-checkbox v-model="checked"
+        button-variant="warning"
+        variant="warning"
+        >
+          Click me to see what happens
+        </b-form-checkbox> -->
+
         <b-form-group id="ICOYesNoGroup"
                       label="Create ICO Contract ?"
                       label-for="ICOYesNoGroup"
                       >
           <b-form-radio-group id="ICOYesNoGroup"
-                      button-variant="outline-primary"
+                      button-variant="outline-info"
                       buttons
                       size="sm"
                       required
+                      class="testRadio"
                       @change="UnSave()"
+                      v-on:click.native.stop="SwitchRadio"
                       v-model="form.ico"
-                      :options="['Yes','No']"
+                      :options="radioOptions"
                       name="" />
         </b-form-group>
       <b-form-group id="nameInputGroup"
@@ -195,32 +205,36 @@
 </template>
 
 <script>
+var radioOptions = ['No', 'Yes']
 export default {
   data () {
     return {
       form: {
-        wallet: '',
+        wallet: '0x228084F69a171C972270373d5aeb1617D6E3679c',
         ico: 'No',
         teamtokens: 0,
         minpresale: 0,
         minmainsale: 0,
-        maxcontributioneth: '',
-        maxcap: '',
+        maxETH: 0,
+        maxcap: 0,
         mincap: 0,
-        priceETH: '',
-        campaignDuration: '',
-        presaleDuration: ''
+        priceETH: 100,
+        campaignDuration: 1,
+        presaleDuration: 1
       },
       show: true,
-      test: false
+      test: false,
+      radioOptions: radioOptions,
+      checked: true
     }
   },
   created: function () {
+    this.UnSave()
   },
   computed: {
 
     totalSupplyInfo: function () {
-      return 'Total supply: ' + this.localNumber(this.$store.state.form.totalSupply)
+      return 'Total supply: ' + this.localNumber(this.$store.state.formI.totalSupply)
     },
     ICODisabled: function () {
       if (this.form.ico === 'Yes') return false
@@ -228,12 +242,24 @@ export default {
     }
   },
   methods: {
+    SwitchRadio: function (evt) {
+      evt.preventDefault()
+      console.log('Switch Radio Magier')
+      if (this.form.ico === 'No') {
+        this.radioOptions = ['No', 'Yes']
+        this.form.ico = 'Yes'
+      } else {
+        this.form.ico = 'No'
+        this.radioOptions = ['No', 'Yes']
+      }
+      this.UnSave()
+    },
     UnSave () {
       for (var key in this.form) {
         console.log('form[' + key + '] = ' + this.form[key])
-        this.$store.state.form[key] = this.form[key]
+        this.$store.state.formI[key] = this.form[key]
       }
-      this.$store.state.form = this.form
+      this.$store.state.formI = this.form
       console.log('Stored form: ', this.$store.state.form)
       this.unsaved = true
     },

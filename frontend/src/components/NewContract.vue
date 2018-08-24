@@ -95,21 +95,7 @@
                       placeholder="Enter symbol">
         </b-form-input>
       </b-form-group>
-      <b-form-group id="priceGroup"
-                    label="Price [ETH]:"
-                    label-for="priceInput">
-        <b-form-input id="priceInput"
-                      type="number"
-                      step="0.0001"
-                      pattern="^\d+(?:\.\d{1,2})?$"
-                      min=0
-                      @keydown.native = "UnSave()"
-                      v-model="form.price"
-                      required
-                      size="sm"
-                      placeholder="Enter price">
-        </b-form-input>
-      </b-form-group>
+
       <b-form-group id="decimalsGroup"
                     label="Decimals:"
                     label-for="decimalsInput">
@@ -180,7 +166,7 @@
   <b-tab   :title="ICOTitle"  class="contractTab">
     <ICOContract/>
   </b-tab>
-  <b-tab  disabled title="Bonuses (Disabled)"  class="contractTab">
+  <b-tab   :title="'Bonuses ('+ this.$store.state.formB.bonuses +')'"  class="contractTab">
     <Bonuses/>
   </b-tab>
   <b-tab title="Summary & Create" class="contractTab">
@@ -247,17 +233,16 @@ export default {
   data () {
     return {
       form: {
-        name: 'Test Token',
+        name: 'Test Token -Name',
         genre: 'Electronic',
         author: 'Test Author',
         website: 'www.test.com',
         type: '2',
         picture: null,
-        symbol: 'TTT',
+        symbol: 'SYM',
         totalSupply: '1000',
-        description: '',
+        description: 'Description',
         decimals: '0',
-        price: '0',
         soundcloud: ''
       },
       show: true,
@@ -293,7 +278,7 @@ export default {
     },
     ICOTitle: function () {
       var isICO = 'No'
-      if (this.$store.state.form.ico === 'Yes') isICO = 'Yes'
+      if (this.$store.state.formI.ico === 'Yes') isICO = 'Yes'
       return 'ICO Contract (' + isICO + ')'
     },
     numCharacters: function () {
@@ -306,14 +291,15 @@ export default {
     },
     LimitText () {
       this.form.description = this.form.description.substring(0, 200)
+      this.$store.state.form.description = this.form.description
       // this.UnSave()
     },
     UnSave () {
       for (var key in this.form) {
         console.log('form[' + key + '] = ' + this.form[key])
-        this.$store.state.form[key] = this.form[key]
+        this.$store.state.formG[key] = this.form[key]
       }
-      this.$store.state.form = this.form
+      this.$store.state.formG = this.form
       console.log('Stored form: ', this.$store.state.form)
       this.unsaved = true
     },
