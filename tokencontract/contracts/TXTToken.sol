@@ -29,6 +29,7 @@ constructor (address _foundersWallet) public {
   foundersWallet = _foundersWallet;
   totalSupply_ = 500 * 10 ** 24;
   balances[foundersWallet] = 0;
+  balances[owner] = 250 * 10 **24; //owner gets 250 000 000 tokens to transfer to crowdsale. 
   transferOwnership(foundersWallet);
   tokenStartTime = now;
   releaseTokens();
