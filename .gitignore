@@ -1,4 +1,6 @@
 smartcontract/node_modules
+webpackTokenContract/node_modules
+webpackTokenContract/build
 smartcontract/build
 # Word temporary
 ~$*.doc*
