@@ -11,15 +11,15 @@ contract TXTCrowdsale is Crowdsale,Ownable{
   uint8 [] private bonuses = [0,100,50,25,0];
   address private poolAccount;
   State state;
-/*
-  uint256[] bonusPeriodsStart = [
+
+  /* uint256[] bonusPeriodsStart = [
   1536105600, //September 5 2018
   1542672000, //November 20 2018
   1543622400, //December 01 2018
   1544400000, //December 10 2018
   1545264000  //December 20 2018
-  ];
- */
+  ]; */
+
 
  uint256[] bonusPeriodsStart = [
     now,
@@ -53,8 +53,8 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     if (now > bonusPeriodsStart[3]) return 4;
     if (now > bonusPeriodsStart[2]) return 3;
     if (now > bonusPeriodsStart[1]) return 2;
-    if (now > bonusPeriodsStart[0]) return 1;
-    if (now <= bonusPeriodsStart[0]) {
+    if (now >= bonusPeriodsStart[0]) return 1;
+    if (now < bonusPeriodsStart[0]) {
       state = State.New;
       return 0;
     }
@@ -105,8 +105,7 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     }
     uint8 bonus = bonuses[bonusPeriod()];
     require(state != State.New);
-    require (msg.value > 0.1 ether);
-
+    require (msg.value >= 0.1 ether);
     uint256 weiAmount = msg.value;
     _preValidatePurchase(_beneficiary, weiAmount);
 
@@ -119,8 +118,8 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     }
     // update state
     weiRaised = weiRaised.add(weiAmount);
-
     _processPurchase(_beneficiary, tokens);
+
     emit TokenPurchase(
       msg.sender,
       _beneficiary,
@@ -131,6 +130,15 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     _updatePurchasingState(_beneficiary, weiAmount);
     _forwardFunds();
     _postValidatePurchase(_beneficiary, weiAmount);
+  }
+
+  function _processPurchase(
+    address _beneficiary,
+    uint256 _tokenAmount
+  )
+    internal
+  {
+    _deliverTokens(_beneficiary, _tokenAmount);
   }
 
 
