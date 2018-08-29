@@ -155,7 +155,7 @@ export const store = new Vuex.Store({
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0x2e14f5db3a78c8c82a31c5bfb74566a556e8aafc')
+      store.state.web3contract = contractDefinition.at('0x4b00b36e9af06348a83ca5bee00f6b216f017ac5')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){

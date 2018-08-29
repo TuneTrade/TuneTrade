@@ -82,7 +82,8 @@
 
                 <div class="summaryElement" style="grid-column:1/2;">
                   <div class="summaryTitle" ></div>
-                  <div class="summaryContent"> <img style="border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img></div>
+                  <div class="summaryContent"> <img style="width:200px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
+                  </div>
                 </div>
 
                 <div class="summaryElement"  style="grid-column:2/4;margin-top:10px;padding:0px 10px 0px 0px;">
@@ -208,8 +209,7 @@
       </b-card>
 
 <!-- </b-card-group> -->
-Transactions length: {{transactions.length}}
-
+Transactions length: {{transactions.length}}<br>
 
   </div>
 </template>
@@ -264,7 +264,8 @@ export default {
   },
   computed: {
     pictureHtml: function () {
-      return 'https://source.unsplash.com/qX9Ie7ieb1E/200x200'
+      // return 'https://source.unsplash.com/qX9Ie7ieb1E/200x200'
+      return this.form['picSrc']
     },
     isPreSaleDurationValid: function () {
       if (isNaN(parseInt(this.form.presaleDuration))) {

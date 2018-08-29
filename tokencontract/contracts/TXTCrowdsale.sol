@@ -5,10 +5,10 @@ import "./Ownable.sol";
 
 contract TXTCrowdsale is Crowdsale,Ownable{
 
-  bool paused = false;
-  uint phase = 0;
+  bool private paused = false;
+  uint private phase = 0;
   enum State {New,Started,Finished,Closed}
-  uint8 [] bonuses = [0,100,50,25,0];
+  uint8 [] private bonuses = [0,100,50,25,0];
   State state;
 /*
   uint256[] bonusPeriodsStart = [
@@ -96,13 +96,14 @@ contract TXTCrowdsale is Crowdsale,Ownable{
       msg.sender.transfer(msg.value);
       _transferRemainingTokens();
     }
+    require(state != State.New);
+    uint8 bonus = bonuses[bonusPeriod()];
     require (msg.value > 0.1 ether);
     uint256 weiAmount = msg.value;
     _preValidatePurchase(_beneficiary, weiAmount);
 
     // calculate token amount to be created
     uint256 tokens = _getTokenAmount(weiAmount);
-    uint8 bonus = bonuses[bonusPeriod()];
     if (bonus > 0)
     {
       tokens = tokens.add(tokens.mul(bonus).div(100)); // Calculate bonus and add it to number of tokens user should get in this transaction.

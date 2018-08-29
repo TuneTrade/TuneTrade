@@ -115,15 +115,17 @@
                     label="Album Image"
                     label-for="picture">
       <b-form-file id="picture"
+                      accept=".jpg, .png, .gif"
                       v-model="form.picture"
                       optional
-                      @change = "UnSave()"
+                      ref="picName"
+                      @change.native="ReadPicture($event,this)"
                       style="font-size:12px; font-weight:600;height:30px"
                       placeholder="Please provide album image">
         </b-form-file>
       </b-form-group>
 
-      <b-form-group id="exampleInputGroup3"
+      <b-form-group id="exampleInputGroup3" style="grid-row:4"
                     label="Genre:"
                     label-for="exampleInput3">
         <b-form-select id="exampleInput3"
@@ -136,7 +138,11 @@
 
         </b-form-select>
       </b-form-group>
-      <div style="grid-column:1/4;">
+      <div style="grid-column:3/4;grid-row:4/6;padding:10px 40px;">
+        <img ref="picPreview" src="https://source.unsplash.com/random" style="border-style:solid;border-width:2px;border-color:#333;width:200px;height:200px"></img>
+
+      </div>
+      <div style="grid-column:1/3;grid-row:5;">
       <b-form-group  id="descriptionGroup"
                     label="Description:"
                     label-for="description"
@@ -243,7 +249,8 @@ export default {
         totalSupply: '1000',
         description: 'Description',
         decimals: '0',
-        soundcloud: ''
+        soundcloud: '',
+        picSrc: ''
       },
       show: true,
       genres: musicGenres,
@@ -286,6 +293,29 @@ export default {
     }
   },
   methods: {
+    ReadPicture (input) {
+      var that = this
+      console.log('This is some input:', input)
+      if (input.target.files && input.target.files[0]) {
+        var reader = new FileReader()
+        reader.onload = function (e) {
+          console.log(that.$ids)
+          console.log(that.$refs)
+          console.log('PicName: ', that.$refs.picName)
+          // that.$refs.picPreview.style.width = '100%'
+          that.$refs.picPreview.style.height = '8%'
+          that.$refs.picPreview.src = '/static/loading.gif'
+          that.form.picSrc = e.target.result
+          that.$refs.picPreview.style.border = 'none'
+          setTimeout(function () {
+            that.$refs.picPreview.style.height = '200px'
+            that.$refs.picPreview.src = ''
+            that.$refs.picPreview.src = e.target.result
+          }, 1300)
+        }
+        reader.readAsDataURL(input.target.files[0])
+      }
+    },
     test () {
       console.log('test: ', this.index)
     },

@@ -4,8 +4,6 @@ import "./PausableToken.sol";
 import "./DetailedERC20.sol";
 
 
-
-
 contract TXTToken is PausableToken, DetailedERC20("Tune Trade Token","TXT",18) {
 
 using SafeMath for uint256;
@@ -14,14 +12,13 @@ using SafeMath for uint;
 
 
 // 200 millions tokens are vested. Every 150 days (5 months)  tokens release 50 millions
-uint256 vestedAmount = 200 * 10 ** 24;
-address foundersWallet;
-uint256 tokenStartTime;
-uint256 private constant  phasePeriod  = 150 days;
-uint256 private constant phaseTokens  = 50 * 10 ** 24;
-uint256 lastPhase = 0;
+address private foundersWallet;
+uint256 private tokenStartTime;
+uint256 private constant  phasePeriod  = 30 days;
+uint256 private constant phaseTokens  = 10 * 10 ** 24;
+uint256 private lastPhase = 0;
 
-
+event TokensReleased(uint256 amount, address to, uint256 phase);
 ///@notice Constructor set total supply and set owner of this contract as _fondersWallet. Founders wallet also receives 50 millions tokens.
 
 constructor (address _foundersWallet) public {
@@ -29,7 +26,7 @@ constructor (address _foundersWallet) public {
   foundersWallet = _foundersWallet;
   totalSupply_ = 500 * 10 ** 24;
   balances[foundersWallet] = 0;
-  balances[owner] = 250 * 10 **24; //owner gets 250 000 000 tokens to transfer to crowdsale. 
+  balances[owner] = 250 * 10 **24; //owner gets 250 000 000 tokens to transfer to crowdsale.
   transferOwnership(foundersWallet);
   tokenStartTime = now;
   releaseTokens();
@@ -38,10 +35,10 @@ constructor (address _foundersWallet) public {
 
 function _phasesToRelease() internal view returns (uint)
 {
-  if (lastPhase == 5) return 0;
-  uint256 timeFromStart = now - tokenStartTime;
+  if (lastPhase == 10) return 0;
+  uint256 timeFromStart = now.sub(tokenStartTime);
   uint256 phases = timeFromStart/(phasePeriod) + 1;
-  if (phases > 5) phases = 5;
+  if (phases > 10) phases = 10;
   return phases - lastPhase;
 }
 
@@ -59,6 +56,8 @@ function releaseTokens () public returns(bool) {
 
   balances[foundersWallet] = balances[foundersWallet].add(phaseTokens * toRelease);
   lastPhase = lastPhase.add(toRelease);
+  emit TokensReleased(phaseTokens*toRelease,foundersWallet,lastPhase);
+
   return true;
 }
 
