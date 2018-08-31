@@ -4,7 +4,7 @@
     <b-modal hide-header ref="AddSongModal"  size="lg" centered  ok-only ok-title="Close">
     <center>
       <img style="height:50px" src="../assets/metamask.png"></img><br><br>
-      <p v-if='!txNumberShow&&!errMsg' style="color:grey"> PLEASE ACCEPT YOUR TRANSACTION IN METAMASK </p>
+      <p v-if='!txNumberShow&&!errMsg' style="color:black;font-family:courier;font-weight:800">PLEASE ACCEPT YOUR TRANSACTION IN METAMASK</p>
       <div v-if=errMsg>
         {{errMsg}}
       </div>
@@ -19,13 +19,15 @@
     <p v-bind:class=statusClass>Tx Status: {{status}}</p>
   </div>
   <div v-for="transaction in transactions">
+    <div style="font-family:Courier;margin:15px 0px;background-color:#ddd;border-radius:4px;padding:10px 20px;">
     Title: {{transaction.title}}<br>
     Number: {{transaction.txNumber}} <br>
-    Status: {{transaction.status}}<br>
-    Details: {{transaction.msg}}<br>
-    Index: {{transaction.index}}<br>
+    Status:<b><span v-bind:class="{errorMessage: transaction.status=='Cancelled',successfulStatus: transaction.status=='Successful', miningStatus: transaction.status=='Mining'}"> {{transaction.status}} </span></b> <br>
+    <!-- Index: {{transaction.index}}<br> -->
     Block number: {{transaction.blockNumber}}<br>
     Gas Used: {{transaction.gasUsed}} <br>
+    <span v-if="transaction.msg">Details: {{transaction.msg}}<br></span>
+  </div>
   </div>
     </b-modal >
     <h4>Contract Summary</h4>
@@ -398,25 +400,33 @@ export default {
           console.log('Checking transaction receipt err:', err)
           console.log('Checking transaction receipt res:', res)
             if (parseInt(res.status,16) === 1) {
-              console.log('Good')
-              tx.status="Successful"
-              tx.id = 4 // 4 - mined transaction
-              tx.blockNumber = that.localNumber(res.blockNumber)
-              tx.gasUsed = that.localNumber(res.gasUsed)
-              that.transactions.sort(function (a,b) {
-                return 1
-              })
-
+              that.UpdateTransactionSuccessfull(res)
+              console.log('Good: ', res.transactionHash)
             } else {
               console.log('Bad')
               tx.status = 'Failed'
               tx.id = 5 // 5 - failed Add New Song
               tx.blockNumber = that.localNumber(res.blockNumber)
               tx.gasUsed = that.localNumber(res.gasUsed)
+              that.SortTransactions()
             }
           })
         }
       }
+    },
+    UpdateTransactionSuccessfull (res)
+    {
+      var i = this.transactions.findIndex(function(el,el1,el2){
+        return (el.txNumber == res.transactionHash)
+      })
+      this.transactions[i].status = 'Successful'
+      this.transactions[i].txNumber = res.transactionHash
+      this.transactions[i].id = 4
+      this.transactions[i].blockNumber = res.blockNumber
+      this.transactions[i].gasUsed = res.gasUsed
+
+      this.SortTransactions()
+
     },
     onSubmit () {
       // evt.preventDefault()
@@ -424,6 +434,7 @@ export default {
       var that = this
       var contract = this.$store.state.web3contract
       var form = this.form
+      this.transactions = []
       this.errMsg = ''
       // this.status ="Confirm in Metamask"
       this.$refs.AddSongModal.show()
@@ -449,52 +460,71 @@ export default {
         console.log('form[' + key + ']=' + form[key] + ' type=' + typeof(form[key]))
       }
 
-      var tx = {}
-      tx.title = "Adding New Song in Blockchain"
-      tx.status = "Waiting for user confirmation"
-      tx.txNumber = 'N/A'
-      tx.id = 1 // 1 - AddSong awaiting for confirmation for confirmation
-      tx.index = this.index ++
-      this.transactions.push(tx)
-      this.transactions.sort(function (a,b) {
-        if (a.index > b.index) return -1
-        else return 1
-      })
+      var songtx = this.AddTransaction( "Adding New Song in Blockchain")
       contract.AddSongFull(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, function (err, res) {
         if (res !== undefined) {
-          var tx = {}
-          // console.log('magier ok')
-          // console.log(res)
-          tx.title='Adding New Song to Blokchain'
-          tx.status = 'Mining'
-          tx.txNumber = res
-          var i = that.transactions.findIndex(function(el,el1,el2){
-            return (el.id == 1)
-          })
-          tx.index = that.transactions[i].index
-          tx.id = 2 // 2 - add song transaction awaiting for mining
-          that.transactions[i] = tx
-
-          that.transactions.sort(function (a,b) {
-            return 1
-          })
-
+          that.UpdateTransactionMining(songtx,res)
         } else {
-          var tx = {}
-          tx.title='Adding New Song to Blokchain'
-          tx.status = 'Cancelled in Metamask'
-          tx.txNumber = 'N/A'
-          tx.msg = err.message
-          that.transactions.push(tx)
-
+          console.log('Error:', err)
+          that.UpdateTransactionCancelled(songtx,err.message)
         }
-        // console.log('Err:', err)
-        // console.log('Res:', res)
       })
       // function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
+      if(form.ico === 'Yes') {
+        var icotx = this.AddTransaction("Adding ICO to Blockchain")
+        contract.AddICO(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,function(err,res){
+          if(res)
+          {
+            that.UpdateTransactionMining(icotx,res)
+          } else
+          {
+            that.UpdateTransactionCancelled(icotx,err.message)
+          }
+        })
+      }
+    },
+    UpdateTransactionMining (index,number)
+    {
+      var i = this.transactions.findIndex(function(el,el1,el2){
+        return (el.index == index)
+      })
+      this.transactions[i].status = 'Mining'
+      this.transactions[i].txNumber = number
+      this.transactions[i].id = 2
+      this.SortTransactions()
 
-      // contract.AddICO(form.wallet, forrm.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration)
+    },
+    SortTransactions() {
+      this.transactions.sort(function (a,b) {
+        if(a.index > b.index) return 1
+        else return -1
+      })
+    },
+    UpdateTransactionCancelled(index,msg)
+    {
+      var i = this.transactions.findIndex(function(el,el1,el2){
+        return (el.index == index)
+      })
 
+      this.transactions[i].msg = msg
+      this.transactions[i].id = 3
+      this.transactions[i].status = 'Cancelled'
+      this.SortTransactions()
+    },
+    AddTransaction(title)
+    {
+      var tx = {}
+      tx.title = title
+      tx.status = "Waiting for user confirmation"
+      tx.txNumber = 'N/A'
+      tx.blockNumber = 'N/A'
+      tx.gasUsed = 'N/A'
+      tx.id = 1 // 1 - AddSong awaiting for confirmation for confirmation
+      tx.index = this.index++
+      this.transactions.push(tx)
+      this.SortTransactions()
+
+      return tx.index
     },
     localNumber: function (val) {
       if (isNaN(val)) return 0

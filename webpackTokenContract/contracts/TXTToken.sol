@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./PausableToken.sol";
 import "./DetailedERC20.sol";
@@ -37,9 +37,9 @@ function _phasesToRelease() internal view returns (uint)
 {
   if (lastPhase == 10) return 0;
   uint256 timeFromStart = now.sub(tokenStartTime);
-  uint256 phases = timeFromStart/(phasePeriod) + 1;
+  uint256 phases = timeFromStart.div(phasePeriod).add(1);
   if (phases > 10) phases = 10;
-  return phases - lastPhase;
+  return phases.sub(lastPhase);
 }
 
 function _readyToRelease() internal view returns(bool) {
@@ -54,7 +54,7 @@ function releaseTokens () public returns(bool) {
   require(_readyToRelease());
   uint256 toRelease = _phasesToRelease();
 
-  balances[foundersWallet] = balances[foundersWallet].add(phaseTokens * toRelease);
+  balances[foundersWallet] = balances[foundersWallet].add(phaseTokens.mul(toRelease));
   lastPhase = lastPhase.add(toRelease);
   emit TokensReleased(phaseTokens*toRelease,foundersWallet,lastPhase);
 
@@ -72,7 +72,7 @@ function transfer(address _to, uint256 _value) public returns (bool)
 function balanceOf(address _owner) public view returns (uint256) {
   if(_owner == foundersWallet)
   {
-    return balances[_owner] + _phasesToRelease() * phaseTokens;
+    return balances[_owner].add( _phasesToRelease().mul(phaseTokens));
   }
   else {
   return balances[_owner];

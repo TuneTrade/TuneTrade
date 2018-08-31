@@ -295,6 +295,8 @@ export default {
       return 'https://rinkeby.etherscan.io/address/' + address
     },
     Price: function (val) {
+      if (val === undefined) return 'N/A'
+      val = '' + val
       return Web3.utils.fromWei(val, 'ether')
     },
     info (item, index, button) {

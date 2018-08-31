@@ -139,7 +139,7 @@
         </b-form-select>
       </b-form-group>
       <div style="grid-column:3/4;grid-row:4/6;padding:10px 40px;">
-        <img ref="picPreview" src="https://source.unsplash.com/random" style="border-style:solid;border-width:2px;border-color:#333;width:200px;height:200px"></img>
+        <img ref="picPreview" v-if="displayPic" style="border-style:solid;border-width:2px;border-color:#333;width:200px;height:200px"></img>
 
       </div>
       <div style="grid-column:1/3;grid-row:5;">

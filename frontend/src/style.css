@@ -208,6 +208,10 @@ songsTable tbody
   color:green;
 }
 
+.miningStatus {
+  color:orange;
+}
+
 .errorMessage {
   color:red;
   font-weight:600;

@@ -76,6 +76,10 @@ contract TuneTrader {
     return songs;
   }
 
-
+function GetICO(SongERC20 song) public view returns(address ico)
+{
+  require (songToSale[song] != 0x0);
+  return songToSale[song];
+}
 
 }

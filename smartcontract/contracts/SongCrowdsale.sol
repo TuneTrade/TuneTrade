@@ -33,6 +33,9 @@ contract SongCrowdSale is Crowdsale, Ownable
   /// @param preSaleDays - presale capaign duration in days
   uint256 preSaleDays;
 
+  uint256 volume;
+  uint256 phase=1;
+
   /// @param _newwallet new wallet address. Must not be zero.
   /// @notice This function change wallet address
   function ChangeWallet (address _newwallet) public onlyOwner returns (bool)
@@ -48,13 +51,9 @@ contract SongCrowdSale is Crowdsale, Ownable
     require (_tokenAddress != address(0x0));
     require (token == ERC20(0x0));
 
-    token =ERC20( _tokenAddress);
+    token = ERC20( _tokenAddress);
   }
 
-  function AddICO(address _wallet,uint256 _teamstokens,uint256 _minpresale, uint256 _minMainSale, uint256 maxEth, uint256  _maxCap, uint256 minCap, uint256 _price, uint256 _durationDays)
-  {
-
-  }
 
 
   constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens, uint _minpresale, uint _minMainSaleETH, uint _maxEth, uint _maxCap, uint _minCap, uint _duration, uint _presaleduration) public Crowdsale(_price,_wallet,ERC20(_song))
@@ -70,9 +69,49 @@ contract SongCrowdSale is Crowdsale, Ownable
 
   }
 
-  function GetSaleInformation() public view returns (uint256 _price,address _wallet, address _song)
+  function GetSaleInformation() public view returns (
+       uint256 _price,
+       address _wallet,
+       address _song,
+       uint256 _teamTokens,
+       uint256 _minpresale,
+       uint256 _minMainSaleETH,
+       uint256 _maxETH,
+       uint256 _minCap,
+       uint256 _duration,
+       uint256 _presaleduration
+       )
   {
-      return (rate,wallet,token);
+      return (rate,wallet,token,teamTokens,minPreSaleETH,minMainSaleETH,maxEth,minCap, durationDays,preSaleDays);
   }
+
+  function GetStats() public view returns (
+    uint256 contribution,
+    uint256 volume,
+    uint8 phase
+    )
+{
+  return (weiRaised, volume,phase );
+}
+
+function _processPurchase(
+  address _beneficiary,
+  uint256 _tokenAmount
+)
+  internal
+{
+  _deliverTokens(_beneficiary, _tokenAmount);
+}
+
+
+function _deliverTokens(
+  address _beneficiary,
+  uint256 _tokenAmount
+)
+  internal
+{
+  token.safeTransfer(_beneficiary, _tokenAmount);
+  volume = volume.add(_tokenAmount);
+}
 
 }
