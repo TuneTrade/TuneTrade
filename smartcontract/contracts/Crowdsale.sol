@@ -72,38 +72,8 @@ contract Crowdsale {
   /**
    * @dev fallback function ***DO NOT OVERRIDE***
    */
-  function () external payable {
-    buyTokens(msg.sender);
-  }
 
-  /**
-   * @dev low level token purchase ***DO NOT OVERRIDE***
-   * @param _beneficiary Address performing the token purchase
-   */
-  function buyTokens(address _beneficiary) public payable {
 
-    uint256 weiAmount = msg.value;
-    _preValidatePurchase(_beneficiary, weiAmount);
-
-    // calculate token amount to be created
-    uint256 tokens = _getTokenAmount(weiAmount);
-
-    // update state
-    weiRaised = weiRaised.add(weiAmount);
-
-    _processPurchase(_beneficiary, tokens);
-    emit TokenPurchase(
-      msg.sender,
-      _beneficiary,
-      weiAmount,
-      tokens
-    );
-
-    _updatePurchasingState(_beneficiary, weiAmount);
-
-    _forwardFunds();
-    _postValidatePurchase(_beneficiary, weiAmount);
-  }
 
   // -----------------------------------------
   // Internal interface (extensible)
@@ -143,28 +113,12 @@ contract Crowdsale {
    * @param _beneficiary Address performing the token purchase
    * @param _tokenAmount Number of tokens to be emitted
    */
-  function _deliverTokens(
-    address _beneficiary,
-    uint256 _tokenAmount
-  )
-    internal
-  {
-    token.safeTransfer(_beneficiary, _tokenAmount);
-  }
 
   /**
    * @dev Executed when a purchase has been validated and is ready to be executed. Not necessarily emits/sends tokens.
    * @param _beneficiary Address receiving the tokens
    * @param _tokenAmount Number of tokens to be purchased
    */
-  function _processPurchase(
-    address _beneficiary,
-    uint256 _tokenAmount
-  )
-    internal
-  {
-    _deliverTokens(_beneficiary, _tokenAmount);
-  }
 
   /**
    * @dev Override for extensions that require an internal state to check for validity (current user contributions, etc.)

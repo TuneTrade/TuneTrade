@@ -5,6 +5,7 @@
         <b-form-group id="BonusesYesNoGroup"
                       label="Add bonuses ?"
                       label-for="BonusesYesNoGroup"
+                      :description="radioDescription"
                       >
           <b-form-radio-group id="BonusesYesNoGroup"
                       button-variant="outline-info"
@@ -12,6 +13,7 @@
                       size="sm"
                       required
                       @change="UnSave()"
+                      :disabled="icoDisabled"
                       v-model="form.bonuses"
                       v-on:click.native.stop="SwitchRadio"
                       :options="radioOptions"
@@ -176,13 +178,22 @@ export default {
   },
   computed: {
     BonusesDisabled: function () {
+      if (this.icoDisabled) return true
       if (this.form.bonuses === 'Yes') return false
       else return true
+    },
+    icoDisabled: function () {
+      if (this.$store.state.formI.ico === 'No') return true
+      else return false
+    },
+    radioDescription: function () {
+      if (this.icoDisabled) return 'Enable ICO to define Bonuses'
     }
   },
   methods: {
     SwitchRadio: function (evt) {
       evt.preventDefault()
+      if (this.icoDisabled) return
       console.log('Switch Radio Magier')
       if (this.form.bonuses === 'No') {
         this.radioOptions = ['No', 'Yes']

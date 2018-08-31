@@ -169,9 +169,9 @@
       </b-card>
           <b-card no-body class="mb-1  ">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn  :disabled="form.bonuses=='No'" block href="#" v-b-toggle.accordion3 variant="info">Bonuses ({{form.bonuses}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></b-btn>
+              <b-btn  :disabled="bonusesYesOrNo=='No'" block href="#" v-b-toggle.accordion3 variant="info">Bonuses ({{bonusesYesOrNo}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></b-btn>
             </b-card-header>
-      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel" :visible="form.bonuses=='Yes'">
+      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel" :visible="bonusesVisible">
         <b-card-body   class="summaryContainer contractTab">
           <div class="summaryElement">
             <div class="summaryTitle">Presale Period [days]:</div>
@@ -265,6 +265,13 @@ export default {
     }
   },
   computed: {
+    bonusesVisible: function () {
+      return (this.form.bonuses=='Yes' && this.form.ico=='Yes')
+    },
+    bonusesYesOrNo: function () {
+      if (this.bonusesVisible) return 'Yes'
+      else return 'No'
+    },
     pictureHtml: function () {
       // return 'https://source.unsplash.com/qX9Ie7ieb1E/200x200'
       return this.form['picSrc']

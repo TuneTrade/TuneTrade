@@ -33,8 +33,46 @@ contract SongCrowdSale is Crowdsale, Ownable
   /// @param preSaleDays - presale capaign duration in days
   uint256 preSaleDays;
 
+  uint8[] bonusValues;
+  // 0 - presale 1 - first period 2-second period 3 - third period
+  uint8[] bonusPeriods;
   uint256 volume;
   uint256 phase=1;
+
+  uint saleStart;
+
+
+function DefineBonusValues(uint8[] _values) public onlyOwner returns (bool)
+{
+    require (_values.length == 4); //there are only four bonus periods
+    bonusValues[0] = _values[0];
+    bonusValues[1] = _values[1];
+    bonusValues[2] = _values[2];
+    bonusValues[3] = _values[3];
+}
+
+function DefineBonusPeriods(uint8[] _values) public onlyOwner returns (bool)
+{
+    require (_values.length == 4); //there are only four bonus periods
+    bonusPeriods[0] = _values[0];
+    bonusPeriods[1] = _values[1];
+    bonusPeriods[2] = _values[2];
+    bonusPeriods[3] = _values[3];
+}
+
+///@notice Return bonus value for current moment in %. If sale is already out of bonus period it will return 0.
+///@dev It will fail if for any reason now is smaller than saleStart
+function currentBonusValue() internal returns (uint8)
+{
+    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1] + bonusPeriods[2] + bonusPeriods[3]) *24*3600 ) return 0;
+    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1] + bonusPeriods[2]) *24*3600 ) return bonusValues[3];
+    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1]) *24*3600 ) return bonusValues[2];
+    if (now > saleStart + (bonusPeriods[0] *24*3600 )) return bonusValues[1];
+    if (now > saleStart ) return bonusValues[0];
+    assert(now >= saleStart);
+}
+
+
 
   /// @param _newwallet new wallet address. Must not be zero.
   /// @notice This function change wallet address
@@ -66,6 +104,7 @@ contract SongCrowdSale is Crowdsale, Ownable
      minCap = _minCap;
      durationDays = _duration;
      preSaleDays = _presaleduration;
+     saleStart = now;
 
   }
 
@@ -103,6 +142,39 @@ function _processPurchase(
   _deliverTokens(_beneficiary, _tokenAmount);
 }
 
+/**
+ * @dev low level token purchase ***DO NOT OVERRIDE***
+ * @param _beneficiary Address performing the token purchase
+ */
+function buyTokens(address _beneficiary) public payable {
+
+  uint256 weiAmount = msg.value;
+  _preValidatePurchase(_beneficiary, weiAmount);
+
+  // calculate token amount to be created
+  uint256 tokens = _getTokenAmount(weiAmount);
+
+  // update state
+  weiRaised = weiRaised.add(weiAmount);
+
+  _processPurchase(_beneficiary, tokens);
+  emit TokenPurchase(
+    msg.sender,
+    _beneficiary,
+    weiAmount,
+    tokens
+  );
+
+  _updatePurchasingState(_beneficiary, weiAmount);
+
+  _forwardFunds();
+  _postValidatePurchase(_beneficiary, weiAmount);
+}
+
+function () external payable {
+  buyTokens(msg.sender);
+}
+
 
 function _deliverTokens(
   address _beneficiary,
@@ -110,8 +182,9 @@ function _deliverTokens(
 )
   internal
 {
-  token.safeTransfer(_beneficiary, _tokenAmount);
-  volume = volume.add(_tokenAmount);
+  uint256 tokenAmount = _tokenAmount + _tokenAmount.mul(currentBonusValue()).div(100);
+  token.safeTransfer(_beneficiary, tokenAmount);
+  volume = volume.add(tokenAmount);
 }
 
 }

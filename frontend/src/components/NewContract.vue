@@ -172,7 +172,7 @@
   <b-tab   :title="ICOTitle"  class="contractTab">
     <ICOContract/>
   </b-tab>
-  <b-tab   :title="'Bonuses ('+ this.$store.state.formB.bonuses +')'"  class="contractTab">
+  <b-tab  :disabled="BonusDisabled" :title="'Bonuses ('+ this.BonusYesOrNo +')'"  class="contractTab">
     <Bonuses/>
   </b-tab>
   <b-tab title="Summary & Create" class="contractTab">
@@ -280,6 +280,14 @@ export default {
     }
   },
   computed: {
+    BonusYesOrNo: function () {
+      if (this.BonusDisabled) return 'No'
+      else return this.$store.state.formB.bonuses
+    },
+    BonusDisabled: function () {
+      if (this.$store.state.formI.ico === 'No') return true
+      else return false
+    },
     selectSize: function () {
       return parseInt('8')
     },
