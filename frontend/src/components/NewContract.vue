@@ -139,7 +139,7 @@
         </b-form-select>
       </b-form-group>
       <div style="grid-column:3/4;grid-row:4/6;padding:10px 40px;">
-        <img ref="picPreview" v-if="displayPic" style="border-style:solid;border-width:2px;border-color:#333;width:200px;height:200px"></img>
+        <img ref="picPreview" style="width:200px;height:200px"></img>
 
       </div>
       <div style="grid-column:1/3;grid-row:5;">
@@ -246,6 +246,7 @@ export default {
         type: '2',
         picture: null,
         symbol: 'SYM',
+        displayPic: false,
         totalSupply: '1000',
         description: 'Description',
         decimals: '0',
@@ -280,6 +281,7 @@ export default {
     }
   },
   computed: {
+
     BonusYesOrNo: function () {
       if (this.BonusDisabled) return 'No'
       else return this.$store.state.formB.bonuses
@@ -309,6 +311,7 @@ export default {
         reader.onload = function (e) {
           console.log(that.$ids)
           console.log(that.$refs)
+          that.displayPic = true
           console.log('PicName: ', that.$refs.picName)
           // that.$refs.picPreview.style.width = '100%'
           that.$refs.picPreview.style.height = '8%'

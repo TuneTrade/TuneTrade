@@ -66,6 +66,11 @@ export default {
   },
   created: function () {
     var that = this
+    if (typeof(web3) === 'undefined')
+    {
+      this.metaMaskAccount = undefined
+    }
+    else {
     web3.currentProvider.publicConfigStore.on('update', function(err,res){
       console.log('web3 metmask updated')
       that.metaMaskAccount = web3.eth.defaultAccount
@@ -76,14 +81,20 @@ export default {
     })
 
     this.metaMaskAccount = web3.eth.defaultAccount
-
+  }
   },
   computed:
   {
     loggedIn: function () {
       console.log(this.metaMaskAccount)
-      if(typeof this.metaMaskAccount=== 'undefined') return false
-      else return true
+      if(typeof this.metaMaskAccount=== 'undefined') {
+        this.$store.state.metaMaskLoggedOut = true
+        return false
+      }
+      else {
+        this.$store.state.metaMaskLoggedOut = false
+        return true
+      }
     },
     contractAddress: function () {
       return this.$store.state.web3contract.address

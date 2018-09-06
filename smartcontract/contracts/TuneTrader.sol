@@ -28,21 +28,20 @@ contract TuneTrader {
   SongCrowdSale [] salesContracts;
   mapping (address => address) songToSale;
 
-  function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
+  function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration,uint8[] _bonuses) public
   {
+    /* uint8[] bonuses; */
     ERC20 songToken = ERC20(userToSongICO[msg.sender]);
-    require (userToSongICO[msg.sender] != address(0x0));
-
-    SongCrowdSale saleContract = new SongCrowdSale(_price,_wallet,songToken,_teamTokens,_minpresale, _minMainSale,_maxEth,_maxCap, _minCap, _durationDays, _presaleduration);
+    /* require (userToSongICO[msg.sender] != address(0x0),"No Song assigned to this msg.sender to create ICO"); */
+    SongCrowdSale saleContract = new SongCrowdSale(_price,_wallet,songToken,_teamTokens,_minpresale, _minMainSale,_maxEth,_maxCap, _minCap, _durationDays, _presaleduration,_bonuses);
     songToSale[songToken] = saleContract;
-
   }
 
 
-  function AddSongFull(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico)
+  function AddSongFull(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico,uint _id)
   {
 
-    SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, 0);
+    SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, 0,_id);
     song.SetDetails(_author, _genre, _entryType, _website, _soundcloud, _description);
     songs.push(song);
 
@@ -58,7 +57,7 @@ contract TuneTrader {
       1234567,
       _name,
       "_symbol",
-      0);
+      0,1);
 
       song.SetDetails("Jan Sebastian Bach",
       "Pop",

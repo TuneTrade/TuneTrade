@@ -35,8 +35,8 @@ function sortFunction(a,b) {
   else return -1
 }
 
-// const API = 'https://tunetrade-backend.herokuapp.com'
-const API = 'http://127.0.0.1:5000'
+const API = 'https://tunetrade-backend.herokuapp.com'
+// const API = 'http://127.0.0.1:5000'
 
 export const store = new Vuex.Store({
   state: {
@@ -46,7 +46,10 @@ export const store = new Vuex.Store({
     songs: [],
     formI: {},
     formB: {},
-    formG: {}
+    formG: {},
+    metaMaskLoggedOut: false,
+    API:API,
+    songsReady: false
   },
   getters: {
     getCountryList: state => {
@@ -91,12 +94,25 @@ export const store = new Vuex.Store({
     updateBlockChainData (state) {
       store.state.currentStorageVersion = store.state.storageVersion
     },
+    UploadPicture(store,payload)
+    {
+      console.log('UploadPicture', payload)
+      axios.post(API+'/uploadPic',payload).then(function(res){
+        console.log('SUCCESS:', res)
+      }).catch(function(err) {
+        console.log('ERROR:', err)
+      })
+    },
     GetSongs (store) {
+      store.state.songsReady = false
       console.log('inside get sons')
+      var totalSongs = 0
+      var songsProcessed = 0
       axios.get(API+'/getSongs').then(function(res) {
         var sList = res.data
         console.log('sList:',sList)
         var songsList = []
+        totalSongs = sList.length
         for(var i = 0;i<sList.length;i++) {
           var tmpSong = {}
           tmpSong.address = sList[i]
@@ -116,9 +132,11 @@ export const store = new Vuex.Store({
             songsList[index].Name = res.data.name
             songsList[index].Author = res.data.author
             songsList[index].Genre = res.data.genre
+            songsList[index].Symbol = res.data.symbol
             songsList[index].Price = res.data.price
             songsList[index].Created = res.data.creationTime
             songsList[index].Type = res.data.entryType
+            songsList[index].Id = res.data.id
             songsList[index].Contribution = res.data.contribution
             songsList[index].soundcloud = res.data.soundcloud
             songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
@@ -144,6 +162,13 @@ export const store = new Vuex.Store({
             if (index == sList.length -1 ) {
               songsList.sort(sortFunction)
             }
+            songsProcessed++
+            if (totalSongs == songsProcessed)
+            {
+              store.state.songsReady = true
+            } else {
+              store.state.songsReady = false
+            }
 
             // console.log(res.data)
           })
@@ -151,11 +176,12 @@ export const store = new Vuex.Store({
         store.state.songs = songsList.sort(sortFunction)
 
 
+
       }).catch(function(err){console.log(err)})
     },
     ConnectToContract (store) {
       var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0x4b00b36e9af06348a83ca5bee00f6b216f017ac5')
+      store.state.web3contract = contractDefinition.at('0xed878C0F543f9F77B81FE52F14128dF21527a52a')
       console.log('Web3Contract Data:', store.state.web3contract)
     }
     //   store.state.web3contract.GetSongs(function(err,res){
@@ -208,5 +234,8 @@ export const store = new Vuex.Store({
     // })
     //   }
 
+  },
+  created: function () {
+    this.state.API = API
   }
 })

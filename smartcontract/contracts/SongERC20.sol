@@ -18,15 +18,17 @@ contract SongERC20 is StandardToken, DetailedERC20, Ownable
   string public website;
   string soundcloud;
   string description;
+  uint256 id;
 
 
 
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals)  DetailedERC20(_name,_symbol,_decimals) public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  DetailedERC20(_name,_symbol,_decimals) public
   {
     // we have to overwirte original Ownable contract owner because msg.sender is equal to TuneTrade contract.
     owner = _owner;
     totalSupply_ = _supply;
     creationTime = now;
+    id = _id;
 
   }
 
@@ -40,9 +42,9 @@ contract SongERC20 is StandardToken, DetailedERC20, Ownable
     description = _description;
   }
 
-  function GetDetails() public view returns (string memory _author, string memory _genre, uint8  _entryType, string memory _website, string memory _soundcloud, string memory _description)
+  function GetDetails() public view returns (string memory _author, string memory _genre, uint8  _entryType, string memory _website, string memory _soundcloud, string memory _description, uint256 _id)
   {
-    return (author, genre, uint8(entryType), website, soundcloud, description);
+    return (author, genre, uint8(entryType), website, soundcloud, description,id);
   }
 
   function GetTokenDetails() public view returns (address _owner, uint256 _supply, string _name, string _symbol, uint8 decimals,uint256 _creationTime) {

@@ -235,5 +235,9 @@ export default {
   }
 }
 </script>
-
+<style lang="css">
+.footer {
+  background-color:red;
+}
+</style>
 <!-- b-form-1.vue -->

@@ -13,8 +13,8 @@
    <h5 style="border-radius:5px;background-color:#aaa;padding:10px"> Transaction details: </h5>
 
     Tx Number: {{txNumberShow}} <br>
-    Block number: {{blockNumber}} <br>
-    Gas Used: {{gasUsed}}<br>
+    Block number: {{localNumber(blockNumber)}} <br>
+    Gas Used: {{localNumber(gasUsed)}}<br>
 
     <p v-bind:class=statusClass>Tx Status: {{status}}</p>
   </div>
@@ -24,20 +24,20 @@
     Number: {{transaction.txNumber}} <br>
     Status:<b><span v-bind:class="{errorMessage: transaction.status=='Cancelled',successfulStatus: transaction.status=='Successful', miningStatus: transaction.status=='Mining'}"> {{transaction.status}} </span></b> <br>
     <!-- Index: {{transaction.index}}<br> -->
-    Block number: {{transaction.blockNumber}}<br>
-    Gas Used: {{transaction.gasUsed}} <br>
+    Block number: {{localNumber(transaction.blockNumber)}}<br>
+    Gas Used: {{localNumber(transaction.gasUsed)}} <br>
     <span v-if="transaction.msg">Details: {{transaction.msg}}<br></span>
   </div>
   </div>
     </b-modal >
     <h4>Contract Summary</h4>
 
-    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px" variant="primary">Create Contract</b-button>
+    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px" variant="primary">Create Contract</b-button> <span style="font-size:13px;color:red;padding:0px;margin:0px" v-if="web3undefined"><br>It looks like Metamask is not installed in this browser.<br><br></span>
           <b-card no-body class="mb-1 aCard">
             <b-card-header header-tag="header" class="p-1" role="tab" style="padding:10px;">
               <b-btn block href="#" v-b-toggle.accordion1 variant="info">General</b-btn>
             </b-card-header>
-            <b-collapse  id="accordion1"  accordions="my-accordion" role="tabpanel">
+            <b-collapse  id="accordion1" visible accordions="my-accordion" role="tabpanel">
               <b-card-body class="summaryContainer contractTab">
 
                 <div class="summaryElement">
@@ -84,7 +84,8 @@
 
                 <div class="summaryElement" style="grid-column:1/2;">
                   <div class="summaryTitle" ></div>
-                  <div class="summaryContent"> <img style="width:200px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
+                  <div class="summaryContent"> <img v-if="pictureValid" style="width:200px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
+                    <span style="color:red;" v-if="!pictureValid">Picture is missing </span>
                   </div>
                 </div>
 
@@ -212,6 +213,7 @@
 
 <!-- </b-card-group> -->
 Transactions length: {{transactions.length}}<br>
+Bonuses: {{bonuses}}
 
   </div>
 </template>
@@ -220,6 +222,8 @@ Transactions length: {{transactions.length}}<br>
 // import musicGenres from '../musicGenres'
 import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
+import axios from 'axios'
+import vueAxios from 'vue-axios'
 var Web3 = require('web3')
 
 var SC = require('soundcloud')
@@ -242,7 +246,9 @@ export default {
       embedHtml: null,
       txNumberShow: null,
       transactions: [],
-      index: 0
+      index: 0,
+      bonuses: [],
+      API: ''
     }
   },
   components: {
@@ -253,6 +259,7 @@ export default {
     var that = this
     this.intervalNumber = setInterval(this.checkTransaction, 1000)
     this.loadEmbed()
+    this.API = this.$store.state.API
 
   },
   destroyed: function () {
@@ -311,7 +318,19 @@ export default {
       return true;
     },
     isFormValid: function () {
-      return this.isICOValid && this.isBonusValid
+      return this.isICOValid && this.isBonusValid && !this.web3undefined && this.form.picture != null
+    },
+    pictureValid: function () {
+      if (this.form.picture != null) {
+        return true
+      } else {
+        return false
+      }
+    },
+    web3undefined: function ()
+    {
+      var web3undefined = (typeof(web3) === 'undefined')
+      return web3undefined
     },
     isBonusValid: function () {
       if (this.form.bonuses == 'No') return true
@@ -407,11 +426,13 @@ export default {
           console.log('Checking transaction receipt err:', err)
           console.log('Checking transaction receipt res:', res)
             if (parseInt(res.status,16) === 1) {
+              that.$refs.AddSongModal.show()
               that.UpdateTransactionSuccessfull(res)
               console.log('Good: ', res.transactionHash)
             } else {
               console.log('Bad')
               tx.status = 'Failed'
+              that.$refs.AddSongModal.show()
               tx.id = 5 // 5 - failed Add New Song
               tx.blockNumber = that.localNumber(res.blockNumber)
               tx.gasUsed = that.localNumber(res.gasUsed)
@@ -435,60 +456,129 @@ export default {
       this.SortTransactions()
 
     },
+    clearOldTransactions: function ()
+    {
+      for (var i in this.transactions) {
+        console.log('transactions[' + i + '].id=' + this.transactions[i].id)
+        if (this.transactions[i].id != 1) {
+          console.log('Removing:', i)
+          this.transactions.splice(i,1)
+          this.clearOldTransactions()
+          break;
+        }
+      }
+    },
+    GetNewSongId(store)
+    {
+      axios.get(this.API+'/getNewSongId').then(function(res){
+        console.log('getNewSongId:', res)
+        return res.data.song.newid
+      }).catch (function(err){
+        console.log('getNewSongId ERR:', err)
+        return -1
+      })
+    },
     onSubmit () {
       // evt.preventDefault()
       // alert(JSON.stringify(this.form))
       var that = this
-      var contract = this.$store.state.web3contract
-      var form = this.form
-      this.transactions = []
-      this.errMsg = ''
-      // this.status ="Confirm in Metamask"
-      this.$refs.AddSongModal.show()
+      console.log("API: ",this.API)
+      if (that.form.picture == null)
+      {
 
-      for (var key in this.form) {
-        console.log('form[' + key + '] = ' + this.form[key])
       }
-      console.log(form.name)
-      console.log(form['name'])
-      console.log(form['author'])
-      console.log(form['genre'])
-      console.log(form['type'])
-      console.log(form['website'])
-      console.log(form['totalSupply'])
-      console.log(form['symbol'])
-      console.log(form['description'])
-      console.log(form['soundcloud'])
-      console.log(form['decimals'])
-      console.log(form['totalSupply'])
-      console.log(form['name'])
+      axios.get(this.API+'/getNewSongId').then(function(res){
+        console.log('getNewSongId:', res)
+        var newid =  res.data.song.newid
+        var sendForm = new FormData()
+        sendForm.append('pic',new Blob([that.form.picture],{type:that.form.picture.type}))
+        sendForm.append('symbol',that.form.symbol)
+        sendForm.append('id',newid)
+        that.$store.dispatch('UploadPicture',sendForm)
+        var contract = that.$store.state.web3contract
+        var form = that.form
+        // this.transactions = []
+        that.clearOldTransactions()
+        var bonuses = []
 
-      for (var key in form) {
-        console.log('form[' + key + ']=' + form[key] + ' type=' + typeof(form[key]))
-      }
+        bonuses[0] = form.presalePeriod
+        bonuses[1] = form.presalePeriodBonus
+        bonuses[2] = form.firstPeriod
+        bonuses[3] = form.firstPeriodBonus
+        bonuses[4] = form.secondPeriod
+        bonuses[5] = form.secondPeriodBonus
+        bonuses[6] = form.thirdPeriod
+        bonuses[7] = form.thirdPeriodBonus
 
-      var songtx = this.AddTransaction( "Adding New Song in Blockchain")
-      contract.AddSongFull(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, function (err, res) {
-        if (res !== undefined) {
-          that.UpdateTransactionMining(songtx,res)
-        } else {
-          console.log('Error:', err)
-          that.UpdateTransactionCancelled(songtx,err.message)
+        that.bonuses = bonuses
+
+
+        that.errMsg = ''
+        // this.status ="Confirm in Metamask"
+        that.$refs.AddSongModal.show()
+
+        for (var key in that.form) {
+          console.log('form[' + key + '] = ' + that.form[key])
         }
-      })
-      // function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
-      if(form.ico === 'Yes') {
-        var icotx = this.AddTransaction("Adding ICO to Blockchain")
-        contract.AddICO(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,function(err,res){
-          if(res)
-          {
-            that.UpdateTransactionMining(icotx,res)
-          } else
-          {
-            that.UpdateTransactionCancelled(icotx,err.message)
+        console.log(form.name)
+        console.log(form['name'])
+        console.log(form['author'])
+        console.log(form['genre'])
+        console.log(form['type'])
+        console.log(form['website'])
+        console.log(form['totalSupply'])
+        console.log(form['symbol'])
+        console.log(form['description'])
+        console.log(form['soundcloud'])
+        console.log(form['decimals'])
+        console.log(form['totalSupply'])
+        console.log(form['name'])
+
+        for (var key in form) {
+          console.log('form[' + key + ']=' + form[key] + ' type=' + typeof(form[key]))
+        }
+        // function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
+        if(form.ico === 'Yes') {
+          var title = 'Adding ICO to Blockchain'
+          if (form.bonuses === 'Yes') title = 'Adding ICO and Bonuses to Blockchain'
+          var icotx = that.AddTransaction(title)
+          console.log('Bonuses: ',bonuses)
+          console.log(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses)
+          contract.AddICO(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses,function(err,res){
+            if(res)
+            {
+              that.UpdateTransactionMining(icotx,res)
+            } else
+            {
+
+              that.$refs.AddSongModal.show()
+              console.log('ICO ERROR: ',err)
+              that.UpdateTransactionCancelled(icotx,err.message)
+            }
+          })
+        }
+        var songtx = that.AddTransaction( "Adding New Song in Blockchain")
+        contract.AddSongFull(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, newid, function (err, res) {
+          if (res !== undefined) {
+            that.$refs.AddSongModal.show()
+            that.UpdateTransactionMining(songtx,res)
+          } else {
+            console.log('Error:', err)
+            that.$refs.AddSongModal.show()
+            that.UpdateTransactionCancelled(songtx,err.message)
           }
         })
-      }
+
+
+      }).catch (function(err){
+        console.log('getNewSongId ERR:', err)
+        return -1
+      })
+
+
+
+
+
     },
     UpdateTransactionMining (index,number)
     {

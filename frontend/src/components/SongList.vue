@@ -16,7 +16,12 @@
         <b-dropdown-item href="#">All</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar>
-  <b-table sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
+    <div v-if="!songsReady">
+<center>      <img src="static/loading.gif"></img> <br> Loading...
+</center>
+
+    </div>
+  <b-table v-if="songsReady" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
@@ -54,7 +59,7 @@
       <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
-      <img v-bind:src="picLink(row.item.OrderNum)" alt="" style="width:50px">
+      <img v-bind:src="picLink(row.item.Id)" alt="" style="width:100px;">
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -69,7 +74,7 @@
     <template slot="row-details" slot-scope="row">
       <b-card style="background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;border-color:black;">
         <b-row>
-          <b-col sm="4" class="text-sm-left"><img v-bind:src="picLink(row.item.OrderNum)" width=240px height=240px></img>
+          <b-col sm="4" class="text-sm-left"><img v-bind:src="picLink(row.item.Id)" width=240px height=240px></img>
           </b-col>
           <b-col sm="8">
             <b-row>
@@ -174,9 +179,8 @@
       </b-card>
     </template>
   </b-table>
-  <b-pagination style="box-shadow:2px 2px 2px; width:117px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
+  <b-pagination  v-if="songsReady"  style="box-shadow:2px 2px 2px; width:117px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
   </b-pagination>
-  <div>We have {{songsCounter}} songs.</div>
   </div>
 </template>
 
@@ -376,13 +380,12 @@ export default {
       var num = entry.toLocaleString()
       return num
     },
-    picLink: function (index) {
-      console.log('PIC LINK:', index)
-      if (index === undefined) {
+    picLink: function (id) {
+      if (id === undefined) {
         return ''
       }
-      var height = 240 + (index % 20)
-      return 'https://source.unsplash.com/collection/1301616/' + height + 'x240'
+      console.log(this.$store.state.API + '/getPicture?id=' + id)
+      return this.$store.state.API + '/getPicture?id=' + id
       // return 'https://source.unsplash.com/random/480x480'
     },
     isPlaying: function (rowNumber) {
@@ -391,6 +394,9 @@ export default {
     }
   },
   computed: {
+    songsReady: function () {
+      return this.$store.state.songsReady
+    },
     songs: function () {
       return this.$store.state.songs
     },

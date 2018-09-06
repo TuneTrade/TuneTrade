@@ -42,22 +42,22 @@ contract SongCrowdSale is Crowdsale, Ownable
   uint saleStart;
 
 
-function DefineBonusValues(uint8[] _values) public onlyOwner returns (bool)
+function DefineBonusValues(uint8 value1, uint8 value2, uint8 value3, uint8 value4) internal  returns (bool)
 {
-    require (_values.length == 4); //there are only four bonus periods
-    bonusValues[0] = _values[0];
-    bonusValues[1] = _values[1];
-    bonusValues[2] = _values[2];
-    bonusValues[3] = _values[3];
+  bonusValues.push(value1);
+  bonusValues.push(value2);
+  bonusValues.push(value3);
+  bonusValues.push(value4);
+  return true;
 }
 
-function DefineBonusPeriods(uint8[] _values) public onlyOwner returns (bool)
+function DefineBonusPeriods(uint8 period1,uint8 period2,  uint8 period3, uint8 period4) internal  returns (bool)
 {
-    require (_values.length == 4); //there are only four bonus periods
-    bonusPeriods[0] = _values[0];
-    bonusPeriods[1] = _values[1];
-    bonusPeriods[2] = _values[2];
-    bonusPeriods[3] = _values[3];
+  bonusPeriods.push(period1);
+  bonusPeriods.push(period2);
+  bonusPeriods.push(period3);
+  bonusPeriods.push(period4);
+  return true;
 }
 
 ///@notice Return bonus value for current moment in %. If sale is already out of bonus period it will return 0.
@@ -78,7 +78,7 @@ function currentBonusValue() internal returns (uint8)
   /// @notice This function change wallet address
   function ChangeWallet (address _newwallet) public onlyOwner returns (bool)
   {
-    require (_newwallet != 0x0);
+    require (_newwallet != 0x0,"New Wallet is zero");
     wallet = _newwallet;
   }
 
@@ -86,15 +86,14 @@ function currentBonusValue() internal returns (uint8)
   /// @dev You can call this function only once. If you set token and it is wrong address then you have to create new crowdsale function
     function SetTokenAddress (address _tokenAddress) public onlyOwner returns (bool)
   {
-    require (_tokenAddress != address(0x0));
-    require (token == ERC20(0x0));
+    require (_tokenAddress != address(0x0),"Token Address is Zero");
+    require (token == ERC20(0x0),"Token was already defined");
 
     token = ERC20( _tokenAddress);
   }
 
 
-
-  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens, uint _minpresale, uint _minMainSaleETH, uint _maxEth, uint _maxCap, uint _minCap, uint _duration, uint _presaleduration) public Crowdsale(_price,_wallet,ERC20(_song))
+  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens, uint _minpresale, uint _minMainSaleETH, uint _maxEth, uint _maxCap, uint _minCap, uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_price,_wallet,ERC20(_song))
   {
      teamTokens = _teamTokens;
      minPreSaleETH = _minpresale;
@@ -105,6 +104,11 @@ function currentBonusValue() internal returns (uint8)
      durationDays = _duration;
      preSaleDays = _presaleduration;
      saleStart = now;
+     if(bonuses.length==8)
+     {
+       DefineBonusValues(bonuses[1],bonuses[3],bonuses[5],bonuses[7]);
+       DefineBonusPeriods(bonuses[0],bonuses[2],bonuses[4],bonuses[6]);
+     }
 
   }
 
