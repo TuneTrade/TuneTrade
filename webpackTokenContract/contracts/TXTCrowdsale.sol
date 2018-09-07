@@ -1,9 +1,39 @@
 pragma solidity 0.4.24;
 
-import "./Crowdsale.sol";
 import "./Ownable.sol";
+import "./SafeMath.sol";
+import "./StandardToken.sol";
+import "./SafeERC20.sol";
 
-contract TXTCrowdsale is Crowdsale,Ownable{
+contract TXTCrowdsale is Ownable{
+
+  using SafeMath for uint256;
+  using SafeERC20 for ERC20;
+
+  // The token being sold
+  ERC20 public token;
+  // Address where funds are collected
+  address public wallet;
+  // How many token units a buyer gets per wei.
+  // The rate is the conversion between wei and the smallest and indivisible token unit.
+  // So, if you are using a rate of 1 with a DetailedERC20 token with 3 decimals called TOK
+  // 1 wei will give you 1 unit, or 0.001 TOK.
+  uint256 public rate;
+  // Amount of wei raised
+  uint256 public weiRaised;
+  /**
+   * Event for token purchase logging
+   * @param purchaser who paid for the tokens
+   * @param beneficiary who got the tokens
+   * @param value weis paid for purchase
+   * @param amount amount of tokens purchased
+   */
+  event TokenPurchase(
+    address indexed purchaser,
+    address indexed beneficiary,
+    uint256 value,
+    uint256 amount
+  );
 
   bool private paused = false;
   uint private phase = 0;
@@ -29,12 +59,8 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     now+240
   ];
 
-  modifier notPaused () {
-    require(paused == false);
-    _;
-  }
 
-  function Pause()  onlyOwner public {
+  function Pause()  public onlyOwner {
     paused = true;
   }
 
@@ -42,42 +68,94 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     paused = false;
   }
 
-  function bonusPeriod() public returns (uint8)
+  function bonusPeriod() public returns (uint256)
   {
-    if (state == State.Closed ) return 5;
-    if (now > bonusPeriodsStart[4]) {
-      state = State.Finished;
-      return 5;
-    }
-    state = State.Started;
-    if (now > bonusPeriodsStart[3]) return 4;
-    if (now > bonusPeriodsStart[2]) return 3;
-    if (now > bonusPeriodsStart[1]) return 2;
-    if (now >= bonusPeriodsStart[0]) return 1;
-    if (now < bonusPeriodsStart[0]) {
-      state = State.New;
-      return 0;
-    }
+    if (now > bonusPeriodsStart[3]) return 0;
+    if (now > bonusPeriodsStart[2]) return 25;
+    if (now > bonusPeriodsStart[1]) return 50;
+    if (now >= bonusPeriodsStart[0]) return 100;
+  }
+
+  function _saleIsNew() internal returns (bool) {
+    return (now < bonusPeriodsStart[0]);
+
+  }
+
+  function _saleIsFinished() internal returns(bool) {
+   return (now > bonusPeriodsStart[4]);
   }
 
   function _transferRemainingTokens() internal returns (bool)
   {
-      require(state == State.Finished);
+      require(state != State.Closed);
       uint256 tokens = token.balanceOf(this);
-      token.transfer(wallet,tokens);
+      token.safeTransfer(wallet,tokens);
       state = State.Closed;
+      return true;
   }
 
 
-  constructor (uint _price, address _wallet, ERC20 _token, address _poolAccount) public Crowdsale(_price,_wallet,_token)
+  constructor (uint _price, address _wallet, ERC20 _token, address _poolAccount) public
   {
+    require(_wallet != address(0));
+    require(_token != address(0));
+
     state = State.New;
     poolAccount = _poolAccount;
+
+    rate = 2500;
+    wallet = _wallet;
+    token = _token;
+
   }
+
+  // -----------------------------------------
+  // Internal interface (extensible)
+  // -----------------------------------------
+
+
+  /**
+   * @dev Validation of an incoming purchase. Use require statements to revert state when conditions are not met. Use `super` in contracts that inherit from Crowdsale to extend their validations.
+   * Example from CappedCrowdsale.sol's _preValidatePurchase method:
+   *   super._preValidatePurchase(_beneficiary, _weiAmount);
+   *   require(weiRaised.add(_weiAmount) <= cap);
+   * @param _beneficiary Address performing the token purchase
+   * @param _weiAmount Value in wei involved in the purchase
+   */
+  function _preValidatePurchase(
+    address _beneficiary,
+    uint256 _weiAmount
+  )
+    internal
+  {
+    require (_weiAmount >= 0.1 ether);
+    require(_beneficiary != address(0));
+  }
+
+
+    /**
+     * @dev Override to extend the way in which ether is converted to tokens.
+     * @param _weiAmount Value in wei to be converted into tokens
+     * @return Number of tokens that can be purchased with the specified _weiAmount
+     */
+    function _getTokenAmount(uint256 _weiAmount)
+      internal view returns (uint256)
+    {
+      return _weiAmount.mul(rate);
+    }
+
+    /**
+     * @dev Determines how ETH is stored/forwarded on purchases.
+     */
+    function _forwardFunds() internal {
+      wallet.transfer(msg.value);
+    }
+
 
   // -----------------------------------------
   // Crowdsale external interface
   // -----------------------------------------
+
 
   /**
    * @dev fallback function ***DO NOT OVERRIDE***
@@ -87,49 +165,37 @@ contract TXTCrowdsale is Crowdsale,Ownable{
     buyTokens(msg.sender);
   }
 
+
+ function FinishSale() public returns(bool) {
+
+   require (_saleIsFinished());
+   msg.sender.transfer(msg.value);
+   _transferRemainingTokens();
+   return true;
+
+ }
   /**
    * @dev low level token purchase ***DO NOT OVERRIDE***
    * @param _beneficiary Address performing the token purchase
    */
-  function buyTokens(address _beneficiary) public notPaused payable {
-    require(state != State.Closed);
+  function buyTokens(address _beneficiary) public payable {
+    require(paused == false);
+    require(_saleIsNew() == false);
+    require(_saleIsFinished () == false);
+    uint256 bonus = bonusPeriod();
 
-    //If crowdsale has been finished contract will wait for one transaction to  close. Closing means
-    // that incoming transaction will be refunded, no tokens will be sold and all remaining tokens will be transfered
-    // to crowdsale wallet account. Then status will be changed to closed. And it status is closed then all
-    // buy transactions are always reverted.
-    if(state == State.Finished) {
-      msg.sender.transfer(msg.value);
-      _transferRemainingTokens();
-      return;
-    }
-    uint8 bonus = bonuses[bonusPeriod()];
-    require(state != State.New);
-    require (msg.value >= 0.1 ether);
     uint256 weiAmount = msg.value;
     _preValidatePurchase(_beneficiary, weiAmount);
 
     // calculate token amount to be created
     uint256 tokens = _getTokenAmount(weiAmount);
-    if (bonus > 0)
-    {
-      // Calculate bonus and add it to number of tokens user should get in this transaction.
-      tokens = tokens.add(tokens.mul(bonus).div(100));
-    }
-    // update state
+    tokens = tokens.add(tokens.mul(bonus).div(100));
+
     weiRaised = weiRaised.add(weiAmount);
     _processPurchase(_beneficiary, tokens);
 
-    emit TokenPurchase(
-      msg.sender,
-      _beneficiary,
-      weiAmount,
-      tokens
-    );
-
-    _updatePurchasingState(_beneficiary, weiAmount);
+    emit TokenPurchase(msg.sender, _beneficiary, weiAmount, tokens);
     _forwardFunds();
-    _postValidatePurchase(_beneficiary, weiAmount);
   }
 
   function _processPurchase(
@@ -148,7 +214,7 @@ contract TXTCrowdsale is Crowdsale,Ownable{
   )
     internal
   {
-    token.transferFrom(poolAccount,_beneficiary, _tokenAmount);
+    token.safeTransferFrom(poolAccount,_beneficiary, _tokenAmount);
   }
 
   function availableTokens() public view returns (uint256 _balance, uint256 _poolApproval)

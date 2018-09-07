@@ -73,9 +73,9 @@ contract("01. Testing Token Contract",    (accounts)=>{
       })
     })
 
-    it("04. Founders Wallet balance should be 10 000 000 (with 18 decimals)", () => {
+    it("04. Founders Wallet balance should be 50 000 000 (with 18 decimals)", () => {
       return TXTTokenContract.balanceOf(foundersWallet).then((res)=>{
-          expect(res/1000000000000000000).to.be.equal(10000000)
+          expect(res/1000000000000000000).to.be.equal(50000000)
       })
     })
 
@@ -131,7 +131,7 @@ contract("01. Testing Token Contract",    (accounts)=>{
 
       it("13. Test Buyer balance should be 2 x 5000 TXT + 100% bonus == 20 000 TXT (with 18 decimals)", () => {
         return TXTTokenContract.balanceOf(testBuyer).then((res)=>{
-            expect(res/1000000000000000000).to.be.equal(20000)
+            expect(res/1000000000000000000).to.be.equal(10000)
         })
       })
 
@@ -143,20 +143,20 @@ contract("01. Testing Token Contract",    (accounts)=>{
       it("15. Sale Contract #1 should have 250 million tokens available minus 10 000 (with 18 decimals)", () => {
         return TXTSaleContract.availableTokens().then((res)=>{
           // console.log(res)
-            expect(parseInt(res[1]/1000000000000000000)).to.be.equal(250000000 - 10000)
+            expect(parseInt(res[1]/1000000000000000000)).to.be.equal(250000000 - 5000)
         })
       })
 
       it("16. Sale Contract #2 should have 250 million tokens available minus 10 000 (with 18 decimals)", () => {
         return TXTSaleContract2.availableTokens().then((res)=>{
           // console.log(res)
-            expect(parseInt(res[1]/1000000000000000000)).to.be.equal(250000000 - 10000)
+            expect(parseInt(res[1]/1000000000000000000)).to.be.equal(250000000 - 5000)
         })
       })
 
       it("17. Pool balance should be 250 000 000 - 10 000 - 10 000 (with 18 decimals)", () => {
         return TXTTokenContract.balanceOf(poolAddress).then((res)=>{
-            expect(parseInt(res/1000000000000000000)).to.be.equal(250000000 - 20000)
+            expect(parseInt(res/1000000000000000000)).to.be.equal(250000000 - 10000)
         })
       })
 

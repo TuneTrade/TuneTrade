@@ -1,8 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./BasicToken.sol";
-import "./ERC20.sol";
-
+import "./SafeMath.sol";
 
 /**
  * @title Standard ERC20 token
@@ -11,9 +9,50 @@ import "./ERC20.sol";
  * https://github.com/ethereum/EIPs/issues/20
  * Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
  */
-contract StandardToken is ERC20, BasicToken {
+contract StandardToken  {
+
+  using SafeMath for uint256;
+  event Transfer(address indexed from, address indexed to, uint256 value);
+  event Approval(address indexed owner,address indexed spender,uint256 value);
 
   mapping (address => mapping (address => uint256)) internal allowed;
+  mapping(address => uint256) internal balances;
+
+
+  uint256 internal totalSupply_;
+
+  /**
+  * @dev Total number of tokens in existence
+  */
+  function totalSupply() public view returns (uint256) {
+    return totalSupply_;
+  }
+
+  /**
+  * @dev Transfer token for a specified address
+  * @param _to The address to transfer to.
+  * @param _value The amount to be transferred.
+  */
+  function transfer(address _to, uint256 _value) public returns (bool) {
+    require(_value <= balances[msg.sender]);
+    require(_to != address(0));
+    require(_to != address(this));
+
+    balances[msg.sender] = balances[msg.sender].sub(_value);
+    balances[_to] = balances[_to].add(_value);
+    emit Transfer(msg.sender, _to, _value);
+    return true;
+  }
+
+  /**
+  * @dev Gets the balance of the specified address.
+  * @param _owner The address to query the the balance of.
+  * @return An uint256 representing the amount owned by the passed address.
+  */
+  function balanceOf(address _owner) public view returns (uint256) {
+    return balances[_owner];
+  }
+
 
 
   /**
@@ -120,5 +159,9 @@ contract StandardToken is ERC20, BasicToken {
     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
     return true;
   }
+
+}
+
+contract ERC20 is StandardToken {
 
 }
