@@ -43,11 +43,11 @@ contract TXTCrowdsale is Ownable{
   State state;
 
   /* uint256[] bonusPeriodsStart = [
-  1536105600, //September 5 2018
-  1542672000, //November 20 2018
-  1543622400, //December 01 2018
-  1544400000, //December 10 2018
-  1545264000  //December 20 2018
+  1542240000, //November 15 2018
+  1544832000, //December 15 2018
+  1547510400, //January 15 2019
+  1550188800, //February 15 2019
+  1551312000  //FFebruary 28 2019
   ]; */
 
 
