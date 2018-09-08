@@ -1,13 +1,11 @@
 pragma solidity ^0.4.24;
-/* pragma experimental ABIEncoderV2; */
 
 
 import "./StandardToken.sol";
-import "./DetailedERC20.sol";
 import "./Ownable.sol";
 
 
-contract SongERC20 is StandardToken, DetailedERC20, Ownable
+contract SongERC20 is StandardToken, Ownable
 {
   enum Type {Song,Band,Influencer}
 
@@ -20,16 +18,21 @@ contract SongERC20 is StandardToken, DetailedERC20, Ownable
   string description;
   uint256 id;
 
+  string public name;
+  string public symbol;
+  uint8 public decimals;
 
 
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  DetailedERC20(_name,_symbol,_decimals) public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
   {
-    // we have to overwirte original Ownable contract owner because msg.sender is equal to TuneTrade contract.
     owner = _owner;
     totalSupply_ = _supply;
     creationTime = now;
     id = _id;
-
+    balances[owner] = totalSupply_;
+    name = _name;
+    symbol = _symbol;
+    decimals = _decimals;
   }
 
   function SetDetails(string _author, string _genre, uint8 _entryType, string _website, string _soundcloud, string _description) public returns (bool) {

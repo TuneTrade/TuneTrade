@@ -21,12 +21,15 @@
         </b-form-group>
       <b-form-group id="presalePeriodGroup"
                     label="Presale Period [days]:"
-                    label-for="presalePeriod">
+                    label-for="presalePeriod"
+                    :description = "PreSaleDescription"
+                    >
         <b-form-input id="presalePeriod"
                       type="number"
                       v-model="form.presalePeriod"
                       optional
                       min=0
+                      :state="PreSalePeriodGood"
                       @keydown.native = "UnSave()"
                       :disabled="BonusesDisabled"
                       @change = "UnSave()"
@@ -53,13 +56,16 @@
 
       <b-form-group id="firstPeriodGroup"
                     label="First Period [days]:"
-                    label-for="firstPeriod">
+                    label-for="firstPeriod"
+                    :description = "CampaignPeriodDescription"
+                    >
         <b-form-input id="firstPeriod"
                       type="number"
                       v-model="form.firstPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
                       :disabled="BonusesDisabled"
+                      :state="CampaignPeriodGood"
                       optional
                       min=0
                       size="sm"
@@ -91,6 +97,7 @@
                       v-model="form.secondPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :state="CampaignPeriodGood"
                       :disabled="BonusesDisabled"
                       optional
                       size="sm"
@@ -123,6 +130,7 @@
                       v-model="form.thirdPeriod"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
+                      :state="CampaignPeriodGood"
                       :disabled="BonusesDisabled"
                       optional
                       min=0
@@ -177,6 +185,23 @@ export default {
     this.UnSave()
   },
   computed: {
+    PreSalePeriodGood: function () {
+      if (this.form.presalePeriod <= this.$store.state.formI.presaleDuration) return null
+      else return false
+    },
+    CampaignPeriodGood: function () {
+      var totalPeriod = 0
+      totalPeriod = parseInt(this.form.firstPeriod) + parseInt(this.form.secondPeriod) + parseInt(this.form.thirdPeriod)
+      console.log('Total Period:', totalPeriod)
+      if (totalPeriod <= this.$store.state.formI.campaignDuration) return null
+      else return false
+    },
+    CampaignPeriodDescription: function () {
+      if (this.CampaignPeriodGood === false) return 'Total periods amount must be smaller or equal then campaign period'
+    },
+    PreSaleDescription: function () {
+      if (this.PreSalePeriodGood === false) return 'Must be equal or smaller than Presale Duration Days (ICO)'
+    },
     BonusesDisabled: function () {
       if (this.icoDisabled) return true
       if (this.form.bonuses === 'Yes') return false

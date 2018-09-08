@@ -3,7 +3,6 @@ pragma solidity ^0.4.24;
 
 
 import "./StandardToken.sol";
-import "./DetailedERC20.sol";
 import "./Crowdsale.sol";
 import "./Ownable.sol";
 
@@ -14,6 +13,7 @@ import "./Ownable.sol";
 
 contract SongCrowdSale is Crowdsale, Ownable
 {
+  enum State {PreSale,Campaign,Ended,Refund}
   /// @param teamTokens number of tokens reserved for a team. It is not possible to sell them.
   uint256 public teamTokens;
    /// @param minPreSale minimum amount of tokens sold in presale. If not sold then it is not possible to go to main
@@ -33,7 +33,22 @@ contract SongCrowdSale is Crowdsale, Ownable
   /// @param preSaleDays - presale capaign duration in days
   uint256 preSaleDays;
 
+  uint256 preSaleEnd;
+  uint256 saleEnd;
+
   uint8[] bonusValues;
+
+  uint256 bonusPresalePeriod;
+  uint256 firstPeriod;
+  uint256 secondPeriod;
+  uint256 thirdPeriod;
+
+  uint256 bonusPreSaleValue;
+  uint256 bonusFirstValue;
+  uint256 bonusSecondValue;
+  uint256 bonusThirdValue;
+
+
   // 0 - presale 1 - first period 2-second period 3 - third period
   uint8[] bonusPeriods;
   uint256 volume;
@@ -41,35 +56,54 @@ contract SongCrowdSale is Crowdsale, Ownable
 
   uint saleStart;
 
+  bool refundAvailable = false;
+  bool isRefundable = false;
+
+  mapping (address=>uint256) collectedFunds;
+
 
 function DefineBonusValues(uint8 value1, uint8 value2, uint8 value3, uint8 value4) internal  returns (bool)
 {
-  bonusValues.push(value1);
-  bonusValues.push(value2);
-  bonusValues.push(value3);
-  bonusValues.push(value4);
-  return true;
+
+ bonusPreSaleValue = value1;
+ bonusFirstValue = value2;
+ bonusSecondValue = value3;
+ bonusThirdValue = value4;
+
+ return true;
 }
 
 function DefineBonusPeriods(uint8 period1,uint8 period2,  uint8 period3, uint8 period4) internal  returns (bool)
 {
-  bonusPeriods.push(period1);
-  bonusPeriods.push(period2);
-  bonusPeriods.push(period3);
-  bonusPeriods.push(period4);
+
+  bonusPresalePeriod = period1;
+  firstPeriod = period2;
+  secondPeriod = period3;
+  thirdPeriod = period4;
+
   return true;
 }
 
 ///@notice Return bonus value for current moment in %. If sale is already out of bonus period it will return 0.
 ///@dev It will fail if for any reason now is smaller than saleStart
-function currentBonusValue() internal returns (uint8)
+function currentBonusValue() internal returns (uint256)
 {
-    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1] + bonusPeriods[2] + bonusPeriods[3]) *24*3600 ) return 0;
-    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1] + bonusPeriods[2]) *24*3600 ) return bonusValues[3];
-    if (now > saleStart + (bonusPeriods[0] + bonusPeriods[1]) *24*3600 ) return bonusValues[2];
-    if (now > saleStart + (bonusPeriods[0] *24*3600 )) return bonusValues[1];
-    if (now > saleStart ) return bonusValues[0];
-    assert(now >= saleStart);
+    if (_campaignState() == State.PreSale) {
+      if (now < (saleStart + (bonusPresalePeriod * 24 * 60 * 60))) {
+        return bonusPreSaleValue;
+      }
+      return 0;
+
+    }
+    if(_campaignState() == State.Campaign) {
+      if (now > ((saleStart + (firstPeriod + secondPeriod + thirdPeriod) * 24 * 3600 ))) return 0;
+      if (now > ((saleStart + (firstPeriod + secondPeriod) * 24 * 3600 ))) return bonusThirdValue;
+      if (now > ((saleStart + (firstPeriod) * 24 * 3600 ))) return bonusSecondValue;
+      if (now > (saleStart)) return bonusFirstValue;
+      return 0;
+    }
+    return 0;
+
 }
 
 
@@ -104,13 +138,36 @@ function currentBonusValue() internal returns (uint8)
      durationDays = _duration;
      preSaleDays = _presaleduration;
      saleStart = now;
+     preSaleEnd = saleStart + (preSaleDays * 24 * 60 * 60);
+     saleEnd = preSaleEnd + (durationDays * 24 * 60 * 60);
+
      if(bonuses.length==8)
      {
        DefineBonusValues(bonuses[1],bonuses[3],bonuses[5],bonuses[7]);
        DefineBonusPeriods(bonuses[0],bonuses[2],bonuses[4],bonuses[6]);
      }
 
+     if ( minPreSaleETH > 0 || minMainSaleETH > 0 ) isRefundable = true;
+
   }
+
+  function _campaignState() public view returns (State _state)
+  {
+    /* enum State {PreSale,Campaign,Ended} */
+    assert (now > saleStart);
+    if (refundAvailable) return State.Refund;
+    if (now <= preSaleEnd) return State.PreSale;
+    if  (now > preSaleEnd && now < saleEnd)
+    {
+      if(weiRaised < minPreSaleETH) return State.Refund;
+      else return State.Campaign;
+    }
+    if (weiRaised < minMainSaleETH) return State.Refund;
+    else return State.Ended;
+  }
+
+
+
 
   function GetSaleInformation() public view returns (
        uint256 _price,
@@ -152,6 +209,12 @@ function _processPurchase(
  */
 function buyTokens(address _beneficiary) public payable {
 
+  require (refundAvailable == false);
+  if (_campaignState() == State.Refund) {
+    refundAvailable = true;
+    msg.sender.transfer(msg.value);
+    return;
+  }
   uint256 weiAmount = msg.value;
   _preValidatePurchase(_beneficiary, weiAmount);
 
@@ -175,10 +238,24 @@ function buyTokens(address _beneficiary) public payable {
   _postValidatePurchase(_beneficiary, weiAmount);
 }
 
+function _updatePurchasingState(
+  address _beneficiary,
+  uint256 _weiAmount
+)
+  internal
+{
+  collectedFunds[_beneficiary] = collectedFunds[_beneficiary].add(_weiAmount);
+}
+
 function () external payable {
   buyTokens(msg.sender);
 }
 
+function refund() public {
+  if (refundAvailable) {
+    msg.sender.transfer(collectedFunds[msg.sender]);
+  }
+}
 
 function _deliverTokens(
   address _beneficiary,
@@ -187,7 +264,7 @@ function _deliverTokens(
   internal
 {
   uint256 tokenAmount = _tokenAmount + _tokenAmount.mul(currentBonusValue()).div(100);
-  token.safeTransfer(_beneficiary, tokenAmount);
+  token.transfer(_beneficiary, tokenAmount);
   volume = volume.add(tokenAmount);
 }
 

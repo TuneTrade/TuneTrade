@@ -59,7 +59,7 @@
       <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
-      <img v-bind:src="picLink(row.item.Id)" alt="" style="width:100px;">
+      <img v-bind:src="picLink(row.item.Id)" alt="" style="width:100px;height:100px">
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -293,12 +293,13 @@ export default {
   methods:
   {
     etherscanToken: function (address) {
-      return 'https://rinkeby.etherscan.io/token/' + address
+      return 'https://ropsten.etherscan.io/token/' + address
     },
     etherscanAddress: function (address) {
-      return 'https://rinkeby.etherscan.io/address/' + address
+      return 'https://ropsten.etherscan.io/address/' + address
     },
     Price: function (val) {
+      if (typeof (web3) === 'undefined') return val / 1000000000000000000
       if (val === undefined) return 'N/A'
       val = '' + val
       return Web3.utils.fromWei(val, 'ether')
