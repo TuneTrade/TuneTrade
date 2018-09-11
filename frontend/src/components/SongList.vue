@@ -1,10 +1,12 @@
 <template lang="html">
-  <div class="" style="margin:0px 0px;">
+  <div class="" style="margin:0px 0px;min-height:600px">
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
-      <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe>
+      <div v-on:load="loaded()" v-html="musicPlayerLink"> </div>
+
+      <!-- <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe> -->
     </b-modal>
-    <b-navbar  style="border-radius:5px;margin:30px 0px;box-shadow:2px 2px 5px black;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
+    <b-navbar  style="border-radius:1px;margin:1px 0px 0px 0px;box-shadow:0px 0px 0px black;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
       <b-nav-form>
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
@@ -50,12 +52,12 @@
     </template>
     <template slot="Picture" slot-scope="row">
       <div style="display:grid;grid-template-columns:1fr 2fr;">
-        <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+        <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
       <img  src="../assets/pauseplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
-        <a v-if="isLoading(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+        <a v-if="isLoading(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
       <img  src="../assets/loadingplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
 
-      <a v-if="!isLoading(row.item.OrderNum) && !isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum)">
+      <a  v-bind:class="{unPlayable: !row.item.playable}" v-if="!isLoading(row.item.OrderNum) && !isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
       <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
@@ -72,102 +74,110 @@
     </template>
 
     <template slot="row-details" slot-scope="row">
-      <b-card style="background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;border-color:black;">
-        <b-row>
-          <b-col sm="4" class="text-sm-left"><img v-bind:src="picLink(row.item.Id)" width=240px height=240px></img>
+      <b-card style="border-color:black;background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;">
+        <b-row style="brder-style:solid;">
+          <b-col sm="2" class="text-sm-left">
+            <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img>
           </b-col>
-          <b-col sm="8">
+          <b-col sm="10">
             <b-row>
             <b-col sm="6">
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
+              <b-row >
+                <b-col sm="4" class="text-sm-left"><b>Type:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
+              <b-row >
+                <b-col sm="4" class="text-sm-left"><b>Name:</b></b-col>
+                <b-col sm="8" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Author:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ row.item.Author }}</b-col>
+              <b-row>
+                <b-col sm="4" class="text-sm-left"><b>Author:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{ row.item.Author }}</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Price:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
+              <b-row>
+                <b-col sm="4" class="text-sm-left"><b>Price:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
+              <b-row>
+                <b-col sm="4" class="text-sm-left"><b>Phase:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
-                <b-col sm="auto" class="text-sm-left"><b-button target="_blank" href="https://soundcloud.com/kodak-black" size="sm" variant="info">Website</b-button></b-col>
+              <b-row >
+                <b-col sm="4" class="text-sm-left"><b>Website:</b></b-col>
+                <b-col sm="8" class="text-sm-left"><b-button target="_blank" v-bind:href="row.item.Website" size="sm" variant="info">Website</b-button><br>
+                  {{row.item.Website}}
+                </b-col>
               </b-row>
 
             </b-col>
             <b-col sm="6">
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Contribution:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.Contribution) }}</b-col>
+              <b-row>
+                <b-col sm="4" class="text-sm-left"><b>Contribution:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.Contribution) }}</b-col>
               </b-row>
-              <b-row class="mb-2">
-                <b-col sm="5" class="text-sm-left"><b>Volume:</b></b-col>
-                <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.Volume) }}</b-col>
+              <b-row>
+                <b-col sm="4" class="text-sm-left"><b>Volume:</b></b-col>
+                <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.Volume) }}</b-col>
               </b-row>
-            <b-row class="mb-2">
-              <b-col sm="5" class="text-sm-left"><b>Total Supply:</b></b-col>
-              <b-col sm="auto" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
+            <b-row >
+              <b-col sm="4" class="text-sm-left"><b>Total Supply:</b></b-col>
+              <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
             </b-row>
-            <b-row class="mb-2">
-              <b-col sm="5" class="text-sm-left"><b>Genre:</b></b-col>
-              <b-col sm="auto" class="text-sm-left">{{ row.item.Genre }}</b-col>
+            <b-row>
+              <b-col sm="4" class="text-sm-left"><b>Genre:</b></b-col>
+              <b-col sm="8" class="text-sm-left">{{ row.item.Genre }}</b-col>
             </b-row>
-            <b-row class="mb-2">
-              <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
-              <b-col sm="auto" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
+            <b-row >
+              <b-col sm="4" class="text-sm-left"><b>Created:</b></b-col>
+              <b-col sm="8" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
             </b-row>
-            <b-row class="mb-2">
+            <b-row >
               <b-col>---
               </b-col>
             </b-row>
-            <b-row class="mb-2">
-              <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
-              <b-col sm="auto" class="text-sm-left"><b-button disabled @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
+            <b-row >
+              <b-col sm="4" class="text-sm-left"><b>Buy:</b></b-col>
+              <b-col sm="8" class="text-sm-left"><b-button disabled @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
         <b-row>
-          <b-col style="margin:10px 0px">
+          <b-col sm="2">
+          </b-col>
+          <b-col sm="10" style="margin:20px 0px">
           </b-col>
         </b-row>
-        <b-row class="mb-2">
+        <b-row >
           <b-col sm="3" class="text-sm-left"><b>Owner:</b></b-col>
-          <b-col sm="8" class="text-sm-left"> {{row.item.Owner}}
+          <b-col sm="5 " class="text-sm-left"> {{row.item.Owner}}
+
+          </b-col>
+          <b-col sm="4">
             <b-link target="_blank" class="text-primary" v-bind:href="etherscanAddress(row.item.Owner)" variant="danger">
               Etherscan
             </b-link>
           </b-col>
         </b-row>
-        <b-row class="mb-2">
+        <b-row >
           <b-col sm="3" class="text-sm-left"><b>Contract address: </b></b-col>
-          <b-col sm="8" class="text-sm-left">{{row.item.address}}
-            <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
-              Etherscasn
-            </b-link>
+          <b-col sm="5" class="text-sm-left">{{row.item.address}}
+
           </b-col>
+          <b-col sm="4" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
+              Etherscan
+            </b-link></b-col>
         </b-row>
         </b-col>
     </b-row>
 
     <br>
-    <b-row  class="mb-2">
-      <b-col sm="6" class="text-sm-left"><b>Description:</b></b-col>
-      <b-col sm="6" class="text-sm-left"><b></b></b-col>
+    <b-row >
+      <b-col xs="2" class="text-sm-left"><b>Description:</b></b-col>
+      <b-col xs="6" class="text-sm-left"><b></b></b-col>
     </b-row>
-      <b-row class="mb-2">
-
-        <b-col sm="6" class="text-sm-left" >
-          <p style="text-align:justify; height:100%;word-wrap: break-word;width:100%;border-style:solid;border-width:1px;border-color:#aaa;padding:20px;border-radius:5px">  {{row.item.Description}}</p>
+      <b-row>
+        <b-col xs="6" class="text-sm-left" >
+          <p style="text-align:justify; height:100%;word-wrap: break-word;;border-style:solid;border-width:1px;border-color:#aaa;;border-radius:5px">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
             <div v-html="row.item.iFrameEmbed"> </div>
@@ -179,76 +189,42 @@
       </b-card>
     </template>
   </b-table>
-  <b-pagination  v-if="songsReady"  style="box-shadow:2px 2px 2px; width:117px" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="dark">
+
+  <b-pagination  v-if="songsReady"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="primary">
   </b-pagination>
+
+  <!-- <div style="width:100%;height:200px;border-style:solid;">
+    TEST
+    <b-row style="border-style:solid">
+      <b-col  style="border-style:solid" sm=6>
+        Row 1
+        <b-row>
+          <b-col  style="border-style:solid" sm=1>
+            Col in Col
+          </b-col>
+        </b-row>
+      </b-col>
+      <b-col  style="border-style:solid" sm=6>
+        Row 1
+      </b-col>
+
+
+    </b-row>
+  </div> -->
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+// import vueAxios from 'vue-axios'
+// Vue.use(axios)
 
 var SC = require('soundcloud')
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+// SC.initialize('174155989')
 
 var Web3 = require('web3')
 
-const items = [
-  {
-    Name: 'Red Hot Chilli Peppers',
-    Author: 'John Green',
-    Type: 'Song',
-    Phase: 'Pre-Sale',
-    Price: '0.001 ETH',
-    Contribution: '35%',
-    TotalSupply: 1200,
-    Genre: 'Pop',
-    Created: '12/07/2018 18:56:34',
-    Website: 'Link',
-    Buy: 'Buy',
-    show_details: ''
-  },
-  {
-    Name: 'Red Hot Chilli Peppers',
-    Author: 'John Green',
-    Type: 'Song',
-    Phase: 'Pre-Sale',
-    Price: '0.001 ETH',
-    Contribution: '35%',
-    TotalSupply: 1200,
-    Genre: 'Rock',
-    Created: '12/07/2018 18:56:34',
-    Website: 'Link',
-    Buy: 'Buy',
-    show_details: ''
-  },
-  {
-    Name: 'Red Hot Chilli Peppers',
-    Author: 'John Green',
-    Type: 'Song',
-    Phase: 'Pre-Sale',
-    Price: '0.001 ETH',
-    Contribution: '35%',
-    TotalSupply: 1200,
-    Genre: 'Trip Hop',
-    Created: '12/07/2018 18:56:34',
-    Website: 'Link',
-    Buy: 'Buy',
-    show_details: ''
-  },
-  {
-    Name: 'Red Hot Chilli Peppers',
-    Author: 'John Green',
-    Type: 'Song',
-    Phase: 'Pre-Sale',
-    Price: '0.001 ETH',
-    Contribution: '35%',
-    TotalSupply: 1200,
-    Genre: 'Pop',
-    Created: '12/07/2018 18:56:34',
-    Website: 'Link',
-    Buy: 'Buy',
-    show_details: ''
-  }
-]
 export default {
   data () {
     return {
@@ -281,7 +257,7 @@ export default {
         // { key: 'Buy', sortable: true },
         { key: 'show_details', sortable: false, label: '' }
       ],
-      items: items
+      items: []
     }
   },
   created: function () {
@@ -292,6 +268,11 @@ export default {
   },
   methods:
   {
+    getRelated: function (link) {
+      axios.get('http://api.soundcloud.com/resolve?url=' + link + '&client_id=rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P').then(function (res) {
+        console.log('RES:', res)
+      })
+    },
     etherscanToken: function (address) {
       return 'https://ropsten.etherscan.io/token/' + address
     },
@@ -349,7 +330,8 @@ export default {
       if (this.loading >= 0) {
         this.loading = -1
       }
-      // alert('loaded')
+      console.log('loaded')
+      alert('loaded')
     },
     isLoading: function (index) {
       if (this.changing === index || this.loading === index) {
@@ -358,7 +340,7 @@ export default {
         return false
       }
     },
-    playMusic: function (index) {
+    playMusic: function (index, link) {
       var that = this
       if (index === this.currentIndex) {
         this.currentIndex = -1
@@ -371,8 +353,13 @@ export default {
       setTimeout(function () {
         that.changing = -1
         that.loading = index
-        that.musicPlayerLink = 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/232694761&color=%231f0604&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true'
-        console.log(this.musicPlayerLink)
+        SC.oEmbed(link, {auto_play: true}).then(function (em) {
+          that.musicPlayerLink = em.html
+          that.loading = -1
+          console.log(em)
+        }).catch(function (err) {
+          console.log(err)
+        })
       }, 100)
     },
     localNumber: function (val) {
@@ -420,5 +407,10 @@ export default {
 {
   filter:invert(100%) hue-rotate(120deg);
 
+}
+
+.unPlayable {
+  opacity:0.0;
+  pointer-events: none;
 }
 </style>

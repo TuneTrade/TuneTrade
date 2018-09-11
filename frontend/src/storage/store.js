@@ -139,15 +139,26 @@ export const store = new Vuex.Store({
             songsList[index].Id = res.data.id
             songsList[index].Contribution = res.data.contribution
             songsList[index].soundcloud = res.data.soundcloud
+            songsList[index].Website = res.data.website
             songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
             var searcher =tmp.address
-            SC.oEmbed(res.data.soundcloud, {auto_play: false,height: 166, maxheight: 166}).then(function (embed) {
+            SC.oEmbed(res.data.soundcloud, {auto_play: false,height: 10, maxheight: 166,width:10}).then(function (embed) {
               console.log('RM: ', embed, searcher)
+              console.log('RM SC: ', SC)
               var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
                 return (el.address == searcher)
               })
               console.log('songList[' + indexSoundCloud + ']')
               songsList[indexSoundCloud].iFrameEmbed = embed.html
+              songsList[indexSoundCloud].playable = true
+            }).catch(function (err) {
+              var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
+                return (el.address == searcher)
+              })
+              songsList[indexSoundCloud].iFrameEmbed = ''
+              songsList[indexSoundCloud].playable = false
+
+
             })
 
             // songsList[index].Contribution = parseInt(res.data[7])

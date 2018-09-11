@@ -23,7 +23,7 @@ a {
     <b-navbar  toggleable="sm"  class="tunetradeMenu">
       <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
-      <img src="../assets/singing3.jpg" class="rounded-picture">
+      <!-- <img src="../assets/singing3.jpg" class="rounded-picture"> -->
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
 
         <b-navbar-brand>

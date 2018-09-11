@@ -153,7 +153,7 @@ function currentBonusValue() internal returns (uint256)
 
   function _campaignState() public view returns (State _state)
   {
-    /* enum State {PreSale,Campaign,Ended} */
+    /* enum State {PreSale,Campaign,Ended, Refund} */
     assert (now > saleStart);
     if (refundAvailable) return State.Refund;
     if (now <= preSaleEnd) return State.PreSale;
@@ -163,6 +163,10 @@ function currentBonusValue() internal returns (uint256)
       else return State.Campaign;
     }
     if (weiRaised < minMainSaleETH) return State.Refund;
+
+    if (minCap > 0 ) {
+      if(volume < minCap && now > saleEnd) return State.Refund;
+    }
     else return State.Ended;
   }
 
@@ -221,8 +225,7 @@ function buyTokens(address _beneficiary) public payable {
   // calculate token amount to be created
   uint256 tokens = _getTokenAmount(weiAmount);
 
-  // update state
-  weiRaised = weiRaised.add(weiAmount);
+
 
   _processPurchase(_beneficiary, tokens);
   emit TokenPurchase(
@@ -232,19 +235,49 @@ function buyTokens(address _beneficiary) public payable {
     tokens
   );
 
-  _updatePurchasingState(_beneficiary, weiAmount);
+  _updatePurchasingState(_beneficiary, weiAmount, tokens);
 
   _forwardFunds();
   _postValidatePurchase(_beneficiary, weiAmount);
 }
 
-function _updatePurchasingState(
+function _preValidatePurchase(
   address _beneficiary,
   uint256 _weiAmount
 )
   internal
 {
+  require(_beneficiary != address(0));
+  require(_weiAmount != 0);
+
+}
+
+function _postValidatePurchase(
+  address _beneficiary,
+  uint256 _weiAmount
+)
+  internal
+{
+  if(maxEth > 0) {
+    require(weiRaised < maxEth);
+  }
+
+  if(maxCap > 0) {
+    require(volume < maxCap);
+  }
+  //cancel if there is not enough tokens for a team
+  require(teamTokens <= token.balanceOf(this));
+}
+
+function _updatePurchasingState(
+  address _beneficiary,
+  uint256 _weiAmount,uint256 _tokenAmount
+)
+  internal
+{
   collectedFunds[_beneficiary] = collectedFunds[_beneficiary].add(_weiAmount);
+  volume = volume.add(_tokenAmount);
+  weiRaised = weiRaised.add(_weiAmount);
 }
 
 function () external payable {
@@ -265,7 +298,6 @@ function _deliverTokens(
 {
   uint256 tokenAmount = _tokenAmount + _tokenAmount.mul(currentBonusValue()).div(100);
   token.transfer(_beneficiary, tokenAmount);
-  volume = volume.add(tokenAmount);
 }
 
 }

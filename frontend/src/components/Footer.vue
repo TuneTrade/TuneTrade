@@ -1,10 +1,11 @@
 <template lang="html">
   <div class="">
-    <b-navbar    toggleable="md" class="md-1 localFooter" type="dark" >
+
+<div class="localFooter">
     <p >
-    Footer  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+<center>  TuneTrader September 2018 </center>
   </p>
-  </b-navbar>
+</div>
   </div>
 </template>
 
@@ -19,18 +20,21 @@ export default {
 {
   /* margin:30px 0px 0px 0px; */
   background-color: #2B2E43;
-  /* padding:0% 10%; */
+  padding:10px 10%;
   line-height: 1.8;
+  width:100%;
   text-align: center;
   font-weight:200;
-  font-size:12px;
+  font-size:16px;
+  color:#fafafa;
   /* padding:30px; */
-  /* position: fixed; */
+  /* position */
   /* position:fixed; */
   /* bottom:0px; */
   z-index:999;
   color:white;
   height:80px;
+  /* bottom:-400px; */
   /* box-shadow: -1px -2px 10px black; */
   /* box-shadow: 0px -2px 2px black; */
 

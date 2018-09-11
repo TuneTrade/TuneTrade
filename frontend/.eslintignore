@@ -8,3 +8,4 @@ src/musicGenres.js
 SummaryNewContract.vue
 ./src/components/NewContract.vue
 ./src/components/About.vue
+./src/components/SongList.vue
