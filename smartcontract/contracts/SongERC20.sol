@@ -11,6 +11,7 @@ contract SongERC20 is StandardToken, Ownable
 
   string public author;
   string public genre;
+  address TuneTrader;
   Type public entryType; //true - band, false - song
   uint public creationTime;
   string public website;
@@ -22,7 +23,10 @@ contract SongERC20 is StandardToken, Ownable
   string public symbol;
   uint8 public decimals;
 
-
+  modifier onlyTuneTrader {
+    require (msg.sender == TuneTrader);
+    _;
+  }
   constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
   {
     owner = _owner;
@@ -33,10 +37,17 @@ contract SongERC20 is StandardToken, Ownable
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
+    TuneTrader = msg.sender;
+  }
+
+  function AssignICOTokens(address _ico, uint256 _amount)  onlyTuneTrader {
+
+    require(balances[owner] > _amount);
+    balances[owner] = balances[owner].sub(_amount);
+    balances[_ico] = balances[_ico].add(_amount);
   }
 
   function SetDetails(string _author, string _genre, uint8 _entryType, string _website, string _soundcloud, string _description) public returns (bool) {
-
     author = _author;
     genre = _genre;
     entryType = Type(_entryType);

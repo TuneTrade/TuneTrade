@@ -14,6 +14,7 @@ a {
 
 <div class="">
     <!-- <b-container> -->
+
     <b-modal style="border-radius:5px;margin:0px 0px;" dismissible alert-variant="warning" variant="secondary" :visible="metaMaskUninstalled" ok-title="Understood" centered ok-only size="lg" hide-header :show="metaMaskUninstalled">
     <center style="padding:40px;">  MetaMask isn't installed. You need to install metamask in order to fully  use this application. You are still able to browse all entries, but you can't create new contract. <b-link style="color:#f6851b" target="_blank" href="https://metamask.io/"> <br><br>
       <img src="../assets/metamask.png" style="height:50px;"></img>
@@ -25,7 +26,6 @@ a {
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing3.jpg" class="rounded-picture"> -->
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
-
         <b-navbar-brand>
             <router-link exact class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
@@ -47,7 +47,8 @@ a {
           {{contractAddress}}
           {{loggedIn}}
         </div>
-        </div>
+      </div>
+      {{ethereumAddress}}
     </b-navbar>
     <!-- </b-container> -->
 </div>
@@ -85,6 +86,9 @@ export default {
   },
   computed:
   {
+    ethereumAddress: function () {
+      return this.$store.state.contractAddress
+    },
     loggedIn: function () {
       console.log(this.metaMaskAccount)
       if(typeof this.metaMaskAccount=== 'undefined') {

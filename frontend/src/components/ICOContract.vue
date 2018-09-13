@@ -59,6 +59,23 @@
         </b-form-input>
       </b-form-group>
 
+      <b-form-group id="saleTokensInputGroup"
+                    label="Tokens assigned to Sale Contract"
+                    label-for="saleTokens"
+                    :description = "totalSupplyInfo">
+        <b-form-input id="teamtokens"
+                      type="number"
+                      v-model="form.saleTokens"
+                      @change = "UnSave()"
+                      :disabled="ICODisabled"
+                      optional
+                      @keydown.native = "UnSave()"
+                      size="sm"
+                      step="0.1"
+                      placeholder="Enter number of tokens assigned to ICO">
+        </b-form-input>
+      </b-form-group>
+
       <b-form-group id="minpresaleGroup"
                     label="Minimum Contribution PreSale:"
                     label-for="minpresale">
@@ -200,6 +217,7 @@
         <!-- </b-form-checkbox-group> -->
       <!-- </b-form-group> -->
     </div>
+    <span style="color:red;font-size:14px;"><i>{{tokenNumberError}}</i></span>
     </b-form>
   </div>
 </template>
@@ -213,6 +231,7 @@ export default {
         wallet: '0x228084F69a171C972270373d5aeb1617D6E3679c',
         ico: 'No',
         teamtokens: 0,
+        saleTokens: 0,
         minpresale: 0,
         minmainsale: 0,
         maxETH: 0,
@@ -232,9 +251,35 @@ export default {
     this.UnSave()
   },
   computed: {
+    tokenNumberError: function () {
+      var supply = parseInt(this.$store.state.formG.totalSupply)
+      var maxcap = parseInt(this.form.maxcap)
+      var mincap = parseInt(this.form.mincap)
+      var saleTokens = parseInt(this.form.saleTokens)
+      var minmainsale = parseInt(this.form.minmainsale)
+      var minpresale = parseInt(this.form.minpresale)
+      var maxEth = parseInt(this.form.maxETH)
+      var freeTokens = supply - saleTokens
+      var teamtokens = parseInt(this.form.teamtokens)
 
+      var withoutMaxCap = supply - maxcap
+      if ((minmainsale + minpresale) > maxEth) return 'Maximum allowed contribution is smaller than minimum presale and main sale contribution.'
+      if (freeTokens < teamtokens && teamtokens > 0) return 'Not enough tokens for a team. Check total supply or tokens assigned to ICO.'
+      if (saleTokens > supply) return 'Tokens has not enough tokens for sale. Check token total supply.'
+      if (saleTokens < maxcap) return 'ICO available tokens are smaller than max cap.'
+      if (saleTokens < mincap) return 'ICO available tokens are smaller than min cap.'
+      if (withoutMaxCap < 0) return 'Total Supply is smaller than maxCap.'
+      if ((this.form.mincap > this.form.maxcap) && this.form.maxcap > 0) return 'Minimum cap is bigger than maximum cap.'
+    },
+    saleTokens: function () {
+      var supply = parseInt(this.$store.state.formG.totalSupply)
+      var maxcap = parseInt(this.form.maxcap)
+      var withoutTeam = supply - parseInt(this.form.teamtokens)
+      if (maxcap < withoutTeam) return maxcap
+      else return withoutTeam
+    },
     totalSupplyInfo: function () {
-      return 'Total supply: ' + this.localNumber(this.$store.state.formI.totalSupply)
+      return 'Total supply: ' + this.localNumber(this.$store.state.formG.totalSupply)
     },
     ICODisabled: function () {
       if (this.form.ico === 'Yes') return false

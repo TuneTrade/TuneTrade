@@ -35,8 +35,8 @@ function sortFunction(a,b) {
   else return -1
 }
 
-const API = 'https://tunetrade-backend.herokuapp.com'
-// const API = 'http://127.0.0.1:5000'
+// const API = 'https://tunetrade-backend.herokuapp.com'
+const API = 'http://127.0.0.1:5000'
 
 export const store = new Vuex.Store({
   state: {
@@ -47,6 +47,7 @@ export const store = new Vuex.Store({
     formI: {},
     formB: {},
     formG: {},
+    contractAddress: '',
     metaMaskLoggedOut: false,
     API:API,
     songsReady: false
@@ -113,6 +114,7 @@ export const store = new Vuex.Store({
         console.log('sList:',sList)
         var songsList = []
         totalSongs = sList.length
+        if(sList.length == 0 ) store.state.songsReady = true
         for(var i = 0;i<sList.length;i++) {
           var tmpSong = {}
           tmpSong.address = sList[i]
@@ -140,6 +142,7 @@ export const store = new Vuex.Store({
             songsList[index].Contribution = res.data.contribution
             songsList[index].soundcloud = res.data.soundcloud
             songsList[index].Website = res.data.website
+            songsList[index].saleAddress = res.data.songSale
             songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
             var searcher =tmp.address
             SC.oEmbed(res.data.soundcloud, {auto_play: false,height: 10, maxheight: 166,width:10}).then(function (embed) {
@@ -190,10 +193,20 @@ export const store = new Vuex.Store({
 
       }).catch(function(err){console.log(err)})
     },
+
     ConnectToContract (store) {
-      var contractDefinition =  web3.eth.contract(smartContract)
-      store.state.web3contract = contractDefinition.at('0xae1E9623534ec73869b544990BCe41790eA8d2D1')
-      console.log('Web3Contract Data:', store.state.web3contract)
+
+      axios.get(API+'/getContract').then(function(res) {
+        console.log('Contract:', res.data)
+        store.state.contractAddress = res.data
+        var contractDefinition =  web3.eth.contract(smartContract)
+        store.state.web3contract = contractDefinition.at(res.data)
+        console.log('Web3Contract Data:', store.state.web3contract)
+      }).catch(function(err) {
+        console.log(err)
+      })
+
+
     }
     //   store.state.web3contract.GetSongs(function(err,res){
     //     var songList = []

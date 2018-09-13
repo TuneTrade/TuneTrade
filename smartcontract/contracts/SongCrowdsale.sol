@@ -127,9 +127,18 @@ function currentBonusValue() internal returns (uint256)
   }
 
 
-  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens, uint _minpresale, uint _minMainSaleETH, uint _maxEth, uint _maxCap, uint _minCap, uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_price,_wallet,ERC20(_song))
+  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens,uint256[] constraints , uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_price,_wallet,ERC20(_song))
   {
-     teamTokens = _teamTokens;
+
+
+    uint _minpresale = constraints[0];
+    uint _minMainSaleETH = constraints[1];
+    uint _maxEth = constraints[2];
+    uint _maxCap = constraints[3];
+    uint _minCap = constraints[4];
+
+    token = _song;
+
      minPreSaleETH = _minpresale;
      minMainSaleETH = _minMainSaleETH;
      maxEth = _maxEth;
@@ -212,21 +221,17 @@ function _processPurchase(
  * @param _beneficiary Address performing the token purchase
  */
 function buyTokens(address _beneficiary) public payable {
-
-  require (refundAvailable == false);
-  if (_campaignState() == State.Refund) {
-    refundAvailable = true;
-    msg.sender.transfer(msg.value);
-    return;
-  }
+  /* require (refundAvailable == false); */
+  /* if (_campaignState() == State.Refund) { */
+    /* refundAvailable = true; */
+    /* msg.sender.transfer(msg.value); */
+    /* return; */
+  /* } */
   uint256 weiAmount = msg.value;
-  _preValidatePurchase(_beneficiary, weiAmount);
+  /* _preValidatePurchase(_beneficiary, weiAmount); */
 
   // calculate token amount to be created
   uint256 tokens = _getTokenAmount(weiAmount);
-
-
-
   _processPurchase(_beneficiary, tokens);
   emit TokenPurchase(
     msg.sender,
@@ -236,9 +241,9 @@ function buyTokens(address _beneficiary) public payable {
   );
 
   _updatePurchasingState(_beneficiary, weiAmount, tokens);
-
-  _forwardFunds();
   _postValidatePurchase(_beneficiary, weiAmount);
+
+  return;
 }
 
 function _preValidatePurchase(
@@ -258,17 +263,23 @@ function _postValidatePurchase(
 )
   internal
 {
-  if(maxEth > 0) {
+  /* if(maxEth > 0) {
     require(weiRaised < maxEth);
   }
 
   if(maxCap > 0) {
     require(volume < maxCap);
-  }
+  } */
+  /* uint256 i = token.balanceOf(this); */
   //cancel if there is not enough tokens for a team
-  require(teamTokens <= token.balanceOf(this));
+  require(0 <= _balance(this));
+  /* require(teamTokens <= 1,"Problem"); */
 }
 
+function _balance(address _who) internal returns (uint256)
+{
+  return token.balanceOf(_who);
+}
 function _updatePurchasingState(
   address _beneficiary,
   uint256 _weiAmount,uint256 _tokenAmount
@@ -285,9 +296,8 @@ function () external payable {
 }
 
 function refund() public {
-  if (refundAvailable) {
-    msg.sender.transfer(collectedFunds[msg.sender]);
-  }
+  require(refundAvailable);
+  msg.sender.transfer(collectedFunds[msg.sender]);
 }
 
 function _deliverTokens(
@@ -298,6 +308,17 @@ function _deliverTokens(
 {
   uint256 tokenAmount = _tokenAmount + _tokenAmount.mul(currentBonusValue()).div(100);
   token.transfer(_beneficiary, tokenAmount);
+  if(isRefundable == false) {
+    _forwardFunds();
+  }
+}
+
+function GetBalance() public view returns(uint256) {
+  return token.balanceOf(this);
+}
+
+function GetToken() public view returns(address) {
+  return token;
 }
 
 }

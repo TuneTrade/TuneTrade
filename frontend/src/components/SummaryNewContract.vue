@@ -510,6 +510,15 @@ export default {
         bonuses[6] = form.thirdPeriod
         bonuses[7] = form.thirdPeriodBonus
 
+
+        var constraints = []
+
+        constraints[0] = form.minpresale
+        constraints[1] = form.minmainsale
+        constraints[2] = form.maxETH
+        constraints[3] = form.maxcap
+        constraints[4] = form.mincap
+
         that.bonuses = bonuses
 
 
@@ -544,7 +553,7 @@ export default {
           var icotx = that.AddTransaction(title)
           console.log('Bonuses: ',bonuses)
           console.log(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses)
-          contract.AddICO(form.wallet, form.teamtokens, form.minpresale, form.minmainsale, form.maxETH, form.maxcap, form.mincap, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses,function(err,res){
+          contract.AddICO(form.wallet, form.teamtokens, constraints, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses,form.saleTokens, function(err,res){
             if(res)
             {
               that.UpdateTransactionMining(icotx,res)
@@ -558,7 +567,7 @@ export default {
           })
         }
         var songtx = that.AddTransaction( "Adding New Song in Blockchain")
-        contract.AddSongFull(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, newid, function (err, res) {
+        contract.AddSong(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud,true, newid, function (err, res) {
           if (res !== undefined) {
             that.$refs.AddSongModal.show()
             that.UpdateTransactionMining(songtx,res)
@@ -574,10 +583,6 @@ export default {
         console.log('getNewSongId ERR:', err)
         return -1
       })
-
-
-
-
 
     },
     UpdateTransactionMining (index,number)

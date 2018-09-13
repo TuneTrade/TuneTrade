@@ -45,24 +45,8 @@ smartContract =[
         "type": "uint256"
       },
       {
-        "name": "_minpresale",
-        "type": "uint256"
-      },
-      {
-        "name": "_minMainSale",
-        "type": "uint256"
-      },
-      {
-        "name": "_maxEth",
-        "type": "uint256"
-      },
-      {
-        "name": "_maxCap",
-        "type": "uint256"
-      },
-      {
-        "name": "_minCap",
-        "type": "uint256"
+        "name": "constraints",
+        "type": "uint256[]"
       },
       {
         "name": "_price",
@@ -79,6 +63,10 @@ smartContract =[
       {
         "name": "_bonuses",
         "type": "uint8[]"
+      },
+      {
+        "name": "assignedTokens",
+        "type": "uint256"
       }
     ],
     "name": "AddICO",
@@ -133,24 +121,6 @@ smartContract =[
       {
         "name": "_id",
         "type": "uint256"
-      }
-    ],
-    "name": "AddSongFull",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "name": "_author",
-        "type": "string"
       }
     ],
     "name": "AddSong",

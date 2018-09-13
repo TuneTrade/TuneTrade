@@ -15,22 +15,27 @@ contract TuneTrader {
   uint public i = 1;
   address public owner = 0x0;
   mapping(address=>address) userToSongICO;
+  mapping(address=>address[]) usersSongs;
+  mapping (address => address) songToSale;
+  SongERC20 [] songs;
+  SongCrowdSale [] salesContracts;
 
   constructor  () public {
     owner = msg.sender;
-    AddSong("Poor Little Fool","Ricky Nelson","Rock",uint8(Type.Song),"testwebsite.com",10000,"TST","This is Test Description","soundcloud.com",false,0);
-    AddSong("Rolling in the Deep","Adele","Rock",uint8(Type.Song),"testwebsite.com",10000,"TST","This is Test Description","soundcloud.com",false,0);
+    /* AddSong("Poor Little Fool","Ricky Nelson","Rock",uint8(Type.Song),"testwebsite.com",10000,"TST","This is Test Description","soundcloud.com",false,0); */
+    /* AddSong("Rolling in the Deep","Adele","Rock",uint8(Type.Song),"testwebsite.com",10000,"TST","This is Test Description","soundcloud.com",false,0); */
 
   }
-  SongERC20 [] songs;
-  SongCrowdSale [] salesContracts;
-  mapping (address => address) songToSale;
 
-  function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration,uint8[] _bonuses) public
+  function AddICO(address _wallet,uint256 _teamTokens,uint256[] constraints, uint256 _price, uint256 _durationDays, uint _presaleduration,uint8[] _bonuses,uint256 assignedTokens) public
   {
+    /* require (constraints.length == 5); */
+
     require (userToSongICO[msg.sender] != address(0x0),"No Song assigned to this msg.sender to create ICO");
-    ERC20 songToken = ERC20(userToSongICO[msg.sender]);
-    SongCrowdSale saleContract = new SongCrowdSale(_price,_wallet,songToken,_teamTokens,_minpresale, _minMainSale,_maxEth,_maxCap, _minCap, _durationDays, _presaleduration,_bonuses);
+    SongERC20 songToken = SongERC20(userToSongICO[msg.sender]);
+    SongCrowdSale saleContract = new SongCrowdSale(_price,_wallet,songToken,_teamTokens, constraints, _durationDays, _presaleduration,_bonuses);
+
+    songToken.AssignICOTokens(address(saleContract),assignedTokens);
     songToSale[songToken] = saleContract;
     userToSongICO[msg.sender] = address(0x0);
   }
@@ -46,17 +51,23 @@ contract TuneTrader {
     if (_ico) {
       userToSongICO[msg.sender] = song;
     }
+
+    usersSongs[msg.sender].push(song);
   }
 
+  function GetMySongs() public view returns(address[])
+  {
+    return usersSongs[msg.sender];
+  }
   function GetSongs() public view returns (SongERC20[])
   {
     return songs;
   }
 
-function GetICO(SongERC20 song) public view returns(address ico)
-{
-  require (songToSale[song] != 0x0);
+  function GetICO(address song) public view returns(address ico)
+  {
+  require (songToSale[song] != address(0x0));
   return songToSale[song];
-}
+  }
 
 }

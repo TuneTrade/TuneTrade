@@ -53,10 +53,10 @@ contract TXTCrowdsale is Ownable{
 
  uint256[] bonusPeriodsStart = [
     now,
-    now+60,
-    now+120,
-    now+180,
-    now+240
+    now + 60,
+    now + 3 * 3600,
+    now+ 6 * 3600,
+    now+ 3 * 24 * 3600
   ];
 
 
@@ -68,7 +68,7 @@ contract TXTCrowdsale is Ownable{
     paused = false;
   }
 
-  function bonusPeriod() public returns (uint256)
+  function bonusPeriod() public view returns (uint256)
   {
     if (now > bonusPeriodsStart[3]) return 0;
     if (now > bonusPeriodsStart[2]) return 25;
@@ -103,7 +103,7 @@ contract TXTCrowdsale is Ownable{
     state = State.New;
     poolAccount = _poolAccount;
 
-    rate = 2500;
+    rate = _price;
     wallet = _wallet;
     token = _token;
 

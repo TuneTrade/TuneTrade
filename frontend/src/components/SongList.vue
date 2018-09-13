@@ -11,11 +11,11 @@
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
       </b-nav-form>
-      <b-nav-item-dropdown text="Type" right style="list-style:none;opacity:1;z-index:2,overflow:visible">
-        <b-dropdown-item href="#">Song</b-dropdown-item>
-        <b-dropdown-item href="#">Band</b-dropdown-item>
-        <b-dropdown-item href="#">Influencer</b-dropdown-item>
-        <b-dropdown-item href="#">All</b-dropdown-item>
+      <b-nav-item-dropdown class="test" v-model="typeDrop" :text="typeDropText" right style="list-style:none;opacity:1;z-index:2,overflow:visible;">
+        <b-dropdown-item v-on:click="filterType(0)"  href="#">Song</b-dropdown-item>
+        <b-dropdown-item v-on:click="filterType(1)"  href="#">Band</b-dropdown-item>
+        <b-dropdown-item v-on:click="filterType(2)"  href="#">Influencer</b-dropdown-item>
+        <b-dropdown-item v-on:click="filterType(3)"  href="#">All</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar>
     <div v-if="!songsReady">
@@ -23,7 +23,7 @@
 </center>
 
     </div>
-  <b-table v-if="songsReady" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="tablefilter" class="songsTable">
+  <b-table v-if="songsReady" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="filterFunction" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
@@ -149,10 +149,10 @@
         </b-row>
         <b-row >
           <b-col sm="3" class="text-sm-left"><b>Owner:</b></b-col>
-          <b-col sm="5 " class="text-sm-left"> {{row.item.Owner}}
+          <b-col sm="6 " class="text-sm-left"> {{row.item.Owner}}
 
           </b-col>
-          <b-col sm="4">
+          <b-col sm="3">
             <b-link target="_blank" class="text-primary" v-bind:href="etherscanAddress(row.item.Owner)" variant="danger">
               Etherscan
             </b-link>
@@ -160,10 +160,19 @@
         </b-row>
         <b-row >
           <b-col sm="3" class="text-sm-left"><b>Contract address: </b></b-col>
-          <b-col sm="5" class="text-sm-left">{{row.item.address}}
+          <b-col sm="6" class="text-sm-left">{{row.item.address}}
 
           </b-col>
-          <b-col sm="4" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
+          <b-col sm="3" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
+              Etherscan
+            </b-link></b-col>
+        </b-row>
+        <b-row >
+          <b-col sm="3" class="text-sm-left"><b>ICO Sale address: </b></b-col>
+          <b-col sm="6" class="text-sm-left">{{row.item.saleAddress}}
+
+          </b-col>
+          <b-col sm="3" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.saleAddress)" variant="danger">
               Etherscan
             </b-link></b-col>
         </b-row>
@@ -177,7 +186,7 @@
     </b-row>
       <b-row>
         <b-col xs="6" class="text-sm-left" >
-          <p style="text-align:justify; height:100%;word-wrap: break-word;;border-style:solid;border-width:1px;border-color:#aaa;;border-radius:5px">  {{row.item.Description}}</p>
+          <p style="text-align:justify;padding:15px; height:100%;word-wrap: break-word;;border-style:solid;border-width:1px;border-color:#aaa;;border-radius:5px">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
             <div v-html="row.item.iFrameEmbed"> </div>
@@ -192,7 +201,6 @@
 
   <b-pagination  v-if="songsReady"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="primary">
   </b-pagination>
-
   <!-- <div style="width:100%;height:200px;border-style:solid;">
     TEST
     <b-row style="border-style:solid">
@@ -240,6 +248,7 @@ export default {
       currentIndex: -1,
       loading: -1,
       changing: -1,
+      typeDrop: 3,
       fields: [
         { key: 'Picture', sortable: false, label: '' },
         { key: 'Type', sortable: false, label: '' },
@@ -268,6 +277,26 @@ export default {
   },
   methods:
   {
+    filterType: function (type) {
+      this.typeDrop = type
+    },
+    filterFunction: function (item) {
+      var itemStr
+      if (this.typeDrop !== 3 && (item.Type !== this.typeDrop)) return false
+      for (var val in item) {
+        // console.log(item[val])
+        if (item[val] === undefined) continue
+        if (item[val] !== undefined && typeof (item[val]) === 'string') {
+          itemStr += item[val]
+        } else {
+          itemStr += item[val].toString()
+        }
+      }
+      var re = new RegExp(this.tablefilter.toLowerCase())
+      console.log('Filter: ', itemStr)
+      console.log('Filter: ', item)
+      return re.test(itemStr.toLowerCase())
+    },
     getRelated: function (link) {
       axios.get('http://api.soundcloud.com/resolve?url=' + link + '&client_id=rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P').then(function (res) {
         console.log('RES:', res)
@@ -303,6 +332,7 @@ export default {
         case 0: return 'Song'
         case 1: return 'Band'
         case 2: return 'Influencer'
+        case 3: return 'All'
         default: return 'Error'
       }
     },
@@ -382,6 +412,9 @@ export default {
     }
   },
   computed: {
+    typeDropText: function () {
+      return 'Type (' + this.SongOrBand(this.typeDrop) + ')'
+    },
     songsReady: function () {
       return this.$store.state.songsReady
     },
@@ -409,6 +442,9 @@ export default {
 
 }
 
+a{
+  color:#fafafa;
+}
 .unPlayable {
   opacity:0.0;
   pointer-events: none;
