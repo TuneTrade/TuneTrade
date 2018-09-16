@@ -36,7 +36,7 @@ contract TuneTrader {
     SongCrowdSale saleContract = new SongCrowdSale(_price,_wallet,songToken,_teamTokens, constraints, _durationDays, _presaleduration,_bonuses);
 
     songToken.AssignICOTokens(address(saleContract),assignedTokens);
-    songToSale[songToken] = saleContract;
+    songToSale[address(songToken)] = address(saleContract);
     userToSongICO[msg.sender] = address(0x0);
   }
 

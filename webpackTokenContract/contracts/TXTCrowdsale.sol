@@ -42,22 +42,22 @@ contract TXTCrowdsale is Ownable{
   address private poolAccount;
   State state;
 
-  /* uint256[] bonusPeriodsStart = [
+  uint256[] bonusPeriodsStart = [
   1542240000, //November 15 2018
   1544832000, //December 15 2018
   1547510400, //January 15 2019
   1550188800, //February 15 2019
   1551312000  //FFebruary 28 2019
-  ]; */
+  ];
 
 
- uint256[] bonusPeriodsStart = [
+ /* uint256[] bonusPeriodsStart = [
     now,
     now + 60,
     now + 3 * 3600,
     now+ 6 * 3600,
     now+ 3 * 24 * 3600
-  ];
+  ]; */
 
 
   function Pause()  public onlyOwner {
@@ -74,6 +74,7 @@ contract TXTCrowdsale is Ownable{
     if (now > bonusPeriodsStart[2]) return 25;
     if (now > bonusPeriodsStart[1]) return 50;
     if (now >= bonusPeriodsStart[0]) return 100;
+    return 0;
   }
 
   function _saleIsNew() internal returns (bool) {

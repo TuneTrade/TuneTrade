@@ -13,7 +13,7 @@ import "./Ownable.sol";
 
 contract SongCrowdSale is Crowdsale, Ownable
 {
-  enum State {PreSale,Campaign,Ended,Refund}
+  enum State {PreSale,Campaign,Ended,Refund,Closed}
   /// @param teamTokens number of tokens reserved for a team. It is not possible to sell them.
   uint256 public teamTokens;
    /// @param minPreSale minimum amount of tokens sold in presale. If not sold then it is not possible to go to main
@@ -57,9 +57,13 @@ contract SongCrowdSale is Crowdsale, Ownable
   uint saleStart;
 
   bool refundAvailable = false;
+  bool closed = false;
   bool isRefundable = false;
 
   mapping (address=>uint256) collectedFunds;
+
+  bool debug = true;
+  uint256 testNow = 0;
 
 
 function DefineBonusValues(uint8 value1, uint8 value2, uint8 value3, uint8 value4) internal  returns (bool)
@@ -84,29 +88,56 @@ function DefineBonusPeriods(uint8 period1,uint8 period2,  uint8 period3, uint8 p
   return true;
 }
 
+
 ///@notice Return bonus value for current moment in %. If sale is already out of bonus period it will return 0.
 ///@dev It will fail if for any reason now is smaller than saleStart
 function currentBonusValue() internal returns (uint256)
 {
     if (_campaignState() == State.PreSale) {
-      if (now < (saleStart + (bonusPresalePeriod * 24 * 60 * 60))) {
+      if (_now() <= (saleStart + (bonusPresalePeriod * 24 * 60 * 60))) {
         return bonusPreSaleValue;
       }
       return 0;
 
     }
     if(_campaignState() == State.Campaign) {
-      if (now > ((saleStart + (firstPeriod + secondPeriod + thirdPeriod) * 24 * 3600 ))) return 0;
-      if (now > ((saleStart + (firstPeriod + secondPeriod) * 24 * 3600 ))) return bonusThirdValue;
-      if (now > ((saleStart + (firstPeriod) * 24 * 3600 ))) return bonusSecondValue;
-      if (now > (saleStart)) return bonusFirstValue;
+      if (_now() > ((preSaleEnd + (firstPeriod + secondPeriod + thirdPeriod) * 24 * 3600 ))) return 0;
+      if (_now() > ((preSaleEnd + (firstPeriod + secondPeriod) * 24 * 3600 ))) return bonusThirdValue;
+      if (_now() > ((preSaleEnd + (firstPeriod) * 24 * 3600 ))) return bonusSecondValue;
+      if (_now() > (preSaleEnd)) return bonusFirstValue;
       return 0;
     }
     return 0;
 
 }
 
+function _campaignState() internal view returns (State _state)
+{
+  /* enum State {PreSale,Campaign,Ended, Refund} */
+  if (refundAvailable) return State.Refund;
+  if (closed) return State.Closed;
+  if (_now() <= preSaleEnd) return State.PreSale;
+  if (_now() > preSaleEnd && _now() <= saleEnd)
+  {
+    if(weiRaised < minPreSaleETH) return State.Refund;
+    else return State.Campaign;
+  }
+  if (weiRaised < minMainSaleETH) return State.Refund;
 
+  if (minCap > 0 ) {
+    if(volume < minCap && _now() > saleEnd) return State.Refund;
+  }
+
+  return State.Ended;
+}
+
+function CampaignState() public view returns(string) {
+  if(_campaignState() == State.PreSale) return "Presale";
+  if(_campaignState() == State.Refund) return "Refund";
+  if(_campaignState() == State.Campaign) return "Main Sale";
+  if(_campaignState() == State.Ended) return "Ended";
+  if(_campaignState() == State.Closed) return "Closed";
+}
 
   /// @param _newwallet new wallet address. Must not be zero.
   /// @notice This function change wallet address
@@ -146,41 +177,43 @@ function currentBonusValue() internal returns (uint256)
      minCap = _minCap;
      durationDays = _duration;
      preSaleDays = _presaleduration;
-     saleStart = now;
+     saleStart = _now();
      preSaleEnd = saleStart + (preSaleDays * 24 * 60 * 60);
      saleEnd = preSaleEnd + (durationDays * 24 * 60 * 60);
+     teamTokens = _teamTokens;
+     owner = tx.origin;
 
      if(bonuses.length==8)
      {
+       require (bonuses[0] < preSaleDays); // bonus period for presale must be smaller than presale itself. Make sense ?
+       require ((bonuses[2] + bonuses [4] + bonuses[6]) < durationDays); // same as above, but for main sale.
        DefineBonusValues(bonuses[1],bonuses[3],bonuses[5],bonuses[7]);
        DefineBonusPeriods(bonuses[0],bonuses[2],bonuses[4],bonuses[6]);
      }
 
      if ( minPreSaleETH > 0 || minMainSaleETH > 0 ) isRefundable = true;
 
+
   }
 
-  function _campaignState() public view returns (State _state)
-  {
-    /* enum State {PreSale,Campaign,Ended, Refund} */
-    assert (now > saleStart);
-    if (refundAvailable) return State.Refund;
-    if (now <= preSaleEnd) return State.PreSale;
-    if  (now > preSaleEnd && now < saleEnd)
-    {
-      if(weiRaised < minPreSaleETH) return State.Refund;
-      else return State.Campaign;
-    }
-    if (weiRaised < minMainSaleETH) return State.Refund;
+function withdrawFunds() public returns(bool) {
+  require(msg.sender == wallet);
+  require(_campaignState() == State.Ended);
+  uint256 toSend;
+  toSend = weiRaised;
+  weiRaised = 0;
+  msg.sender.transfer(toSend);
+  closed = true;
+}
 
-    if (minCap > 0 ) {
-      if(volume < minCap && now > saleEnd) return State.Refund;
-    }
-    else return State.Ended;
-  }
+function _now() internal view returns (uint256) {
+  if (debug == true) return testNow;
+  else return now;
+}
 
-
-
+function SetTestNow(uint256 _testNow) public onlyOwner {
+  testNow = _testNow;
+}
 
   function GetSaleInformation() public view returns (
        uint256 _price,
@@ -220,13 +253,14 @@ function _processPurchase(
  * @dev low level token purchase ***DO NOT OVERRIDE***
  * @param _beneficiary Address performing the token purchase
  */
-function buyTokens(address _beneficiary) public payable {
-  /* require (refundAvailable == false); */
-  /* if (_campaignState() == State.Refund) { */
-    /* refundAvailable = true; */
-    /* msg.sender.transfer(msg.value); */
-    /* return; */
-  /* } */
+function buyTokens(address _beneficiary) public payable returns(bool)  {
+  require (refundAvailable == false);
+  require (_campaignState() != State.Ended);
+  if (_campaignState() == State.Refund) {
+    refundAvailable = true;
+    msg.sender.transfer(msg.value);
+    return;
+   }
   uint256 weiAmount = msg.value;
   /* _preValidatePurchase(_beneficiary, weiAmount); */
 
@@ -242,9 +276,17 @@ function buyTokens(address _beneficiary) public payable {
 
   _updatePurchasingState(_beneficiary, weiAmount, tokens);
   _postValidatePurchase(_beneficiary, weiAmount);
-
-  return;
 }
+
+function _getTokenAmount(uint256 _weiAmount)
+  internal view returns (uint256)
+{
+
+  /* uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + 20).div(100); */
+  uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + currentBonusValue()).div(100);
+  return tokenAmount;
+}
+
 
 function _preValidatePurchase(
   address _beneficiary,
@@ -254,7 +296,6 @@ function _preValidatePurchase(
 {
   require(_beneficiary != address(0));
   require(_weiAmount != 0);
-
 }
 
 function _postValidatePurchase(
@@ -263,17 +304,15 @@ function _postValidatePurchase(
 )
   internal
 {
-  /* if(maxEth > 0) {
+  if(maxEth > 0) {
     require(weiRaised < maxEth);
   }
 
   if(maxCap > 0) {
     require(volume < maxCap);
-  } */
-  /* uint256 i = token.balanceOf(this); */
+  }
   //cancel if there is not enough tokens for a team
-  require(0 <= _balance(this));
-  /* require(teamTokens <= 1,"Problem"); */
+  require(teamTokens <= _balance(this));
 }
 
 function _balance(address _who) internal returns (uint256)
@@ -296,9 +335,14 @@ function () external payable {
 }
 
 function refund() public {
-  require(refundAvailable);
-  msg.sender.transfer(collectedFunds[msg.sender]);
+  require(collectedFunds[msg.sender] > 0);
+  require(refundAvailable || _campaignState() == State.Refund);
+  refundAvailable = true;
+  uint256 toRefund = collectedFunds[msg.sender];
+  collectedFunds[msg.sender] = 0;
+  msg.sender.transfer(toRefund);
 }
+
 
 function _deliverTokens(
   address _beneficiary,
@@ -306,8 +350,7 @@ function _deliverTokens(
 )
   internal
 {
-  uint256 tokenAmount = _tokenAmount + _tokenAmount.mul(currentBonusValue()).div(100);
-  token.transfer(_beneficiary, tokenAmount);
+  token.transfer(_beneficiary, _tokenAmount);
   if(isRefundable == false) {
     _forwardFunds();
   }

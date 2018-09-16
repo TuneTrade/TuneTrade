@@ -42,7 +42,7 @@ contract SongERC20 is StandardToken, Ownable
 
   function AssignICOTokens(address _ico, uint256 _amount)  onlyTuneTrader {
 
-    require(balances[owner] > _amount);
+    require(balances[owner] >= _amount);
     balances[owner] = balances[owner].sub(_amount);
     balances[_ico] = balances[_ico].add(_amount);
   }
