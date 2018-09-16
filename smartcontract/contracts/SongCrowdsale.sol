@@ -36,7 +36,6 @@ contract SongCrowdSale is Crowdsale, Ownable
   uint256 preSaleEnd;
   uint256 saleEnd;
 
-  uint8[] bonusValues;
 
   uint256 bonusPresalePeriod;
   uint256 firstPeriod;
@@ -50,7 +49,6 @@ contract SongCrowdSale is Crowdsale, Ownable
 
 
   // 0 - presale 1 - first period 2-second period 3 - third period
-  uint8[] bonusPeriods;
   uint256 volume;
   uint256 phase=1;
 
@@ -185,8 +183,8 @@ function CampaignState() public view returns(string) {
 
      if(bonuses.length==8)
      {
-       require (bonuses[0] < preSaleDays); // bonus period for presale must be smaller than presale itself. Make sense ?
-       require ((bonuses[2] + bonuses [4] + bonuses[6]) < durationDays); // same as above, but for main sale.
+       require (bonuses[0] <= preSaleDays); // bonus period for presale must be smaller or equal than presale itself. Make sense ?
+       require ((bonuses[2] + bonuses [4] + bonuses[6]) <= durationDays); // same as above, but for main sale.
        DefineBonusValues(bonuses[1],bonuses[3],bonuses[5],bonuses[7]);
        DefineBonusPeriods(bonuses[0],bonuses[2],bonuses[4],bonuses[6]);
      }
@@ -232,12 +230,12 @@ function SetTestNow(uint256 _testNow) public onlyOwner {
   }
 
   function GetStats() public view returns (
-    uint256 contribution,
-    uint256 volume,
-    uint8 phase
+    uint256 _contribution,
+    uint256 _volume,
+    uint8 _phase
     )
 {
-  return (weiRaised, volume,phase );
+  return (weiRaised, volume,uint8(phase) );
 }
 
 function _processPurchase(

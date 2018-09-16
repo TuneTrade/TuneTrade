@@ -22,7 +22,7 @@
     <div style="font-family:Courier;margin:15px 0px;background-color:#ddd;border-radius:4px;padding:10px 20px;">
     Title: {{transaction.title}}<br>
     Number: {{transaction.txNumber}} <br>
-    Status:<b><span v-bind:class="{errorMessage: transaction.status=='Cancelled',successfulStatus: transaction.status=='Successful', miningStatus: transaction.status=='Mining'}"> {{transaction.status}} </span></b> <br>
+    Status:<b><span v-bind:class="{errorMessage: transaction.status=='Cancelled',successfulStatus: transaction.status=='Successful', miningStatus: transaction.status=='Mining', failedStatus: transaction.status=='Failed'}"> {{transaction.status}} </span></b> <br>
     <!-- Index: {{transaction.index}}<br> -->
     Block number: {{localNumber(transaction.blockNumber)}}<br>
     Gas Used: {{localNumber(transaction.gasUsed)}} <br>
@@ -430,13 +430,10 @@ export default {
               that.UpdateTransactionSuccessfull(res)
               console.log('Good: ', res.transactionHash)
             } else {
-              console.log('Bad')
-              tx.status = 'Failed'
+              console.log('Bad:', tx.Number, res)
+              that.UpdateTransactionFailed(res)
               that.$refs.AddSongModal.show()
-              tx.id = 5 // 5 - failed Add New Song
-              tx.blockNumber = that.localNumber(res.blockNumber)
-              tx.gasUsed = that.localNumber(res.gasUsed)
-              that.SortTransactions()
+              // that.SortTransactions()
             }
           })
         }
@@ -450,6 +447,20 @@ export default {
       this.transactions[i].status = 'Successful'
       this.transactions[i].txNumber = res.transactionHash
       this.transactions[i].id = 4
+      this.transactions[i].blockNumber = res.blockNumber
+      this.transactions[i].gasUsed = res.gasUsed
+
+      this.SortTransactions()
+
+    },
+    UpdateTransactionFailed (res)
+    {
+      var i = this.transactions.findIndex(function(el,el1,el2){
+        return (el.txNumber == res.transactionHash)
+      })
+      this.transactions[i].status = 'Failed'
+      this.transactions[i].txNumber = res.transactionHash
+      this.transactions[i].id = 5
       this.transactions[i].blockNumber = res.blockNumber
       this.transactions[i].gasUsed = res.gasUsed
 
@@ -501,26 +512,26 @@ export default {
         that.clearOldTransactions()
         var bonuses = []
 
-        bonuses[0] = form.presalePeriod
-        bonuses[1] = form.presalePeriodBonus
-        bonuses[2] = form.firstPeriod
-        bonuses[3] = form.firstPeriodBonus
-        bonuses[4] = form.secondPeriod
-        bonuses[5] = form.secondPeriodBonus
-        bonuses[6] = form.thirdPeriod
-        bonuses[7] = form.thirdPeriodBonus
+        bonuses[0] = parseInt(form.presalePeriod)
+        bonuses[1] = parseInt(form.presalePeriodBonus)
+        bonuses[2] = parseInt(form.firstPeriod)
+        bonuses[3] = parseInt(form.firstPeriodBonus)
+        bonuses[4] = parseInt(form.secondPeriod)
+        bonuses[5] = parseInt(form.secondPeriodBonus)
+        bonuses[6] = parseInt(form.thirdPeriod)
+        bonuses[7] = parseInt(form.thirdPeriodBonus)
 
 
         var constraints = []
 
-        constraints[0] = form.minpresale
-        constraints[1] = form.minmainsale
-        constraints[2] = form.maxETH
-        constraints[3] = form.maxcap
-        constraints[4] = form.mincap
+        constraints[0] = parseInt(form.minpresale)
+        constraints[1] = parseInt(form.minmainsale)
+        constraints[2] = parseInt(form.maxETH)
+        constraints[3] = parseInt(form.maxcap)
+        constraints[4] = parseInt(form.mincap)
 
         that.bonuses = bonuses
-
+        console.log("Bonuses: ",bonuses)
 
         that.errMsg = ''
         // this.status ="Confirm in Metamask"

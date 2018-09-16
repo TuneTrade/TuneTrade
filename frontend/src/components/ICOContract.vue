@@ -259,12 +259,12 @@ export default {
       var minmainsale = parseInt(this.form.minmainsale)
       var minpresale = parseInt(this.form.minpresale)
       var maxEth = parseInt(this.form.maxETH)
-      var freeTokens = supply - saleTokens
+      // var freeTokens = supply - saleTokens
       var teamtokens = parseInt(this.form.teamtokens)
 
       var withoutMaxCap = supply - maxcap
       if ((minmainsale + minpresale) > maxEth) return 'Maximum allowed contribution is smaller than minimum presale and main sale contribution.'
-      if (freeTokens < teamtokens && teamtokens > 0) return 'Not enough tokens for a team. Check total supply or tokens assigned to ICO.'
+      if (teamtokens > saleTokens && teamtokens > 0) return 'Not enough tokens for a team. Check total supply or tokens assigned to ICO.'
       if (saleTokens > supply) return 'Tokens has not enough tokens for sale. Check token total supply.'
       if (saleTokens < maxcap) return 'ICO available tokens are smaller than max cap.'
       if (saleTokens < mincap) return 'ICO available tokens are smaller than min cap.'

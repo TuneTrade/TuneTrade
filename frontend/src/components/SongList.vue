@@ -33,7 +33,7 @@
       </b-button>
     </template>
     <template slot="TotalSupply" slot-scope="row">
-      {{localNumber (row.item.TotalSupply)}}
+      {{BigValue (row.item.TotalSupply)}}
     </template>
 
     <template slot="Volume" slot-scope="row">
@@ -44,7 +44,7 @@
       {{Price(row.item.Price)}}
     </template>
     <template slot="Contribution" slot-scope="row">
-      {{localNumber (row.item.Contribution)}}
+      {{Price (row.item.Contribution)}}
     </template>
 
     <template slot="Type" slot-scope="row">
@@ -226,8 +226,9 @@
 import axios from 'axios'
 // import vueAxios from 'vue-axios'
 // Vue.use(axios)
-
+var BigNumber = require('bignumber.js')
 var SC = require('soundcloud')
+
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 // SC.initialize('174155989')
 
@@ -312,7 +313,13 @@ export default {
       if (typeof (web3) === 'undefined') return val / 1000000000000000000
       if (val === undefined) return 'N/A'
       val = '' + val
-      return Web3.utils.fromWei(val, 'ether')
+      let price = Web3.utils.fromWei(val, 'ether')
+      if (price < 0.001) {
+        let big = BigNumber(price)
+        return big.toExponential(5).toString()
+      } else {
+        return parseFloat(price).toFixed(6)
+      }
     },
     info (item, index, button) {
       // this.modalInfo.title = `Row index: ${index}`
@@ -397,6 +404,17 @@ export default {
       var entry = parseFloat(val)
       var num = entry.toLocaleString()
       return num
+    },
+    BigValue: function (val) {
+      if (isNaN(val)) return val
+      console.log(val)
+      var num = BigNumber(val)
+      if (num.isGreaterThan(1000000000)) {
+        return num.toExponential(5).toString()
+      } else {
+        // return 7
+        return num.toString()
+      }
     },
     picLink: function (id) {
       if (id === undefined) {

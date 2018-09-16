@@ -152,5 +152,15 @@ contract("Test TuneTrader Contract Bonuses",   async (accounts)=> {
       expect (saleInstance.sendTransaction ({"gas":914366353, "gasPrice":1, "value":1,"from":accounts[5]})).to.be.eventually.rejected
     })
 
+    it('13. Volume should show amount of sold tokens and be equal to buyer ballance', async () => {
+      let res = await saleInstance.GetStats.call()
+      expect(parseInt(res[1])).to.be.equal(myBalance)
+    })
+
+    it('14. Contribution should show 8 wei. This is total amount for which tokens were bought.', async () => {
+      let res = await saleInstance.GetStats.call()
+      expect(parseInt(res[0])).to.be.equal(8)
+    })
+
 
 })
