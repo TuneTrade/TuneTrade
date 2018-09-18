@@ -221,3 +221,18 @@ content
   color:red;
   font-size:20px;
 }
+
+.noSongs {
+  border-style:solid;
+  border-width:1px;
+  margin:3% 10%;
+  /* height: 6rem; */
+  padding: 5% 0%;
+  text-align: center;
+  border-radius:5px;
+  border-color:gray;
+  background-color: #6acde7;
+  font-size:20px;
+  text-transform: full-width uppercase;
+
+}

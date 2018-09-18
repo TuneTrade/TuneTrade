@@ -12,7 +12,6 @@ contract TuneTrader {
 
   enum Type {Song,Band,Influencer}
 
-  uint public i = 1;
   address public owner = 0x0;
   mapping(address=>address) userToSongICO;
   mapping(address=>address[]) usersSongs;

@@ -1,5 +1,41 @@
 <template lang="html">
   <div class="" style="margin:0px 0px;min-height:600px">
+    <b-modal v-if="currentItem != null" @ok="test($event)" hide-header ref="BuyTokensModal"  size="lg" centered   ok-title="Buy">
+    <center>
+      <img style="height:50px" src="../assets/metamask.png"></img><br><br>
+    </center>
+    <div style="font-family:Courier;margin:15px 0px;background-color:#ddd;border-radius:4px;padding:10px 20px;">
+  <b>Name: </b> {{currentItem.Name}} <br>
+  <b>Rate [{{currentItem.Symbol}}/ETH]: </b> {{tokensForEth(currentItem.Price, currentItem.Decimals)}} <br>
+  <b>Sale Contract Address:</b> {{currentItem.saleAddress}} <br>
+  <b> Available tokens:</b> 10000
+  <br><br>
+    <b-form style="text-align:center">
+      <center>      <b-form-input style=
+            "width:200px; height:3rem" id="tokensToBuy"
+                          type="number"
+                          v-model="tokensToBuy"
+                          optional
+                          size="sm"
+                          step="currentItem.Price"
+                          placeholder="0">
+            </b-form-input>
+          </center>
+    <b-form-group style="padding:13px 0px;"id="tokensToBuyGroup"
+                  label="How many tokens ?"
+                  label-for="tokenstoBuy"
+                  >
+    </b-form-group>
+  </b-form>
+
+  <b> Tokens price [ETH]</b>: {{tokensPriceEth(currentItem.Price, tokensToBuy)}} <br>
+  <b> Tokens price [WEI]</b>: {{tokensPriceWei(currentItem.Price, tokensToBuy)}} <br>
+
+
+
+  </div>
+    </b-modal >
+
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <div v-on:load="loaded()" v-html="musicPlayerLink"> </div>
@@ -23,7 +59,10 @@
 </center>
 
     </div>
-  <b-table v-if="songsReady" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="filterFunction" class="songsTable">
+    <div v-if="noSongs && songsReady" class="noSongs">
+      SONGS LIST IS EMPTY
+    </div>
+  <b-table v-if="songsReady && !noSongs" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="filterFunction" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
@@ -31,6 +70,12 @@
       <b-button size="sm" @click.stop="row.toggleDetails"  variant="info">
       {{ row.detailsShowing ? 'Hide' : 'Show'}}  Details
       </b-button>
+      <br><br>
+      <b-button v-if="tokensForEth(row.item.Price, row.item.Decimals) != null" size="sm" @click.stop="ShowBuyModal(row.item)"  variant="info">
+      Buy Tokens
+      </b-button>
+      {{tokensForEth(row.item.Price, row.item.Decimals)}}
+      <!-- {{tokensForEth(row.item.Price,row.item.Decimals)}} -->
     </template>
     <template slot="TotalSupply" slot-scope="row">
       {{BigValue (row.item.TotalSupply)}}
@@ -159,7 +204,7 @@
           </b-col>
         </b-row>
         <b-row >
-          <b-col sm="3" class="text-sm-left"><b>Contract address: </b></b-col>
+          <b-col sm="3" class="text-sm-left"><b>Token Contract address: </b></b-col>
           <b-col sm="6" class="text-sm-left">{{row.item.address}}
 
           </b-col>
@@ -199,7 +244,7 @@
     </template>
   </b-table>
 
-  <b-pagination  v-if="songsReady"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="primary">
+  <b-pagination  v-if="songsReady && !noSongs"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="primary">
   </b-pagination>
   <!-- <div style="width:100%;height:200px;border-style:solid;">
     TEST
@@ -249,6 +294,8 @@ export default {
       currentIndex: -1,
       loading: -1,
       changing: -1,
+      currentItem: {},
+      tokensToBuy: 0,
       typeDrop: 3,
       fields: [
         { key: 'Picture', sortable: false, label: '' },
@@ -278,6 +325,30 @@ export default {
   },
   methods:
   {
+    test (evt) {
+      evt.preventDefault()
+      console.log('test')
+    },
+    ShowBuyModal: function (item) {
+      console.log(item)
+      this.currentItem = item
+      this.$refs.BuyTokensModal.show()
+    },
+    tokensForEth: function (rate, decimals) {
+      if (rate === undefined) return null
+      if (decimals === undefined) decimals = 0
+      var weiInEth = Web3.utils.toWei('1', 'ether')
+      var ret = (rate * weiInEth) / Math.pow(10, decimals)
+      return ret.toLocaleString()
+    },
+    tokensPriceWei: function (rateInWei) {
+      return this.tokensToBuy + ' ' + rateInWei
+      // return tokensAmount / rateInWei
+    },
+    tokensPriceEth: function (rateInWei, tokensAmount) {
+      var ret = (tokensAmount / rateInWei) / Web3.utils.toWei('1', 'ether')
+      return BigNumber(ret).toFixed().toString()
+    },
     filterType: function (type) {
       this.typeDrop = type
     },
@@ -430,6 +501,9 @@ export default {
     }
   },
   computed: {
+    noSongs: function () {
+      return (this.songs.length === 0)
+    },
     typeDropText: function () {
       return 'Type (' + this.SongOrBand(this.typeDrop) + ')'
     },
