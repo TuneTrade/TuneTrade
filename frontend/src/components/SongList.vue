@@ -1,36 +1,44 @@
 <template lang="html">
   <div class="" style="margin:0px 0px;min-height:600px">
-    <b-modal v-if="currentItem != null" @ok="test($event)" hide-header ref="BuyTokensModal"  size="lg" centered   ok-title="Buy">
+    <b-modal v-if="currentItem != null" @ok.prevent="BuyTokens()" hide-header ref="BuyTokensModal"  size="lg" centered   ok-title="Buy" :ok-disabled="cantBuyTokens">
     <center>
       <img style="height:50px" src="../assets/metamask.png"></img><br><br>
     </center>
     <div style="font-family:Courier;margin:15px 0px;background-color:#ddd;border-radius:4px;padding:10px 20px;">
-  <b>Name: </b> {{currentItem.Name}} <br>
-  <b>Rate [{{currentItem.Symbol}}/ETH]: </b> {{tokensForEth(currentItem.Price, currentItem.Decimals)}} <br>
-  <b>Sale Contract Address:</b> {{currentItem.saleAddress}} <br>
-  <b> Available tokens:</b> 10000
-  <br><br>
+      <div style="display:grid;grid-template-columns:auto auto 1fr;grid-column-gap:10px;margin:0px 0px 2rem 0px;">
+  <div><b>Name:</b></div><div> {{currentItem.Name}}</div><div/>
+  <div><b>Rate [{{currentItem.Symbol}}/ETH]: </b></div><div> {{tokensForEth(currentItem.Price, currentItem.Decimals)}}</div> <div/>
+  <div><b>Rate [{{currentItem.Symbol}}/WEI]: </b></div><div> {{tokensForWei(currentItem.Price, currentItem.Decimals)}}</div><div/>
+  <div><b>Sale Contract Address:</b></div><div> {{currentItem.saleAddress}}</div><div/>
+  <div><b>Token Contract Address:</b></div><div> {{currentItem.address}}</div><div/>
+  <div><b>Available tokens [{{currentItem.Symbol}}]:</b></div><div> {{availableTokens}}</div><div/>
+  <div><b>Decimals: </b></div><div> {{localNumber(currentItem.Decimals)}}</div><div/>
+  <div><b>Minimum amount to buy:</b></div><div> {{tokensStep(currentItem.Price,currentItem.Decimals)}}</div><div/>
+</div>
     <b-form style="text-align:center">
       <center>      <b-form-input style=
-            "width:200px; height:3rem" id="tokensToBuy"
-                          type="number"
+            "width:200px; height:2rem" id="tokensToBuyInput"
+                          type="text"
                           v-model="tokensToBuy"
-                          optional
+                          required
                           size="sm"
-                          step="currentItem.Price"
-                          placeholder="0">
+                          placeholder="How many tokens ?">
             </b-form-input>
           </center>
-    <b-form-group style="padding:13px 0px;"id="tokensToBuyGroup"
+    <b-form-group style="padding:10px 0px 0px 0px;margin:0px;"id="tokensToBuyGroup"
                   label="How many tokens ?"
-                  label-for="tokenstoBuy"
+                  label-for="tokenstoBuyInput"
                   >
     </b-form-group>
+    <div style="height:3rem;;margin:0px;padding:0px">
+    <center> <span style="color:red;font-weight:800">{{cantBuyTokensMsg}}</span> </center>
+  </div>
   </b-form>
+  <div style="display:grid;grid-template-columns:auto 1fr;text-align:right;grid-column-gap:10px;">
+  <div><b>You will pay [ETH]: </b></div><div style="text-align:left"> {{tokensPriceEth()}} </div>
+  <div><b>[WEI]: </b></div><div style="text-align:left;"> {{tokensPriceWei(currentItem.Price, tokensToBuy)}} </div><div/>
 
-  <b> Tokens price [ETH]</b>: {{tokensPriceEth(currentItem.Price, tokensToBuy)}} <br>
-  <b> Tokens price [WEI]</b>: {{tokensPriceWei(currentItem.Price, tokensToBuy)}} <br>
-
+</div>
 
 
   </div>
@@ -47,7 +55,7 @@
         <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
         <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
       </b-nav-form>
-      <b-nav-item-dropdown class="test" v-model="typeDrop" :text="typeDropText" right style="list-style:none;opacity:1;z-index:2,overflow:visible;">
+      <b-nav-item-dropdown v-model="typeDrop" :text="typeDropText" right style="list-style:none">
         <b-dropdown-item v-on:click="filterType(0)"  href="#">Song</b-dropdown-item>
         <b-dropdown-item v-on:click="filterType(1)"  href="#">Band</b-dropdown-item>
         <b-dropdown-item v-on:click="filterType(2)"  href="#">Influencer</b-dropdown-item>
@@ -67,26 +75,25 @@
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
     <template slot="show_details" slot-scope="row">
-      <b-button size="sm" @click.stop="row.toggleDetails"  variant="info">
+      <b-button size="sm" @click.stop="row.toggleDetails"  variant="info"  style="width:110px;margin:5px 20px">
       {{ row.detailsShowing ? 'Hide' : 'Show'}}  Details
       </b-button>
-      <br><br>
-      <b-button v-if="tokensForEth(row.item.Price, row.item.Decimals) != null" size="sm" @click.stop="ShowBuyModal(row.item)"  variant="info">
+      <br>
+      <b-button :disabled="!tokenOnSale(row.item.State)" size="sm" @click.stop="ShowBuyModal(row.item)"  variant="info" style="width:110px; margin:5px 20px">
       Buy Tokens
       </b-button>
-      {{tokensForEth(row.item.Price, row.item.Decimals)}}
       <!-- {{tokensForEth(row.item.Price,row.item.Decimals)}} -->
     </template>
     <template slot="TotalSupply" slot-scope="row">
-      {{BigValue (row.item.TotalSupply)}}
+      {{BigValue (row.item.TotalSupply,row.item.Decimals)}}
     </template>
 
     <template slot="Volume" slot-scope="row">
-      {{localNumber (row.item.Volume)}}
+      {{BigValue(row.item.Volume,row.item.Decimals)}}
     </template>
 
     <template slot="Price" slot-scope="row">
-      {{Price(row.item.Price)}}
+      {{tokensForEth(row.item.Price,row.item.Decimals)}}
     </template>
     <template slot="Contribution" slot-scope="row">
       {{Price (row.item.Contribution)}}
@@ -119,7 +126,7 @@
     </template>
 
     <template slot="row-details" slot-scope="row">
-      <b-card style="border-color:black;background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;">
+      <b-card style="border-color:black;background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;font-size:14px;">
         <b-row style="brder-style:solid;">
           <b-col sm="2" class="text-sm-left">
             <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img>
@@ -128,28 +135,28 @@
             <b-row>
             <b-col sm="6">
               <b-row >
-                <b-col sm="4" class="text-sm-left"><b>Type:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
               </b-row>
               <b-row >
-                <b-col sm="4" class="text-sm-left"><b>Name:</b></b-col>
-                <b-col sm="8" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
+                <b-col sm="7" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
               </b-row>
               <b-row>
-                <b-col sm="4" class="text-sm-left"><b>Author:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{ row.item.Author }}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Author:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{ row.item.Author }}</b-col>
               </b-row>
               <b-row>
-                <b-col sm="4" class="text-sm-left"><b>Price:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{Price(row.item.Price)}}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Price [{{row.item.Symbol}}/ETH]:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{tokensForEth(row.item.Price,row.item.Decimals)}}</b-col>
               </b-row>
               <b-row>
-                <b-col sm="4" class="text-sm-left"><b>Phase:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{ PhaseToString(row.item.Phase) }}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{Phase(row.item.State)}}</b-col>
               </b-row>
               <b-row >
-                <b-col sm="4" class="text-sm-left"><b>Website:</b></b-col>
-                <b-col sm="8" class="text-sm-left"><b-button target="_blank" v-bind:href="row.item.Website" size="sm" variant="info">Website</b-button><br>
+                <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
+                <b-col sm="7" class="text-sm-left"><b-button target="_blank" v-bind:href="row.item.Website" size="sm" variant="info">Website</b-button><br>
                   {{row.item.Website}}
                 </b-col>
               </b-row>
@@ -157,32 +164,36 @@
             </b-col>
             <b-col sm="6">
               <b-row>
-                <b-col sm="4" class="text-sm-left"><b>Contribution:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.Contribution) }}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Contribution [ETH]:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{ Price(row.item.Contribution) }}</b-col>
               </b-row>
               <b-row>
-                <b-col sm="4" class="text-sm-left"><b>Volume:</b></b-col>
-                <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.Volume) }}</b-col>
+                <b-col sm="5" class="text-sm-left"><b>Volume [{{row.item.Symbol}}]:</b></b-col>
+                <b-col sm="7" class="text-sm-left">{{ BigValue(row.item.Volume,row.item.Decimals) }}</b-col>
               </b-row>
             <b-row >
-              <b-col sm="4" class="text-sm-left"><b>Total Supply:</b></b-col>
-              <b-col sm="8" class="text-sm-left">{{ localNumber(row.item.TotalSupply) }}</b-col>
-            </b-row>
-            <b-row>
-              <b-col sm="4" class="text-sm-left"><b>Genre:</b></b-col>
-              <b-col sm="8" class="text-sm-left">{{ row.item.Genre }}</b-col>
+              <b-col sm="5" class="text-sm-left"><b>Total Supply [{{row.item.Symbol}}]:</b></b-col>
+              <b-col sm="7" class="text-sm-left">{{ BigValue(row.item.TotalSupply,row.item.Decimals) }}</b-col>
             </b-row>
             <b-row >
-              <b-col sm="4" class="text-sm-left"><b>Created:</b></b-col>
-              <b-col sm="8" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
+              <b-col sm="5" class="text-sm-left"><b>Decimals:</b></b-col>
+              <b-col sm="7" class="text-sm-left">{{row.item.Decimals}}</b-col>
+            </b-row>
+            <b-row>
+              <b-col sm="5" class="text-sm-left"><b>Genre:</b></b-col>
+              <b-col sm="7" class="text-sm-left">{{ row.item.Genre }}</b-col>
+            </b-row>
+            <b-row >
+              <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
+              <b-col sm="7" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
             </b-row>
             <b-row >
               <b-col>---
               </b-col>
             </b-row>
             <b-row >
-              <b-col sm="4" class="text-sm-left"><b>Buy:</b></b-col>
-              <b-col sm="8" class="text-sm-left"><b-button disabled @click.stop="info(row.item, row.index, $event.target)" size="sm" variant="info">Buy</b-button></b-col>
+              <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
+              <b-col sm="7" class="text-sm-left"><b-button :diabled="!tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" size="sm" variant="info">Buy</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -273,7 +284,7 @@ import axios from 'axios'
 // Vue.use(axios)
 var BigNumber = require('bignumber.js')
 var SC = require('soundcloud')
-
+require('./saleContractdef.js')
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 // SC.initialize('174155989')
 
@@ -295,7 +306,7 @@ export default {
       loading: -1,
       changing: -1,
       currentItem: {},
-      tokensToBuy: 0,
+      tokensToBuy: '0',
       typeDrop: 3,
       fields: [
         { key: 'Picture', sortable: false, label: '' },
@@ -304,10 +315,10 @@ export default {
         { key: 'Created', sortable: true, sortDirection: 'asc' },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
-        { key: 'Price', sortable: true },
-        { key: 'Volume', sortable: true },
-        { key: 'Contribution', sortable: true },
-        { key: 'TotalSupply', sortable: true },
+        { key: 'Price', sortable: true, label: 'Price [TOKEN/ETH]' },
+        // { key: 'Volume', sortable: true, label: 'Volume [TOKEN]' },
+        { key: 'Contribution', sortable: true, label: 'Contribution [ETH]' },
+        // { key: 'TotalSupply', sortable: true },
         // { key: 'Created', sortable: true },
         { key: 'Genre', sortable: true },
         // { key: 'Website', sortable: true },
@@ -320,17 +331,53 @@ export default {
   created: function () {
     // this.$store.dispatch('ConnectToContract')
 
-    console.log('Calling get songs and so on')
     this.$store.dispatch('GetSongs')
   },
-  methods:
-  {
-    test (evt) {
-      evt.preventDefault()
-      console.log('test')
+  methods: {
+    tokenOnSale: function (state) {
+      if (state === undefined) return false
+      if (state === 'Presale') return true
+      if (state === 'Main Sale') return true
+      return false
+    },
+    Phase: function (state) {
+      if (state === undefined) return 'Not on sale'
+      if (state.length > 0 ) return state
+      return 'Not on sale'
+    },
+    ValidateTokens: function () {
+      if (this.tokensToBuy === 0) return
+      if (isNaN(this.tokensToBuy)) return
+      if (this.tokensToBuy.length === 0) return
+      let step = this.tokensStep(this.currentItem.Price, this.currentItem.Decimals)
+      step = BigNumber(step)
+      console.log('STEP: ', step.toString())
+      let numberofStep = BigNumber(this.tokensToBuy).div(step)
+      let tmpTokens = numberofStep.times(step)
+      if (tmpTokens.gt(this.availableTokens)) tmpTokens = BigNumber(this.availableTokens)
+      if (tmpTokens.lt(step)) this.tokensToBuy = BigNumber(step)
+      this.tokensToBuy = tmpTokens.toString()
+    },
+    BuyTokens () {
+      var saleContractDef = web3.eth.contract(saleContractDefinition)
+      var saleContract = saleContractDef.at(this.currentItem.saleAddress)
+      var weiAmount = this.tokensPriceWeiBigNumber()
+      var that = this
+
+      console.log('Wei Amount: ', weiAmount.toString())
+      console.log(this.currentItem.saleAddress)
+      this.$refs.BuyTokensModal.hide()
+      this.$store.dispatch('AddTransaction',{title: 'Buying ' + this.tokensToBuy + ' tokens ' + this.currentItem.Symbol + ' on blockchain'})
+      var txind = this.$store.getters.getTransactionIndex
+      saleContract._eth.sendTransaction({'value': weiAmount.toString(), 'to': this.currentItem.saleAddress},function (err,res) {
+        if (res !== undefined) {
+          that.$store.dispatch('UpdateTransactionMining', {index: txind, number: res})
+        } else {
+          that.$store.dispatch('UpdateTransactionCancelled',{index: txind, msg: err.message})
+        }
+      })
     },
     ShowBuyModal: function (item) {
-      console.log(item)
       this.currentItem = item
       this.$refs.BuyTokensModal.show()
     },
@@ -338,16 +385,48 @@ export default {
       if (rate === undefined) return null
       if (decimals === undefined) decimals = 0
       var weiInEth = Web3.utils.toWei('1', 'ether')
-      var ret = (rate * weiInEth) / Math.pow(10, decimals)
-      return ret.toLocaleString()
+
+      decimals = parseInt(decimals)
+      var ret = BigNumber(rate).times(weiInEth).shiftedBy(-decimals).toFormat()
+      return ret
     },
-    tokensPriceWei: function (rateInWei) {
-      return this.tokensToBuy + ' ' + rateInWei
-      // return tokensAmount / rateInWei
+    tokensForWei: function (rate, decimals) {
+      if (rate === undefined) return null
+      if (decimals === undefined) decimals = 0
+      let dec = parseInt(decimals)
+      let r = BigNumber(rate)
+      return r.shiftedBy(-dec).toFormat()
     },
-    tokensPriceEth: function (rateInWei, tokensAmount) {
-      var ret = (tokensAmount / rateInWei) / Web3.utils.toWei('1', 'ether')
-      return BigNumber(ret).toFixed().toString()
+    tokensStep: function (rate, decimals) {
+      if (rate === undefined) return null
+      if (decimals === undefined) decimals = 0
+      let r = BigNumber(rate)
+      r = r.shiftedBy(-decimals)
+      return r.toFormat()
+    },
+    tokensPriceWei: function (rateInWei, tokensAmount) {
+      let decimals = parseInt(this.currentItem.Decimals)
+      if (isNaN(decimals)) return 0
+      let amount = BigNumber(tokensAmount).shiftedBy(decimals)
+      return amount.div(rateInWei).toFormat()
+    },
+    tokensPriceWeiBigNumber: function (rateInWei, tokensAmount) {
+      let amount = BigNumber(this.tokensToBuy)
+      let rate = BigNumber(this.currentItem.Price)
+      let decimals = parseInt(this.currentItem.Decimals)
+      if (isNaN(decimals)) return 0
+
+      return amount.shiftedBy(decimals).div(rate)
+    },
+    tokensPriceEth: function () {
+      let amount = BigNumber(this.tokensToBuy)
+      let rate = BigNumber(this.currentItem.Price)
+      let decimals = parseInt(this.currentItem.Decimals)
+      let weiInEth = BigNumber(Web3.utils.toWei('1', 'ether'))
+      if (isNaN(decimals)) return 0
+
+      return amount.shiftedBy(decimals).div(rate).div(weiInEth).toFormat()
+
     },
     filterType: function (type) {
       this.typeDrop = type
@@ -365,13 +444,10 @@ export default {
         }
       }
       var re = new RegExp(this.tablefilter.toLowerCase())
-      console.log('Filter: ', itemStr)
-      console.log('Filter: ', item)
       return re.test(itemStr.toLowerCase())
     },
     getRelated: function (link) {
       axios.get('http://api.soundcloud.com/resolve?url=' + link + '&client_id=rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P').then(function (res) {
-        console.log('RES:', res)
       })
     },
     etherscanToken: function (address) {
@@ -380,17 +456,17 @@ export default {
     etherscanAddress: function (address) {
       return 'https://ropsten.etherscan.io/address/' + address
     },
-    Price: function (val) {
-      if (typeof (web3) === 'undefined') return val / 1000000000000000000
-      if (val === undefined) return 'N/A'
-      val = '' + val
-      let price = Web3.utils.fromWei(val, 'ether')
-      if (price < 0.001) {
-        let big = BigNumber(price)
-        return big.toExponential(5).toString()
-      } else {
-        return parseFloat(price).toFixed(6)
-      }
+    Price: function (priceInWei) {
+      if (priceInWei === undefined) return 0
+
+      let value = BigNumber(priceInWei)
+
+      if (value === null) return 0
+      if (value.isNaN()) return value.toString()
+
+      //Convert price in Wei to ETH. 1 ETH == 10^18 Wei. So we shift it by 18 places.
+      return value.shiftedBy(-18).toFormat()
+
     },
     info (item, index, button) {
       // this.modalInfo.title = `Row index: ${index}`
@@ -405,7 +481,6 @@ export default {
       return ts.toLocaleString()
     },
     SongOrBand: function (val) {
-      console.log('Song Or Band:', val)
       switch (parseInt(val)) {
         case 0: return 'Song'
         case 1: return 'Band'
@@ -438,8 +513,6 @@ export default {
       if (this.loading >= 0) {
         this.loading = -1
       }
-      console.log('loaded')
-      alert('loaded')
     },
     isLoading: function (index) {
       if (this.changing === index || this.loading === index) {
@@ -464,9 +537,7 @@ export default {
         SC.oEmbed(link, {auto_play: true}).then(function (em) {
           that.musicPlayerLink = em.html
           that.loading = -1
-          console.log(em)
         }).catch(function (err) {
-          console.log(err)
         })
       }, 100)
     },
@@ -476,22 +547,17 @@ export default {
       var num = entry.toLocaleString()
       return num
     },
-    BigValue: function (val) {
+    BigValue: function (val,dec) {
       if (isNaN(val)) return val
-      console.log(val)
       var num = BigNumber(val)
-      if (num.isGreaterThan(1000000000)) {
-        return num.toExponential(5).toString()
-      } else {
-        // return 7
-        return num.toString()
-      }
+      let decimals = parseInt(dec)
+      return num.shiftedBy(-decimals).toFormat()
+
     },
     picLink: function (id) {
       if (id === undefined) {
         return ''
       }
-      console.log(this.$store.state.API + '/getPicture?id=' + id)
       return this.$store.state.API + '/getPicture?id=' + id
       // return 'https://source.unsplash.com/random/480x480'
     },
@@ -501,6 +567,53 @@ export default {
     }
   },
   computed: {
+    availableTokens: function () {
+      let free = BigNumber(this.currentItem.FreeTokens)
+      let decimals = parseInt(this.currentItem.Decimals)
+      if (isNaN(decimals)) return 0
+      return free.shiftedBy(-decimals).toFormat()
+    },
+    cantBuyTokens: function () {
+      if (isNaN(this.tokensToBuy)) return true
+      let freeTokens = BigNumber(this.currentItem.FreeTokens)
+      let tokensToBuy = BigNumber(this.tokensToBuy)
+      let decimals = BigNumber(this.currentItem.Decimals)
+      if (decimals.isNaN()) return true
+      console.log('Decimals: ', decimals.sd())
+      let maxValue = freeTokens.shiftedBy(-decimals.toNumber())
+      console.log('MaX:', maxValue.toFormat())
+      if (freeTokens.lt(tokensToBuy)) return true
+
+      let step = this.tokensStep(this.currentItem.Price, this.currentItem.Decimals)
+      let numberofStep = tokensToBuy.div(step).dp(0,1)
+      if(numberofStep === null) return true
+      console.log('numberofStep: ', numberofStep)
+      step = BigNumber(step)
+      let correctValue = numberofStep.times(step)
+      if (!correctValue.eq(tokensToBuy)) return true
+      if (correctValue.lt(step)) return true
+      if(correctValue.gt(maxValue)) return true
+    },
+    cantBuyTokensMsg: function () {
+      if (isNaN(this.tokensToBuy)) return 'This is not a number'
+      let freeTokens = BigNumber(this.currentItem.FreeTokens)
+      let tokensToBuy = BigNumber(this.tokensToBuy)
+      let decimals = BigNumber(this.currentItem.Decimals)
+      if (decimals.isNaN()) return null
+      console.log('Decimals: ', decimals.sd())
+      let maxValue = freeTokens.shiftedBy(-decimals.toNumber())
+      console.log('MaX:', maxValue.toFormat())
+
+      let step = this.tokensStep(this.currentItem.Price, this.currentItem.Decimals)
+      let numberofStep = tokensToBuy.div(step).dp(0,1)
+      if(numberofStep === null) return true
+      console.log('numberofStep: ', numberofStep)
+      step = BigNumber(step)
+      let correctValue = numberofStep.times(step)
+      if (correctValue.lt(step)) return 'You have to buy minimum ' + step.toFormat() + ' tokens'
+      if (!correctValue.eq(tokensToBuy)) return "You have to buy mutliplication of minimum token amount."
+      if(correctValue.gt(maxValue)) return 'Not enough available tokens.'
+    },
     noSongs: function () {
       return (this.songs.length === 0)
     },

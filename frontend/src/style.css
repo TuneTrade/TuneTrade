@@ -110,7 +110,7 @@ content
 
 .summaryContent {
   word-break: break-all;
-  font-size:13px;
+  font-size:14px;
   font-kerning: none;
   font-family:sans-serif;
   font-weight:100;
@@ -137,12 +137,14 @@ content
 
 .debug {
   color:rgba(0,0,0,0);
+  height:50px;
+  display:none;
 }
 
 .debug:hover {
   /* color:black; */
-  margin-top:15px;
-  font-size:16px;
+  /* margin-top:15px; */
+  font-size:14px;
 }
 
 .tunetradeMenu

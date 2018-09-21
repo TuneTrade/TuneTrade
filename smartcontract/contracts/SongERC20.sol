@@ -21,13 +21,13 @@ contract SongERC20 is StandardToken, Ownable
 
   string public name;
   string public symbol;
-  uint8 public decimals;
+  uint256 public decimals;
 
   modifier onlyTuneTrader {
     require (msg.sender == TuneTrader);
     _;
   }
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint256 _decimals,uint256 _id)  public
   {
     owner = _owner;
     totalSupply_ = _supply;
@@ -61,7 +61,7 @@ contract SongERC20 is StandardToken, Ownable
     return (author, genre, uint8(entryType), website, soundcloud, description,id);
   }
 
-  function GetTokenDetails() public view returns (address _owner, uint256 _supply, string _name, string _symbol, uint8 decimals,uint256 _creationTime) {
+  function GetTokenDetails() public view returns (address _owner, uint256 _supply, string _name, string _symbol, uint256 _decimals,uint256 _creationTime) {
     return (owner,totalSupply_,name,symbol,decimals,creationTime);
   }
 

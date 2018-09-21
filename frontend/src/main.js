@@ -7,6 +7,7 @@ import Menu from './components/Menu'
 import TokenExchange from './components/TokenExchange'
 import NewContract from './components/NewContract'
 import ICOContract from './components/ICOContract'
+import Transactions from './components/Transactions'
 import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -25,9 +26,20 @@ new Vue({
     Menu,
     TokenExchange,
     NewContract,
-    ICOContract
+    ICOContract,
+    Transactions
   },
   created: function () {
     store.dispatch('ConnectToContract')
+    store.dispatch('StartCheckingTransactions')
+    console.log('APP CREATED')
+  },
+  updated: function () {
+    console.log('This is update')
+  },
+  destroyed: function () {
+    alert('Destroyed')
+    console.log('APP Destroyed')
   }
+
 })

@@ -1,4 +1,4 @@
-smartContract = [
+smartContract =[
   {
     "constant": true,
     "inputs": [],
@@ -103,6 +103,10 @@ smartContract = [
       {
         "name": "_ico",
         "type": "bool"
+      },
+      {
+        "name": "_decimals",
+        "type": "uint256"
       },
       {
         "name": "_id",

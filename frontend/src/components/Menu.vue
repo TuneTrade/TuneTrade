@@ -13,6 +13,9 @@ a {
 <template lang="html">
 
 <div class="">
+  <b-modal hide-header ref="AddSongModal"  size="lg" centered  ok-only ok-title="Close">
+    <Transactions v-bind:pending='true'/>
+  </b-modal >
     <!-- <b-container> -->
 
     <b-modal style="border-radius:5px;margin:0px 0px;" dismissible alert-variant="warning" variant="secondary" :visible="metaMaskUninstalled" ok-title="Understood" centered ok-only size="lg" hide-header :show="metaMaskUninstalled">
@@ -36,19 +39,24 @@ a {
             <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
         </b-navbar-brand>
         <b-navbar-brand>
+            <router-link   exact class="router-link"    :to="{ name: 'Transactions', params: {pending: false} }">Transactions</router-link>
+        </b-navbar-brand>
+        <b-navbar-brand>
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
         <div style="font-family:Sans-serif;font-size:14px;width:100%;text-align:right;color:red"v-if="!loggedIn && !metaMaskUninstalled"><b>PLEASE LOGIN TO METAMASK</b></div>
+        <div class="debug">
+        {{metaMaskUninstalled}}
+        {{metaMaskAccount}}
+        {{contractAddress}}
+        {{loggedIn}}
+      </div>
+      <div/>
         <div class="menuLogo">
           <img src="../assets/logotunetradesmall.png" style="width:68px;margin-top:0px;"></img>
-          <div class="debug">
-          {{metaMaskUninstalled}}
-          {{metaMaskAccount}}
-          {{contractAddress}}
-          {{loggedIn}}
-        </div>
+
       </div>
-      {{ethereumAddress}}
+      <!-- {{ethereumAddress}} -->
     </b-navbar>
     <!-- </b-container> -->
 </div>
@@ -57,8 +65,13 @@ a {
 
 <script>
 
+import Transactions from './Transactions'
+
 export default {
   name: 'Menu',
+  components: {
+    Transactions
+  },
   data () {
     return {
       networkId: 0,
@@ -73,7 +86,6 @@ export default {
     }
     else {
     web3.currentProvider.publicConfigStore.on('update', function(err,res){
-      console.log('web3 metmask updated')
       that.metaMaskAccount = web3.eth.defaultAccount
     });
 
@@ -84,13 +96,29 @@ export default {
     this.metaMaskAccount = web3.eth.defaultAccount
   }
   },
+  watch: {
+    soundCloudLink: function(val) {
+        this.loadEmbed()
+    },
+    updatedTransactions: function(val) {
+      if (val === true) {
+        this.$refs.AddSongModal.show()
+        this.$store.dispatch('clearUpdatedTransactions')
+      }
+    }
+  },
   computed:
   {
+    updatedTransactions: function () {
+      return this.$store.state.updatedTransactions
+    },
+    transactions: function () {
+      return this.$store.state.transactions
+    },
     ethereumAddress: function () {
       return this.$store.state.contractAddress
     },
     loggedIn: function () {
-      console.log(this.metaMaskAccount)
       if(typeof this.metaMaskAccount=== 'undefined') {
         this.$store.state.metaMaskLoggedOut = true
         return false
@@ -108,7 +136,6 @@ export default {
       {
         return true
       } else {
-        console.log('web3:', web3.currentProvider.constructor.name)
         if (web3.currentProvider.constructor.name == 'MetamaskInpageProvider') return false
         else return true
       }

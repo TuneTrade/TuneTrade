@@ -748,7 +748,7 @@ function _deliverTokens(
 }
 
 function GetBalance() public view returns(uint256) {
-  return token.balanceOf(this);
+  return token.balanceOf(this).sub(teamTokens);
 }
 
 function GetToken() public view returns(address) {
@@ -775,13 +775,13 @@ contract SongERC20 is StandardToken, Ownable
 
   string public name;
   string public symbol;
-  uint8 public decimals;
+  uint256 public decimals;
 
   modifier onlyTuneTrader {
     require (msg.sender == TuneTrader);
     _;
   }
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint256 _decimals,uint256 _id)  public
   {
     owner = _owner;
     totalSupply_ = _supply;
@@ -815,7 +815,7 @@ contract SongERC20 is StandardToken, Ownable
     return (author, genre, uint8(entryType), website, soundcloud, description,id);
   }
 
-  function GetTokenDetails() public view returns (address _owner, uint256 _supply, string _name, string _symbol, uint8 decimals,uint256 _creationTime) {
+  function GetTokenDetails() public view returns (address _owner, uint256 _supply, string _name, string _symbol, uint256 _decimals,uint256 _creationTime) {
     return (owner,totalSupply_,name,symbol,decimals,creationTime);
   }
 
@@ -859,10 +859,10 @@ contract TuneTrader {
   }
 
 
-  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico,uint _id)
+  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico, uint256 _decimals,uint _id)
   {
 
-    SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, 0,_id);
+    SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, _decimals,_id);
     song.SetDetails(_author, _genre, _entryType, _website, _soundcloud, _description);
     songs.push(song);
 

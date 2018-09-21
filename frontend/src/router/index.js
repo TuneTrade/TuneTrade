@@ -6,6 +6,7 @@ import SongList from '../components/SongList'
 import TokenExchange from '../components/TokenExchange'
 import NewContract from '../components/NewContract'
 import ICOContract from '../components/ICOContract'
+import Transactions from '../components/Transactions'
 import About from '../components/About'
 
 Vue.use(Router)
@@ -36,6 +37,12 @@ export default new Router({
       path: '/icocontracttest',
       name: 'ICOContract',
       component: ICOContract
+    },
+    {
+      path: '/transactions/:pending',
+      props: true,
+      name: 'Transactions',
+      component: Transactions
     }
   ]
 })

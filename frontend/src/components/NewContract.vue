@@ -83,9 +83,11 @@
       </b-form-group>
       <b-form-group id="supplyGroup"
                     label="Total Supply:"
-                    label-for="totalSupply">
+                    label-for="totalSupply"
+                    :description="totalSupplyDesc"
+                    >
         <b-form-input id="totalSupply"
-                      type="number"
+                      type="text"
                       step="1"
                       min=0
                       @keydown.native = "UnSave()"
@@ -184,6 +186,7 @@
 </template>
 
 <script>
+var BigNumber = require('bignumber.js')
 // import musicGenres from '../musicGenres'
 import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
@@ -247,9 +250,9 @@ export default {
         picture: null,
         symbol: 'SYM',
         displayPic: false,
-        totalSupply: '1000',
+        totalSupply: 1000,
         description: 'Description',
-        decimals: '0',
+        decimals: 0,
         soundcloud: '',
         picSrc: ''
       },
@@ -281,7 +284,23 @@ export default {
     }
   },
   computed: {
-
+    totalSupplyDesc: function () {
+      var format = {
+        decimalSeparator: '.',
+        groupSeparator: ',',
+        groupSize: 3,
+        secondaryGroupSize: 0,
+        fractionGroupSeparator: ' ',
+        fractionGroupSize: 0
+      }
+      BigNumber.config({'FORMAT': format})
+      console.log('MAGIER4 ', this.form.decimals, this.form.totalSupply)
+      let supply = BigNumber(this.form.totalSupply)
+      let decimals = parseInt(this.form.decimals)
+      let total = supply.shiftedBy(0 - decimals).toFormat(decimals)
+      if (this.form.totalSupply.length === 0) total = ''
+      return 'Including decimals places: ' + total
+    },
     BonusYesOrNo: function () {
       if (this.BonusDisabled) return 'No'
       else return this.$store.state.formB.bonuses
@@ -303,6 +322,12 @@ export default {
     }
   },
   methods: {
+    localNumber: function (val) {
+      if (isNaN(val)) return 0
+      // var entry = parseFloat(val)
+      var num = val.toLocaleString()
+      return num
+    },
     ReadPicture (input) {
       var that = this
       console.log('This is some input:', input)
@@ -317,11 +342,14 @@ export default {
           that.$refs.picPreview.style.height = '8%'
           that.$refs.picPreview.src = '/static/loading.gif'
           that.form.picSrc = e.target.result
+          that.$store.state.formG.picSrc = e.target.result
+          that.$store.state.formG['picSrc'] = e.target.result
           that.$refs.picPreview.style.border = 'none'
           setTimeout(function () {
             that.$refs.picPreview.style.height = '200px'
             that.$refs.picPreview.src = ''
             that.$refs.picPreview.src = e.target.result
+            that.UnSave()
           }, 1300)
         }
         reader.readAsDataURL(input.target.files[0])
@@ -332,15 +360,23 @@ export default {
     },
     LimitText () {
       this.form.description = this.form.description.substring(0, 200)
-      this.$store.state.form.description = this.form.description
-      // this.UnSave()
+      this.$store.state.formG.description = this.form.description
+      this.UnSave()
     },
     UnSave () {
-      for (var key in this.form) {
-        console.log('form[' + key + '] = ' + this.form[key])
-        this.$store.state.formG[key] = this.form[key]
+      let form = {}
+      let tmpForm = this.form
+
+      this.form = form
+      form['picSrc'] = tmpForm.picSrc
+      for (var key in tmpForm) {
+        console.log('12345form[' + key + '] = ' + tmpForm[key])
+        form[key] = tmpForm[key]
+        this.$store.state.formG[key] = form[key]
       }
-      this.$store.state.formG = this.form
+      this.$store.state.formG = form
+      this.$store.state.formG.picSrc = form['picSrc']
+      // this.form = form
       console.log('Stored form: ', this.$store.state.form)
       this.unsaved = true
     },

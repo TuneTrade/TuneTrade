@@ -355,7 +355,7 @@ function _deliverTokens(
 }
 
 function GetBalance() public view returns(uint256) {
-  return token.balanceOf(this);
+  return token.balanceOf(this).sub(teamTokens);
 }
 
 function GetToken() public view returns(address) {

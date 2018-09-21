@@ -64,7 +64,7 @@
                     label-for="saleTokens"
                     :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
-                      type="number"
+                      type="text"
                       v-model="form.saleTokens"
                       @change = "UnSave()"
                       :disabled="ICODisabled"
