@@ -17,6 +17,7 @@ require('./contractdef')
 Vue.use(Vuex)
 // Vue.use(web3)
 Vue.use(vueResource)
+var URI = require("uri-js");
 
 // function hex2a(hexx) {
 //     var hex = hexx.toString();//force conversion
@@ -46,6 +47,7 @@ export const store = new Vuex.Store({
     formI: {},
     formB: {},
     formG: {},
+    lastUpdate: null,
     contractAddress: '',
     metaMaskLoggedOut: false,
     API:API,
@@ -108,8 +110,10 @@ export const store = new Vuex.Store({
     },
     checkTransaction (store) {
       var transactions = store.state.transactions
-      console.log('Checking transactions')
-      console.log(transactions)
+      // console.log('Checking transactions')
+      // console.log(transactions)
+      store.state.lastUpdate = new Date(Date.now()).toLocaleString()
+      console.log('time:', store.state.lastUpdate)
       for (var i in transactions) {
         var tx = transactions[i]
         if (tx.id === 4 || tx.id === 5 || tx.id === 3) {
@@ -118,10 +122,12 @@ export const store = new Vuex.Store({
         }
         if (tx.id == 2) {
           console.log('Transaction pending')
+
           web3.eth.getTransactionReceipt(tx.txNumber,function(err, res) {
             if (res !== null) {
               if (parseInt(res.status,16) === 1) {
                 store.dispatch('UpdateTransactionSuccessfull', res)
+                store.dispatch('GetSongs')
               } else {
                 store.dispatch('UpdateTransactionFailed', res)
               }
@@ -263,17 +269,28 @@ export const store = new Vuex.Store({
             songsList[index].Decimals = res.data.decimals
             songsList[index].Contribution = res.data.contribution
             songsList[index].soundcloud = res.data.soundcloud
+            let uriParsed = URI.parse(res.data.soundcloud)
+            console.log(uriParsed)
+            if (uriParsed.path.length > 0) {
+              if(uriParsed.scheme === undefined)
+              console.log(uriParsed)
+              songsList[index].soundcloud = 'https://'+res.data.soundcloud
+            } else {
+              songsList[index].soundcloud = ''
+
+            }
             songsList[index].Website = res.data.website
             songsList[index].State = res.data.state
             songsList[index].FreeTokens = res.data.balance
             songsList[index].saleAddress = res.data.songSale
             songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
             var searcher =tmp.address
-            SC.oEmbed(res.data.soundcloud, {auto_play: false,height: 10, maxheight: 166,width:10}).then(function (embed) {
+            SC.oEmbed(songsList[index].soundcloud, {auto_play: false,height: 10, maxheight: 166,width:10}).then(function (embed) {
               var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
                 return (el.address == searcher)
               })
               songsList[indexSoundCloud].iFrameEmbed = embed.html
+              console.log('Embed: ', embed)
               songsList[indexSoundCloud].playable = true
               songsList.sort(sortFunction)
 
@@ -283,7 +300,7 @@ export const store = new Vuex.Store({
               })
               songsList[indexSoundCloud].iFrameEmbed = ''
               songsList[indexSoundCloud].playable = false
-
+              console.log('Embed problem: ', err, songsList[indexSoundCloud].soundcloud )
 
             })
 
@@ -294,6 +311,7 @@ export const store = new Vuex.Store({
             songsList[index].Owner = res.data.owner
             // songsList[index].Volume = parseInt(res.data[12])
             songsList[index].Volume = res.data.volume
+            songsList[index].Bonus = res.data.bonus
             songsList[index].Description = res.data.description
             songsList[index].address = searchAddress
             if (index == sList.length -1 ) {

@@ -26,6 +26,7 @@ var rate = 500;
 var mySong = null
 var songToken = null
 var saleInstance = null
+var decimals = 0
 // Accounts definition
 // accounts[9] - founder wallet account in token contract
 // accounts[1] - crowdsale wallet account
@@ -51,7 +52,7 @@ contract("Test TuneTrader Contract General functionality. Song and ICO creation.
         console.log(' ')
     })
     it("02. Should be able to add new Song without ICO",async () => {
-      return expect( TuneTraderContract.AddSong("TEST","TEST","TEST","1","TEST","11111","SYM","DESC","suondcloud",false,"1")).to.be.eventually.fulfilled;
+      return expect( TuneTraderContract.AddSong("TEST","TEST","TEST","1","TEST","11111","SYM","DESC","suondcloud",false, decimals,"1")).to.be.eventually.fulfilled;
     })
 
 
@@ -62,7 +63,7 @@ contract("Test TuneTrader Contract General functionality. Song and ICO creation.
     })
 
     it("04. Should be able to add new Song with ICO", function () {
-      return expect(TuneTraderContract.AddSong("Song Name","Author","Genre",1,"website.com",assignTokens,"SYM","Description","soundcloud.com",true,1)).to.be.eventually.fulfilled;
+      return expect(TuneTraderContract.AddSong("Song Name","Author","Genre",1,"website.com",assignTokens,"SYM","Description","soundcloud.com",true,decimals,1)).to.be.eventually.fulfilled;
     })
   // function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico,uint _id)
 

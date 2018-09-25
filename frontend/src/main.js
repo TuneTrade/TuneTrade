@@ -38,7 +38,6 @@ new Vue({
     console.log('This is update')
   },
   destroyed: function () {
-    alert('Destroyed')
     console.log('APP Destroyed')
   }
 

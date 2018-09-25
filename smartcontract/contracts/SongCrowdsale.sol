@@ -11,6 +11,8 @@ import "./Ownable.sol";
 /// @notice         This is Song ICO sale contract based on Open Zeppelin Crowdsale contract.
 ///                 It's purpose is to sell song tokens in main sale and presale.
 
+
+
 contract SongCrowdSale is Crowdsale, Ownable
 {
   enum State {PreSale,Campaign,Ended,Refund,Closed}
@@ -155,8 +157,25 @@ function CampaignState() public view returns(string) {
     token = ERC20( _tokenAddress);
   }
 
+  // !!! rate is defined as TOKENS ( full tokens not mini tokens ) per ETH. To calculate minitokens per wei we have to
+  // multiply it by 10 to power of decimals and divide by 10 to power of 18 ( because there is 10^18 weis in ETH)
+  // and then we can multiply it by amount of wei to get number of tokens.
+  // token_amount = ((price * 10**decimals) * weiAmount) / 10**18
 
-  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens,uint256[] constraints , uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_price,_wallet,ERC20(_song))
+function TokensForWei(uint256 wei_amount,uint256 decimals, uint256 _rate) public view returns(uint256 _minitokensAmount, uint256 _tokensAmount,uint256 _valueInWei, uint256 _weiToReturn) {
+  uint256 tokensAmount;
+  uint256 minitokensAmount;
+  uint256 base = 10;
+
+
+  minitokensAmount = _rate.mul(base**decimals).mul(wei_amount).div(10 ** 18);
+  tokensAmount = minitokensAmount.div(base**decimals);
+  uint256 valueInWei = minitokensAmount.mul(10**18).div(10**decimals).div(_rate);
+  uint256 weiToReturn = wei_amount.sub(valueInWei);
+  return(minitokensAmount,tokensAmount,valueInWei, weiToReturn);
+}
+
+  constructor (uint _rate,address _wallet, ERC20 _song, uint _teamTokens,uint256[] constraints , uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_rate,_wallet,ERC20(_song))
   {
 
 
@@ -232,10 +251,12 @@ function SetTestNow(uint256 _testNow) public onlyOwner {
   function GetStats() public view returns (
     uint256 _contribution,
     uint256 _volume,
-    uint8 _phase
+    uint8 _phase,
+    uint256 _bonus
     )
 {
-  return (weiRaised, volume,uint8(phase) );
+  uint256 bonus = currentBonusValue();
+  return (weiRaised, volume,uint8(phase), bonus );
 }
 
 function _processPurchase(
@@ -263,7 +284,8 @@ function buyTokens(address _beneficiary) public payable returns(bool)  {
   /* _preValidatePurchase(_beneficiary, weiAmount); */
 
   // calculate token amount to be created
-  uint256 tokens = _getTokenAmount(weiAmount);
+  uint256 tokens;
+  tokens = _getTokenAmount(weiAmount);
   _processPurchase(_beneficiary, tokens);
   emit TokenPurchase(
     msg.sender,
@@ -271,18 +293,17 @@ function buyTokens(address _beneficiary) public payable returns(bool)  {
     weiAmount,
     tokens
   );
-
   _updatePurchasingState(_beneficiary, weiAmount, tokens);
   _postValidatePurchase(_beneficiary, weiAmount);
 }
 
 function _getTokenAmount(uint256 _weiAmount)
-  internal view returns (uint256)
+  internal view returns (uint256 _tokens)
 {
+  /* function TokensForWei(uint256 wei_amount,uint256 decimals, uint256 _rate) public view returns(uint256 _minitokensAmount, uint256 _tokensAmount,uint256 _valueInWei, uint256 _weiToReturn) { */
 
-  /* uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + 20).div(100); */
-  uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + currentBonusValue()).div(100);
-  return tokenAmount;
+  uint256 tokenAmount = _weiAmount.mul(rate);
+  return tokenAmount.mul(100 + currentBonusValue()).div(100);
 }
 
 

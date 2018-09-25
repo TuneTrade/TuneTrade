@@ -196,7 +196,7 @@ import Transactions from './Transactions'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
 var Web3 = require('web3')
-
+var BigNumber = require('bignumber.js')
 var SC = require('soundcloud')
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 
@@ -356,7 +356,7 @@ export default {
       } else if (this.form.soundcloud.length > 0) {
         this.embedHtml = 'Inccorect Link s- \'' + this.form.soundcloud + '\''
       } else {
-        this.embedHtml='No soundcloud link was provided...'
+        this.embedHtml='No soundcloud link was provided...' + this.form.soundcloud
       }
     },
   localNumber: function (val) {
@@ -395,7 +395,17 @@ export default {
         sendForm.append('id',newid)
         that.$store.dispatch('UploadPicture',sendForm)
         var contract = that.$store.state.web3contract
+
         var form = that.form
+        //Adjust some values by decimals
+        let decimals = parseInt(form.decimals)
+        let totalSupply = BigNumber(form.totalSupply).shiftedBy(decimals).toNumber()
+        let teamTokens = BigNumber(form.teamTokens).shiftedBy(decimals).toNumber()
+        let saleTokens = BigNumber(form.saleTokens).shiftedBy(decimals).toNumber()
+        let dec = BigNumber(decimals).toNumber
+
+        console.log('sale Tokens: ', saleTokens)
+
         // this.transactions = []
         // that.$store.dispatch('clearOldTransactions')
         var bonuses = []
@@ -412,11 +422,12 @@ export default {
 
         var constraints = []
 
-        constraints[0] = parseInt(form.minpresale)
-        constraints[1] = parseInt(form.minmainsale)
-        constraints[2] = parseInt(form.maxETH)
-        constraints[3] = parseInt(form.maxcap)
-        constraints[4] = parseInt(form.mincap)
+        //convert from ETH to WEI
+        constraints[0] = BigNumber(parseInt(form.minpresale)).shiftedBy(18).toString()
+        constraints[1] = BigNumber(parseInt(form.minmainsale)).shiftedBy(18).toString()
+        constraints[2] = BigNumber(parseInt(form.maxETH)).shiftedBy(18).toString()
+        constraints[3] = BigNumber(parseInt(form.maxcap)).shiftedBy(decimals).toString()
+        constraints[4] = BigNumber(parseInt(form.mincap)).shiftedBy(decimals).toString()
 
         that.bonuses = bonuses
 
@@ -428,21 +439,22 @@ export default {
         if(form.ico === 'Yes') {
           var title = 'Adding ICO to Blockchain'
           if (form.bonuses === 'Yes') title = 'Adding ICO and Bonuses to Blockchain'
-          that.store.dispatch('AddTransaction', {title: title})
-          var icotx = that.store.getters.getTransactionIndex
-          contract.AddICO(form.wallet, form.teamtokens, constraints, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses,form.saleTokens, function(err,res){
+          that.$store.dispatch('AddTransaction', {title: title})
+          var icotx = that.$store.getters.getTransactionIndex
+          contract.AddICO(form.wallet, teamTokens, constraints, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses, saleTokens, function(err,res){
             if(res)
             {
-              that.store.dispatch('UpdateTransactionMining',{index: icotx, number: res})
+              that.$store.dispatch('UpdateTransactionMining',{index: icotx, number: res})
             } else
             {
-              that.store.dispatch('UpdateTransactionCancelled',{index: icotx, msg: err.message})
+              that.$store.dispatch('UpdateTransactionCancelled',{index: icotx, msg: err.message})
             }
           })
         }
         that.$store.dispatch('AddTransaction',{title: 'Adding New Song in Blockchain'})
         var songtx = that.$store.getters.getTransactionIndex
-        contract.AddSong(form.name, form.author, form.genre, form.type, form.website, form.totalSupply, form.symbol, form.description, form.soundcloud, true, form.decimals, newid, function (err, res) {
+        console.log(totalSupply, decimals,form.name, form.author )
+        contract.AddSong(form.name, form.author, form.genre, form.type, form.website, totalSupply, form.symbol, form.description, form.soundcloud, true, decimals, newid, function (err, res) {
           if (res !== undefined) {
             that.$store.dispatch('UpdateTransactionMining', {index: songtx, number: res})
           } else {

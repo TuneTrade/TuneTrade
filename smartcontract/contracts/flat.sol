@@ -7,6 +7,7 @@ pragma solidity ^0.4.24;
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 contract ERC20 {
+  uint8 public decimals;
   function totalSupply() public view returns (uint256);
   function balanceOf(address who) public view returns (uint256);
   function transfer(address to, uint256 value) public returns (bool);
@@ -183,16 +184,6 @@ contract Crowdsale {
    * @param _weiAmount Value in wei involved in the purchase
    */
 
-  /**
-   * @dev Override to extend the way in which ether is converted to tokens.
-   * @param _weiAmount Value in wei to be converted into tokens
-   * @return Number of tokens that can be purchased with the specified _weiAmount
-   */
-  function _getTokenAmount(uint256 _weiAmount)
-    internal view returns (uint256)
-  {
-    return _weiAmount.mul(rate);
-  }
 
   /**
    * @dev Determines how ETH is stored/forwarded on purchases.
@@ -238,7 +229,6 @@ contract BasicToken is ERC20 {
   using SafeMath for uint256;
 
   mapping(address => uint256) balances;
-
   uint256 totalSupply_;
 
   /**
@@ -404,6 +394,8 @@ contract StandardToken is ERC20, BasicToken {
 /// @notice         This is Song ICO sale contract based on Open Zeppelin Crowdsale contract.
 ///                 It's purpose is to sell song tokens in main sale and presale.
 
+
+
 contract SongCrowdSale is Crowdsale, Ownable
 {
   enum State {PreSale,Campaign,Ended,Refund,Closed}
@@ -548,8 +540,25 @@ function CampaignState() public view returns(string) {
     token = ERC20( _tokenAddress);
   }
 
+  // !!! rate is defined as TOKENS ( full tokens not mini tokens ) per ETH. To calculate minitokens per wei we have to
+  // multiply it by 10 to power of decimals and divide by 10 to power of 18 ( because there is 10^18 weis in ETH)
+  // and then we can multiply it by amount of wei to get number of tokens.
+  // token_amount = ((price * 10**decimals) * weiAmount) / 10**18
 
-  constructor (uint _price,address _wallet, ERC20 _song, uint _teamTokens,uint256[] constraints , uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_price,_wallet,ERC20(_song))
+function TokensForWei(uint256 wei_amount,uint256 decimals, uint256 _rate) public view returns(uint256 _minitokensAmount, uint256 _tokensAmount,uint256 _valueInWei, uint256 _weiToReturn) {
+  uint256 tokensAmount;
+  uint256 minitokensAmount;
+  uint256 base = 10;
+
+
+  minitokensAmount = _rate.mul(base**decimals).mul(wei_amount).div(10 ** 18);
+  tokensAmount = minitokensAmount.div(base**decimals);
+  uint256 valueInWei = minitokensAmount.mul(10**18).div(10**decimals).div(_rate);
+  uint256 weiToReturn = wei_amount.sub(valueInWei);
+  return(minitokensAmount,tokensAmount,valueInWei, weiToReturn);
+}
+
+  constructor (uint _rate,address _wallet, ERC20 _song, uint _teamTokens,uint256[] constraints , uint _duration, uint _presaleduration,uint8[] bonuses) public Crowdsale(_rate,_wallet,ERC20(_song))
   {
 
 
@@ -625,10 +634,12 @@ function SetTestNow(uint256 _testNow) public onlyOwner {
   function GetStats() public view returns (
     uint256 _contribution,
     uint256 _volume,
-    uint8 _phase
+    uint8 _phase,
+    uint256 _bonus
     )
 {
-  return (weiRaised, volume,uint8(phase) );
+  uint256 bonus = currentBonusValue();
+  return (weiRaised, volume,uint8(phase), bonus );
 }
 
 function _processPurchase(
@@ -656,7 +667,8 @@ function buyTokens(address _beneficiary) public payable returns(bool)  {
   /* _preValidatePurchase(_beneficiary, weiAmount); */
 
   // calculate token amount to be created
-  uint256 tokens = _getTokenAmount(weiAmount);
+  uint256 tokens;
+  tokens = _getTokenAmount(weiAmount);
   _processPurchase(_beneficiary, tokens);
   emit TokenPurchase(
     msg.sender,
@@ -664,18 +676,17 @@ function buyTokens(address _beneficiary) public payable returns(bool)  {
     weiAmount,
     tokens
   );
-
   _updatePurchasingState(_beneficiary, weiAmount, tokens);
   _postValidatePurchase(_beneficiary, weiAmount);
 }
 
 function _getTokenAmount(uint256 _weiAmount)
-  internal view returns (uint256)
+  internal view returns (uint256 _tokens)
 {
+  /* function TokensForWei(uint256 wei_amount,uint256 decimals, uint256 _rate) public view returns(uint256 _minitokensAmount, uint256 _tokensAmount,uint256 _valueInWei, uint256 _weiToReturn) { */
 
-  /* uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + 20).div(100); */
-  uint256 tokenAmount = _weiAmount.mul(rate).mul(100 + currentBonusValue()).div(100);
-  return tokenAmount;
+  uint256 tokenAmount = _weiAmount.mul(rate);
+  return tokenAmount.mul(100 + currentBonusValue()).div(100);
 }
 
 
@@ -775,13 +786,12 @@ contract SongERC20 is StandardToken, Ownable
 
   string public name;
   string public symbol;
-  uint256 public decimals;
 
   modifier onlyTuneTrader {
     require (msg.sender == TuneTrader);
     _;
   }
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint256 _decimals,uint256 _id)  public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
   {
     owner = _owner;
     totalSupply_ = _supply;
@@ -859,7 +869,7 @@ contract TuneTrader {
   }
 
 
-  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico, uint256 _decimals,uint _id)
+  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico, uint8 _decimals,uint _id)
   {
 
     SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, _decimals,_id);

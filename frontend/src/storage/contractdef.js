@@ -106,7 +106,7 @@ smartContract =[
       },
       {
         "name": "_decimals",
-        "type": "uint256"
+        "type": "uint8"
       },
       {
         "name": "_id",

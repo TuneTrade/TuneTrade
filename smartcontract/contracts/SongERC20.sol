@@ -21,13 +21,12 @@ contract SongERC20 is StandardToken, Ownable
 
   string public name;
   string public symbol;
-  uint256 public decimals;
 
   modifier onlyTuneTrader {
     require (msg.sender == TuneTrader);
     _;
   }
-  constructor (address _owner, uint _supply,string _name, string _symbol, uint256 _decimals,uint256 _id)  public
+  constructor (address _owner, uint _supply,string _name, string _symbol, uint8 _decimals,uint256 _id)  public
   {
     owner = _owner;
     totalSupply_ = _supply;

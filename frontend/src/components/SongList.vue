@@ -9,6 +9,7 @@
   <div><b>Name:</b></div><div> {{currentItem.Name}}</div><div/>
   <div><b>Rate [{{currentItem.Symbol}}/ETH]: </b></div><div> {{tokensForEth(currentItem.Price, currentItem.Decimals)}}</div> <div/>
   <div><b>Rate [{{currentItem.Symbol}}/WEI]: </b></div><div> {{tokensForWei(currentItem.Price, currentItem.Decimals)}}</div><div/>
+  <div><b>Current bonus: </b></div><div> +{{currentItem.Bonus}}%</div><div/>
   <div><b>Sale Contract Address:</b></div><div> {{currentItem.saleAddress}}</div><div/>
   <div><b>Token Contract Address:</b></div><div> {{currentItem.address}}</div><div/>
   <div><b>Available tokens [{{currentItem.Symbol}}]:</b></div><div> {{availableTokens}}</div><div/>
@@ -35,6 +36,7 @@
   </div>
   </b-form>
   <div style="display:grid;grid-template-columns:auto 1fr;text-align:right;grid-column-gap:10px;">
+  <div><b>Including bonus: [TOKEN]: </b></div><div style="text-align:left"> {{tokensAndBonus}} </div>
   <div><b>You will pay [ETH]: </b></div><div style="text-align:left"> {{tokensPriceEth()}} </div>
   <div><b>[WEI]: </b></div><div style="text-align:left;"> {{tokensPriceWei(currentItem.Price, tokensToBuy)}} </div><div/>
 
@@ -113,7 +115,7 @@
       <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
-      <img v-bind:src="picLink(row.item.Id)" alt="" style="width:100px;height:100px">
+      <b-img fluid rounded v-bind:src="picLink(row.item.Id)" alt="" width="150" />
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -128,10 +130,12 @@
     <template slot="row-details" slot-scope="row">
       <b-card style="border-color:black;background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;font-size:14px;">
         <b-row style="brder-style:solid;">
-          <b-col sm="2" class="text-sm-left">
-            <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img>
+          <b-col sm="3" class="text-sm-left">
+            <!-- <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img> -->
+            <b-img   fluid    blank-color="#777" rounded v-bind:src="picLink(row.item.Id)" alt="" />
+
           </b-col>
-          <b-col sm="10">
+          <b-col sm="9">
             <b-row>
             <b-col sm="6">
               <b-row >
@@ -156,11 +160,9 @@
               </b-row>
               <b-row >
                 <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
-                <b-col sm="7" class="text-sm-left"><b-button target="_blank" v-bind:href="row.item.Website" size="sm" variant="info">Website</b-button><br>
-                  {{row.item.Website}}
+                <b-col sm="7" class="text-sm-left"><b-link class="text-primary" target="_blank" v-bind:href="WebsiteLink(row.item.Website)" variant="danger">Website </b-link>
                 </b-col>
               </b-row>
-
             </b-col>
             <b-col sm="6">
               <b-row>
@@ -193,7 +195,7 @@
             </b-row>
             <b-row >
               <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
-              <b-col sm="7" class="text-sm-left"><b-button :diabled="!tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" size="sm" variant="info">Buy</b-button></b-col>
+              <b-col sm="7" class="text-sm-left"><b-button :disabled="!tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" size="sm" variant="info">Buy</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -223,7 +225,7 @@
               Etherscan
             </b-link></b-col>
         </b-row>
-        <b-row >
+        <b-row  >
           <b-col sm="3" class="text-sm-left"><b>ICO Sale address: </b></b-col>
           <b-col sm="6" class="text-sm-left">{{row.item.saleAddress}}
 
@@ -245,6 +247,7 @@
           <p style="text-align:justify;padding:15px; height:100%;word-wrap: break-word;;border-style:solid;border-width:1px;border-color:#aaa;;border-radius:5px">  {{row.item.Description}}</p>
           </b-col>
           <b-col>
+            <!-- <b-link>{{row.item.soundcloud}}</b-link> -->
             <div v-html="row.item.iFrameEmbed"> </div>
             </b-col>
       </b-row>
@@ -287,6 +290,7 @@ var SC = require('soundcloud')
 require('./saleContractdef.js')
 SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 // SC.initialize('174155989')
+var URI = require("uri-js");
 
 var Web3 = require('web3')
 
@@ -315,7 +319,7 @@ export default {
         { key: 'Created', sortable: true, sortDirection: 'asc' },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
-        { key: 'Price', sortable: true, label: 'Price [TOKEN/ETH]' },
+        { key: 'Price', sortable: true, label: 'Rate [TOKEN/ETH]' },
         // { key: 'Volume', sortable: true, label: 'Volume [TOKEN]' },
         { key: 'Contribution', sortable: true, label: 'Contribution [ETH]' },
         // { key: 'TotalSupply', sortable: true },
@@ -334,6 +338,17 @@ export default {
     this.$store.dispatch('GetSongs')
   },
   methods: {
+    WebsiteLink: function (address)
+    {
+      let uriParsed = URI.parse(address)
+      if (uriParsed.path.length > 0) {
+        if(uriParsed.scheme === undefined)
+        console.log(uriParsed)
+        return 'http://'+address
+      } else {
+        return null
+      }
+    },
     tokenOnSale: function (state) {
       if (state === undefined) return false
       if (state === 'Presale') return true
@@ -451,6 +466,7 @@ export default {
       })
     },
     etherscanToken: function (address) {
+      if (address.length === 0) return null
       return 'https://ropsten.etherscan.io/token/' + address
     },
     etherscanAddress: function (address) {
@@ -555,8 +571,10 @@ export default {
 
     },
     picLink: function (id) {
+      console.log('Pic Link:', id)
       if (id === undefined) {
-        return ''
+        return null
+
       }
       return this.$store.state.API + '/getPicture?id=' + id
       // return 'https://source.unsplash.com/random/480x480'
@@ -567,6 +585,11 @@ export default {
     }
   },
   computed: {
+    tokensAndBonus: function () {
+      let tokensToBuy = BigNumber(this.tokensToBuy)
+      let bonus = this.currentItem.Bonus
+      return tokensToBuy.times(100+bonus).div(100).toString()
+    },
     availableTokens: function () {
       let free = BigNumber(this.currentItem.FreeTokens)
       let decimals = parseInt(this.currentItem.Decimals)
@@ -599,6 +622,7 @@ export default {
       let freeTokens = BigNumber(this.currentItem.FreeTokens)
       let tokensToBuy = BigNumber(this.tokensToBuy)
       let decimals = BigNumber(this.currentItem.Decimals)
+      let tokensAndBonus = BigNumber(this.tokensAndBonus)
       if (decimals.isNaN()) return null
       console.log('Decimals: ', decimals.sd())
       let maxValue = freeTokens.shiftedBy(-decimals.toNumber())
@@ -612,7 +636,7 @@ export default {
       let correctValue = numberofStep.times(step)
       if (correctValue.lt(step)) return 'You have to buy minimum ' + step.toFormat() + ' tokens'
       if (!correctValue.eq(tokensToBuy)) return "You have to buy mutliplication of minimum token amount."
-      if(correctValue.gt(maxValue)) return 'Not enough available tokens.'
+      if(tokensAndBonus.gt(maxValue)) return 'Not enough available tokens.'
     },
     noSongs: function () {
       return (this.songs.length === 0)

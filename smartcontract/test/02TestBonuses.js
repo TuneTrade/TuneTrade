@@ -23,6 +23,7 @@ var balance = 0;
 var assignTokens = 30000
 var teamTokens = 1000
 var rate = 500;
+var decimals = 18
 var mySong = null
 var songToken = null
 var saleInstance = null
@@ -55,7 +56,7 @@ contract("Test TuneTrader Contract Bonuses",   async (accounts)=> {
     })
 
     it("02. Should be able to add new Song with ICO", function () {
-      return expect(TuneTraderContract.AddSong("Song Name","Author","Genre",1,"website.com",assignTokens,"SYM","Description","soundcloud.com",true,1,{"gasPrice": 1})).to.be.eventually.fulfilled;
+      return expect(TuneTraderContract.AddSong("Song Name","Author","Genre",1,"website.com",assignTokens,"SYM","Description","soundcloud.com",true,decimals,1,{"gasPrice": 1})).to.be.eventually.fulfilled;
     })
   // function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico,uint _id)
 

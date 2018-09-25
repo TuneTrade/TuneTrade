@@ -27,7 +27,7 @@
                       name="" />
         </b-form-group>
       <b-form-group id="nameInputGroup"
-                    label="Contribution Wallet Address:"
+                    label="Contribution Wallet Ethereum Address:"
                     label-for="wallet">
         <b-form-input id="nameInput"
                       type="text"
@@ -43,7 +43,7 @@
 
 
       <b-form-group id="teamtokensInputGroup"
-                    label="Tokens for a team:"
+                    label="Tokens for a team [TOKEN]:"
                     label-for="teamtokens"
                     :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
@@ -60,7 +60,7 @@
       </b-form-group>
 
       <b-form-group id="saleTokensInputGroup"
-                    label="Tokens assigned to Sale Contract"
+                    label="Tokens assigned to Sale Contract [TOKEN]:"
                     label-for="saleTokens"
                     :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
@@ -77,7 +77,7 @@
       </b-form-group>
 
       <b-form-group id="minpresaleGroup"
-                    label="Minimum Contribution PreSale:"
+                    label="Minimum Contribution PreSale [ETH]:"
                     label-for="minpresale">
         <b-form-input id="minpersale"
                       type="number"
@@ -93,7 +93,7 @@
 
 
       <b-form-group id="minmainSaleGroup"
-                    label="Minimum Contribution MainSale:"
+                    label="Minimum Contribution MainSale [ETH]:"
                     label-for="minmainsale">
         <b-form-input id="minmainsale"
                       type="number"
@@ -109,7 +109,7 @@
 
 
       <b-form-group id="maxETHGroup"
-                    label="Maximum Contribution Ether"
+                    label="Maximum ICO Contribution [ETH]: "
                     label-for="maxETH">
         <b-form-input id="maxETH"
                       type="number"
@@ -125,7 +125,7 @@
       </b-form-group>
 
       <b-form-group id="maxcapgroup"
-                    label="Maximum Cap"
+                    label="Maximum Cap [TOKEN]:"
                     label-for="maxcap">
         <b-form-input id="maxcap"
                       type="number"
@@ -141,7 +141,7 @@
       </b-form-group>
 
       <b-form-group id="mincapgroup"
-                    label="Minimum Cap"
+                    label="Minimum Cap [TOKEN]:"
                     label-for="mincap">
         <b-form-input id="mincap"
                       type="number"
@@ -158,8 +158,9 @@
 
 
       <b-form-group id="priceETHGroup"
-                    label="Token Price ETH"
-                    label-for="priceETH">
+                    label="Rate [Mini Token/WEI]"
+                    label-for="priceETH"
+                    >
         <b-form-input id="priceETH"
                       type="number"
                       v-model="form.priceETH"
@@ -175,7 +176,7 @@
 
 
       <b-form-group id="durationDaysGroup"
-                    label="Campaign Duration Days"
+                    label="Main Campaign Duration [DAY]:"
                     label-for="campaignDuration">
         <b-form-input id="campaignDuration"
                       type="number"
@@ -191,7 +192,7 @@
       </b-form-group>
 
       <b-form-group id="presaledurationDaysGroup"
-                    label="Presale Duration Days"
+                    label="Presale Duration [DAY]:"
                     label-for="presalecampaignDuration">
         <b-form-input id="presalecampaignDuration"
                       type="number"
@@ -205,11 +206,8 @@
                       >
         </b-form-input>
       </b-form-group>
-
-
-
-
       </b-form-group>
+<div style="grid-column:1/4;font-size:13px; font-weight:200"> Rate adjusted by number of decimals ({{decimals}}) in [TOKEN/ETH]: {{rateDescription}}</div>
       <!-- <b-form-group id="exampleGroup4"> -->
         <!-- <b-form-checkbox-group v-model="form.checked" id="exampleChecks"> -->
           <!-- <b-form-checkbox value="me">Check me out</b-form-checkbox> -->
@@ -223,6 +221,8 @@
 </template>
 
 <script>
+var BigNumber = require('bignumber.js')
+
 var radioOptions = ['No', 'Yes']
 export default {
   data () {
@@ -251,6 +251,15 @@ export default {
     this.UnSave()
   },
   computed: {
+    rateDescription: function () {
+      var rate = this.form.priceETH
+      var decimals = parseInt(this.$store.state.formG.decimals)
+
+      return BigNumber(rate).shiftedBy(18).shiftedBy(-decimals).toFormat()
+    },
+    decimals: function () {
+      return this.$store.state.formG.decimals
+    },
     tokenNumberError: function () {
       var supply = parseInt(this.$store.state.formG.totalSupply)
       var maxcap = parseInt(this.form.maxcap)
@@ -261,7 +270,7 @@ export default {
       var maxEth = parseInt(this.form.maxETH)
       // var freeTokens = supply - saleTokens
       var teamtokens = parseInt(this.form.teamtokens)
-
+      console.log('Min cap: ', mincap, ' Max cap: ', maxcap)
       var withoutMaxCap = supply - maxcap
       if ((minmainsale + minpresale) > maxEth) return 'Maximum allowed contribution is smaller than minimum presale and main sale contribution.'
       if (teamtokens > saleTokens && teamtokens > 0) return 'Not enough tokens for a team. Check total supply or tokens assigned to ICO.'

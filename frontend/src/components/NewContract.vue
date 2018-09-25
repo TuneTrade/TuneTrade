@@ -82,7 +82,7 @@
         </b-form-input>
       </b-form-group>
       <b-form-group id="supplyGroup"
-                    label="Total Supply:"
+                    label="Total Supply [TOKEN]:"
                     label-for="totalSupply"
                     :description="totalSupplyDesc"
                     >
@@ -99,13 +99,13 @@
       </b-form-group>
 
       <b-form-group id="decimalsGroup"
-                    label="Decimals:"
+                    label="Decimals (Max:18) [NUMBER]:"
                     label-for="decimalsInput">
         <b-form-input id="decimalsInput"
                       type="number"
                       step="1"
                       min=0
-                      @keydown.native = "UnSave()"
+                      @keyup.native = "UnSave()"
                       v-model="form.decimals"
                       required
                       size="sm"
@@ -297,9 +297,9 @@ export default {
       console.log('MAGIER4 ', this.form.decimals, this.form.totalSupply)
       let supply = BigNumber(this.form.totalSupply)
       let decimals = parseInt(this.form.decimals)
-      let total = supply.shiftedBy(0 - decimals).toFormat(decimals)
+      let total = supply.shiftedBy(decimals).toFormat()
       if (this.form.totalSupply.length === 0) total = ''
-      return 'Including decimals places: ' + total
+      return 'Mini tokens (adjusted by decimals places):<br>' + total
     },
     BonusYesOrNo: function () {
       if (this.BonusDisabled) return 'No'
@@ -364,9 +364,11 @@ export default {
       this.UnSave()
     },
     UnSave () {
-      let form = {}
+      console.log('Decimals: ', this.form.decimals)
+      if (parseInt(this.form.decimals) > 18) this.form.decimals = 18
+      if (parseInt(this.form.decimals) === 0) this.form.decimals = 0
       let tmpForm = this.form
-
+      let form = {}
       this.form = form
       form['picSrc'] = tmpForm.picSrc
       for (var key in tmpForm) {

@@ -40,7 +40,7 @@ contract TuneTrader {
   }
 
 
-  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico, uint256 _decimals,uint _id)
+  function AddSong(string _name, string _author,string _genre, uint8 _entryType,string _website,uint _totalSupply,string _symbol,string _description,string _soundcloud,bool _ico, uint8 _decimals,uint _id)
   {
 
     SongERC20 song = new SongERC20(msg.sender, _totalSupply, _name, _symbol, _decimals,_id);

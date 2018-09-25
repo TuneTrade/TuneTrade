@@ -1,10 +1,11 @@
 <template lang="html">
   <div class="">
-    <!-- <b-button @click="addTransaction()"> Add </b-button>
+    <!-- <b-button @click="addTransaction()"> Add </b-button> -->
     <b-button @click="cleanTransactions()"> Clean </b-button>
-    {{pending}} -->
+    <!-- {{pending}} -->
     <center>
       <img style="height:50px" src="../assets/metamask.png"></img><br><br>
+      Last update: {{lastUpdate}}
       <p style="color:black;font-family:courier;font-weight:800">PLEASE ACCEPT YOUR TRANSACTION IN METAMASK</p>
 
    </center>
@@ -36,6 +37,9 @@ export default {
   },
 
   computed: {
+    lastUpdate: function () {
+      return this.$store.state.lastUpdate
+    },
     transactions: function () {
       var that = this
       return this.$store.state.transactions.filter(function (tx) {

@@ -20,7 +20,7 @@
                       name="" />
         </b-form-group>
       <b-form-group id="presalePeriodGroup"
-                    label="Presale Period [days]:"
+                    label="Presale Period [DAY]:"
                     label-for="presalePeriod"
                     :description = "PreSaleDescription"
                     >
@@ -55,7 +55,7 @@
       </b-form-group>
 
       <b-form-group id="firstPeriodGroup"
-                    label="First Period [days]:"
+                    label="First Period [DAY]:"
                     label-for="firstPeriod"
                     :description = "CampaignPeriodDescription"
                     >
@@ -90,7 +90,7 @@
       </b-form-group>
 
       <b-form-group id="secondPeriodGroup"
-                    label="Second Period [days]:"
+                    label="Second Period [DAY]:"
                     label-for="secondPeriod">
         <b-form-input id="secondPeriod"
                       type="number"
@@ -123,7 +123,7 @@
       </b-form-group>
 
       <b-form-group id="thirdPeriodGroup"
-                    label="Third Period [days]:"
+                    label="Third Period [DAY]:"
                     label-for="thirdPeriod">
         <b-form-input id="thirdPeriod"
                       type="number"
