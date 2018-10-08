@@ -19,7 +19,7 @@ export default {
 .localFooter
 {
   /* margin:30px 0px 0px 0px; */
-  background-color: #2B2E43;
+  background-color: #303030;
   padding:10px 10%;
   line-height: 1.8;
   width:100%;

@@ -7,6 +7,7 @@ import TokenExchange from '../components/TokenExchange'
 import NewContract from '../components/NewContract'
 import ICOContract from '../components/ICOContract'
 import Transactions from '../components/Transactions'
+import SongDetails from '../components/SongDetails'
 import About from '../components/About'
 
 Vue.use(Router)
@@ -43,6 +44,12 @@ export default new Router({
       props: true,
       name: 'Transactions',
       component: Transactions
+    },
+    {
+      path: '/songdetails/:song',
+      props: true,
+      name: 'SongDetails',
+      component: SongDetails
     }
   ]
 })

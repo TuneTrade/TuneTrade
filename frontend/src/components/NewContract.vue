@@ -7,7 +7,7 @@
       <b-form-group id="typeGroup"
                     label="Type:"
                     label-for="typeGroup"
-                    description="Song, Band or Influencer ?">
+                    description="Music,Project or Influencer ?">
         <b-form-radio-group id="typeGroup"
                     buttons
                     button-variant="outline-primary"
@@ -261,8 +261,8 @@ export default {
       unsaved: false,
       index: '',
       entryTypeOptions: [
-        {text: 'Song', value: 0},
-        {text: 'Band', value: 1},
+        {text: 'Project', value: 0},
+        {text: 'Music', value: 1},
         {text: 'Influencer', value: 2}
       ]
     }

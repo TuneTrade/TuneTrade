@@ -52,18 +52,42 @@
 
       <!-- <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe> -->
     </b-modal>
-    <b-navbar  style="border-radius:1px;margin:1px 0px 0px 0px;box-shadow:0px 0px 0px black;background-color:rgba(230,210,230,0.7);" toggleable="md" type="dark" variant="secondary">
-      <b-nav-form>
-        <b-form-input size="sm" v-model="tablefilter" class="mr-sm-2" type="text" placeholder="Search"/>
-        <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+    <b-container style="height:0px;">
+    <div class="filterText">
+    <a class="filterText"  v-bind:class="{filterTextUp: !showFilters || !songsReady, blockedFilter: !songsReady}" href="#" v-on:click="showHideFilters()">FILTERS
+      <font-awesome-icon v-if="showFilters" icon="angle-up" class="arrow fa-2x"/>
+      <font-awesome-icon v-if="!showFilters" icon="angle-down" class="arrow fa-2x"/>
+    </a>
+  </div>
+  </b-container>
+    <b-container fluid class="navbarBox" v-bind:class="{navbarBox: showFilters && songsReady
+      , hiddenNavbarBox: !showFilters  || !songsReady}">
+    <b-container  class="">
+      <div class="filterContainer">
+    <!-- <div v-if="!showFilters"/> -->
+    <b-navbar  toggleable="md" style="padding:0px;" >
+      <b-nav-form  class="filterBox">
+          <input type="text" class="searchBox" placeholder="Search" v-model="tablefilter">
+        <font-awesome-icon icon="search"  class=" searchIcon"/>
+        <!-- <b-form-input size="sm"  class="mr-sm-2" type="text" placeholder="Search"/> -->
+        <b-button size="sm"  v-on:click="filterType(3)" class="my-2 my-sm-0 typeButton" v-bind:class="{selectedType: typeDrop==3}" type="submit">ALL</b-button>
+        <b-button size="sm" v-on:click="filterType(2)" class="my-2 my-sm-0 typeButton"  v-bind:class="{selectedType: typeDrop==2}"  type="submit">INFLUENCER</b-button>
+        <b-button size="sm" v-on:click="filterType(1)" class="my-2 my-sm-0 typeButton" type="submit"  v-bind:class="{selectedType: typeDrop==1}" >MUSIC</b-button>
+        <b-button size="sm"  v-on:click="filterType(0)" class="my-2 my-sm-0 typeButton" type="submit"  v-bind:class="{selectedType: typeDrop==0}" >PROJECT</b-button>
+        <div/>
       </b-nav-form>
-      <b-nav-item-dropdown v-model="typeDrop" :text="typeDropText" right style="list-style:none">
-        <b-dropdown-item v-on:click="filterType(0)"  href="#">Song</b-dropdown-item>
-        <b-dropdown-item v-on:click="filterType(1)"  href="#">Band</b-dropdown-item>
-        <b-dropdown-item v-on:click="filterType(2)"  href="#">Influencer</b-dropdown-item>
-        <b-dropdown-item v-on:click="filterType(3)"  href="#">All</b-dropdown-item>
-      </b-nav-item-dropdown>
-    </b-navbar>
+</b-navbar>
+<div/>
+
+</div>
+</b-container>
+
+</b-container>
+
+<b-container fluid class="navbarBox">
+</b-container>
+
+<b-container>
     <div v-if="!songsReady">
 <center>      <img src="static/loading.gif"></img> <br> Loading...
 </center>
@@ -72,18 +96,16 @@
     <div v-if="noSongs && songsReady" class="noSongs">
       SONGS LIST IS EMPTY
     </div>
-  <b-table v-if="songsReady && !noSongs" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true" striped hover :items="songs" :fields="fields" small variant="danger" :filter="filterFunction" class="songsTable">
+  <b-table v-if="songsReady && !noSongs" thead-class="headerClass" thead-tr-class="headerClass" tbody-tr-class="test" tbody-class="test" tbody-td-class="test" sort-direction="desc" sort-by="Created" :current-page="currentPage" :per-page="perPage" sort-desc="true"   :items="songs" :fields="fields"  :filter="filterFunction" class="songsTable">
     <template slot="Buy" slot-scope="row">
       <b-button size="sm" variant="info"  @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
     </template>
     <template slot="show_details" slot-scope="row">
-      <b-button size="sm" @click.stop="row.toggleDetails"  variant="info"  style="width:110px;margin:5px 20px">
+      <b-button size="sm" @click.stop="row.toggleDetails"  variant="info" class="detailsButton">
       {{ row.detailsShowing ? 'Hide' : 'Show'}}  Details
       </b-button>
       <br>
-      <b-button :disabled="!tokenOnSale(row.item.State)" size="sm" @click.stop="ShowBuyModal(row.item)"  variant="info" style="width:110px; margin:5px 20px">
-      Buy Tokens
-      </b-button>
+
       <!-- {{tokensForEth(row.item.Price,row.item.Decimals)}} -->
     </template>
     <template slot="TotalSupply" slot-scope="row">
@@ -105,17 +127,17 @@
       {{SongOrBand (row.item.Type)}}
     </template>
     <template slot="Picture" slot-scope="row">
-      <div style="display:grid;grid-template-columns:1fr 2fr;">
-        <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
+      <div style="display:grid;grid-template-columns:1fr ;">
+        <!-- <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
       <img  src="../assets/pauseplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
         <a v-if="isLoading(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
       <img  src="../assets/loadingplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
 
       <a  v-bind:class="{unPlayable: !row.item.playable}" v-if="!isLoading(row.item.OrderNum) && !isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
-      <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>
+      <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a> -->
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
-      <b-img fluid rounded v-bind:src="picLink(row.item.Id)" alt="" width="150" />
+      <b-img  style="padding:0px;" v-bind:src="picLink(row.item.Id)" alt=""  height="60" width="60" />
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -258,7 +280,7 @@
     </template>
   </b-table>
 
-  <b-pagination  v-if="songsReady && !noSongs"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" variant="primary">
+  <b-pagination  v-if="songsReady && !noSongs"  size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage" class="robert">
   </b-pagination>
   <!-- <div style="width:100%;height:200px;border-style:solid;">
     TEST
@@ -275,9 +297,9 @@
         Row 1
       </b-col>
 
-
     </b-row>
   </div> -->
+</b-container>
   </div>
 </template>
 
@@ -311,11 +333,12 @@ export default {
       changing: -1,
       currentItem: {},
       tokensToBuy: '0',
+      showFilters:true,
       typeDrop: 3,
       fields: [
-        { key: 'Picture', sortable: false, label: '' },
-        { key: 'Type', sortable: false, label: '' },
-        { key: 'Name', sortable: true },
+        { key: 'Picture', sortable: false, label: ''},
+        { key: 'Type', sortable: false, label: 'Type' },
+        { key: 'Name', sortable: true},
         { key: 'Created', sortable: true, sortDirection: 'asc' },
         { key: 'Author', sortable: true },
         // { key: 'Phase', sortable: true },
@@ -327,7 +350,7 @@ export default {
         { key: 'Genre', sortable: true },
         // { key: 'Website', sortable: true },
         // { key: 'Buy', sortable: true },
-        { key: 'show_details', sortable: false, label: '' }
+        { key: 'show_details', sortable: false, label: '', tdClass: 'noPadding' }
       ],
       items: []
     }
@@ -338,6 +361,9 @@ export default {
     this.$store.dispatch('GetSongs')
   },
   methods: {
+    showHideFilters: function (){
+      this.showFilters = !this.showFilters
+    },
     WebsiteLink: function (address)
     {
       let uriParsed = URI.parse(address)

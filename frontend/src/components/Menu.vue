@@ -25,26 +25,31 @@ a {
     </center>
     </b-modal>
     <b-navbar  toggleable="sm"  class="tunetradeMenu">
+
+
       <!-- <img src="../assets/singing.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing3.jpg" class="rounded-picture"> -->
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
-        <b-navbar-brand>
+        <b-navbar-brand class="menuElement">
             <router-link exact class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
-        <b-navbar-brand>
-            <router-link  exact  class="router-link"   :to="{ name: 'NewContract', params: {} }">Create Contract</router-link>
+        <b-navbar-brand  class="menuElement">
+            <router-link  exact  class="router-link"   :to="{ name: 'NewContract', params: {} }">Create Token </router-link>
         </b-navbar-brand>
-        <b-navbar-brand>
+        <b-navbar-brand class="menuElement">
             <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
         </b-navbar-brand>
-        <b-navbar-brand>
+        <b-navbar-brand class="menuElement">
+            <router-link   exact class="router-link"    :to="{ name: 'SongDetails', params: {song: {}} }">Song Details</router-link>
+        </b-navbar-brand>
+        <b-navbar-brand class="menuElement">
             <router-link   exact class="router-link"    :to="{ name: 'Transactions', params: {pending: false} }">Transactions</router-link>
         </b-navbar-brand>
-        <b-navbar-brand>
+        <b-navbar-brand class="menuElement">
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
-        <div style="font-family:Sans-serif;font-size:14px;width:100%;text-align:right;color:red"v-if="!loggedIn && !metaMaskUninstalled"><b>PLEASE LOGIN TO METAMASK</b></div>
+        <div class ="metamaskInfo" v-if="!loggedIn && !metaMaskUninstalled"><b>Please login to Metamask</b></div>
         <div class="debug">
         {{metaMaskUninstalled}}
         {{metaMaskAccount}}
@@ -52,10 +57,7 @@ a {
         {{loggedIn}}
       </div>
       <div/>
-        <div class="menuLogo">
-          <img src="../assets/logotunetradesmall.png" style="width:68px;margin-top:0px;"></img>
 
-      </div>
       <!-- {{ethereumAddress}} -->
     </b-navbar>
     <!-- </b-container> -->
