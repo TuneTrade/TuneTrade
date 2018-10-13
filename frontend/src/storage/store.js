@@ -285,7 +285,7 @@ export const store = new Vuex.Store({
             songsList[index].saleAddress = res.data.songSale
             songsList[index].iFrameEmbed = 'Soundcloud link: \'' + songsList[index].soundcloud  + '\''
             var searcher =tmp.address
-            SC.oEmbed(songsList[index].soundcloud, {auto_play: false,height: 10, maxheight: 166,width:10}).then(function (embed) {
+            SC.oEmbed(songsList[index].soundcloud, {auto_play: false,height: 300, maxheight: 300, width:200}).then(function (embed) {
               var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
                 return (el.address == searcher)
               })

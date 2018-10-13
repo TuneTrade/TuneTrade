@@ -137,7 +137,7 @@
       <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a> -->
       <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
       <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe> -->
-      <b-img  style="padding:0px;" v-bind:src="picLink(row.item.Id)" alt=""  height="60" width="60" />
+      <b-img  style="padding:0px;" v-bind:src="picLink(row.item.Id)" alt=""  height="52" width="52" />
     </div>
       <!-- {{SongOrBand (row.item.Type)}} -->
     </template>
@@ -149,133 +149,144 @@
       {{ getLocalTime(row.item.Created)}}
     </template>
 
-    <template slot="row-details" slot-scope="row">
-      <b-card style="border-color:black;background-color:rgba(0,0,0,0.1);border-width:1px;border-style:solid;font-size:14px;">
-        <b-row style="brder-style:solid;">
-          <b-col sm="3" class="text-sm-left">
+    <template slot="row-details" slot-scope="row" style="padding:0px;">
+      <b-card style="background-color:inherit;font-size:11px;"   class="detailsRowCard" >
+        <b-row>
+          <b-col sm="2" class="text-sm-left">
             <!-- <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img> -->
-            <b-img   fluid    blank-color="#777" rounded v-bind:src="picLink(row.item.Id)" alt="" />
+            <b-img  blank-color="#777" v-bind:src="picLink(row.item.Id)"  width="150" />
 
           </b-col>
-          <b-col sm="9">
+          <b-col sm="10">
             <b-row>
+            <b-col sm="8">
+            <b-row class="detailsRow">
             <b-col sm="6">
-              <b-row >
-                <b-col sm="5" class="text-sm-left"><b>Type:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{ SongOrBand(row.item.Type) }}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="4" class="text-sm-left">Type:</b-col>
+                <b-col sm="8" class="text-sm-left detailsInformation">{{ SongOrBand(row.item.Type) }}</b-col>
               </b-row>
-              <b-row >
-                <b-col sm="5" class="text-sm-left"><b>Name:</b></b-col>
-                <b-col sm="7" class="text-sm-left">&quot;{{ row.item.Name }}&quot;</b-col>
+              <b-row  class="detailsRow">
+                <b-col sm="4" class="text-sm-left">Name:</b-col>
+                <b-col sm="8" class="text-sm-left detailsInformation">&quot;{{ row.item.Name }}&quot;</b-col>
               </b-row>
-              <b-row>
-                <b-col sm="5" class="text-sm-left"><b>Author:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{ row.item.Author }}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="4" class="text-sm-left">Author:</b-col>
+                <b-col sm="8" class="text-sm-left detailsInformation">{{ row.item.Author }}</b-col>
               </b-row>
-              <b-row>
-                <b-col sm="5" class="text-sm-left"><b>Price [{{row.item.Symbol}}/ETH]:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{tokensForEth(row.item.Price,row.item.Decimals)}}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="4" class="text-sm-left">Price [{{row.item.Symbol}}/ETH]:</b-col>
+                <b-col sm="8" class="text-sm-left detailsInformation">{{tokensForEth(row.item.Price,row.item.Decimals)}}</b-col>
               </b-row>
-              <b-row>
-                <b-col sm="5" class="text-sm-left"><b>Phase:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{Phase(row.item.State)}}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="4" class="text-sm-left">Phase:</b-col>
+                <b-col sm="8" class="text-sm-left detailsInformation">{{Phase(row.item.State)}}</b-col>
               </b-row>
-              <b-row >
-                <b-col sm="5" class="text-sm-left"><b>Website:</b></b-col>
-                <b-col sm="7" class="text-sm-left"><b-link class="text-primary" target="_blank" v-bind:href="WebsiteLink(row.item.Website)" variant="danger">Website </b-link>
+              <b-row class="detailsRow" >
+                <b-col sm="4" class="text-sm-left">Website:</b-col>
+                <b-col sm=8 class="text-sm-left detailsInformation"><b-link class="text-primary" target="_blank" v-bind:href="WebsiteLink(row.item.Website)" variant="danger">{{WebsiteLink(row.item.Website)}} </b-link>
                 </b-col>
               </b-row>
             </b-col>
             <b-col sm="6">
-              <b-row>
-                <b-col sm="5" class="text-sm-left"><b>Contribution [ETH]:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{ Price(row.item.Contribution) }}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="5" class="text-sm-left">Contribution [ETH]:</b-col>
+                <b-col sm="7" class="text-sm-left detailsInformation">{{ Price(row.item.Contribution) }}</b-col>
               </b-row>
-              <b-row>
-                <b-col sm="5" class="text-sm-left"><b>Volume [{{row.item.Symbol}}]:</b></b-col>
-                <b-col sm="7" class="text-sm-left">{{ BigValue(row.item.Volume,row.item.Decimals) }}</b-col>
+              <b-row class="detailsRow">
+                <b-col sm="5" class="text-sm-left">Volume [{{row.item.Symbol}}]:</b-col>
+                <b-col sm="7" class="text-sm-left detailsInformation">{{BigValue(row.item.Volume,row.item.Decimals) }}</b-col>
               </b-row>
+            <b-row  class="detailsRow">
+              <b-col sm="5" class="text-sm-left">Total Supply [{{row.item.Symbol}}]:</b-col>
+              <b-col sm="7" class="text-sm-left detailsInformation">{{ BigValue(row.item.TotalSupply,row.item.Decimals) }}</b-col>
+            </b-row class="detailsRow">
             <b-row >
-              <b-col sm="5" class="text-sm-left"><b>Total Supply [{{row.item.Symbol}}]:</b></b-col>
-              <b-col sm="7" class="text-sm-left">{{ BigValue(row.item.TotalSupply,row.item.Decimals) }}</b-col>
+              <b-col sm="5" class="text-sm-left">Decimals:</b-col>
+              <b-col sm="7" class="text-sm-left detailsInformation">{{row.item.Decimals}}</b-col>
             </b-row>
-            <b-row >
-              <b-col sm="5" class="text-sm-left"><b>Decimals:</b></b-col>
-              <b-col sm="7" class="text-sm-left">{{row.item.Decimals}}</b-col>
+            <b-row class="detailsRow">
+              <b-col sm="5" class="text-sm-left">Genre:</b-col>
+              <b-col sm="7" class="text-sm-left detailsInformation">{{ row.item.Genre }}</b-col>
             </b-row>
-            <b-row>
-              <b-col sm="5" class="text-sm-left"><b>Genre:</b></b-col>
-              <b-col sm="7" class="text-sm-left">{{ row.item.Genre }}</b-col>
+            <b-row class="detailsRow" >
+              <b-col sm="5" class="text-sm-left">Created:</b-col>
+              <b-col sm="7" class="text-sm-left detailsInformation">{{ getLocalTime( row.item.Created )}}</b-col>
             </b-row>
-            <b-row >
-              <b-col sm="5" class="text-sm-left"><b>Created:</b></b-col>
-              <b-col sm="7" class="text-sm-left">{{ getLocalTime( row.item.Created )}}</b-col>
+          </b-col>
+        </b-row>
+        <b-row class="detailsRow">
+            <b-col sm="12" class="text-sm-center">
+              <b-button  v-if="tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" variant="info" class="buyCoinButton">BUY COIN</b-button></b-col>
+          </b-row>
+        </b-col>
+          <b-col sm="4">
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">Owner:</b-col>
             </b-row>
-            <b-row >
-              <b-col>---
+            <b-row class="detailsRow" >
+            <b-col sm="12" class="text-sm-left detailsInformation"> {{row.item.Owner}}</b-col>
+            </b-row>
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">
+              <b-link target="_blank" style="text-align:left" class="text-primary" v-bind:href="etherscanAddress(row.item.Owner)" variant="danger">
+                  Etherscan
+                </b-link>
               </b-col>
             </b-row>
-            <b-row >
-              <b-col sm="5" class="text-sm-left"><b>Buy:</b></b-col>
-              <b-col sm="7" class="text-sm-left"><b-button :disabled="!tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" size="sm" variant="info">Buy</b-button></b-col>
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">Token address:</b-col>
             </b-row>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col sm="2">
-          </b-col>
-          <b-col sm="10" style="margin:20px 0px">
-          </b-col>
-        </b-row>
-        <b-row >
-          <b-col sm="3" class="text-sm-left"><b>Owner:</b></b-col>
-          <b-col sm="6 " class="text-sm-left"> {{row.item.Owner}}
+            <b-row class="detailsRow" >
+            <b-col sm="12" class="text-sm-left detailsInformation"> {{row.item.address}}</b-col>
+            </b-row>
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">
+              <b-link target="_blank" style="text-align:left" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
+                  Etherscan
+                </b-link>
+              </b-col>
+            </b-row>
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">Sale address:</b-col>
+            </b-row>
+            <b-row class="detailsRow" >
+            <b-col sm="12" class="text-sm-left detailsInformation"> {{row.item.saleAddress}}</b-col>
+            </b-row>
+            <b-row class="detailsRow" >
+              <b-col sm="12" class="text-sm-left">
+              <b-link target="_blank" style="text-align:left" class="text-primary" v-bind:href="etherscanToken(row.item.saleAddress)" variant="danger">
+                  Etherscan
+                </b-link>
+              </b-col>
+            </b-row>
+
 
           </b-col>
-          <b-col sm="3">
-            <b-link target="_blank" class="text-primary" v-bind:href="etherscanAddress(row.item.Owner)" variant="danger">
-              Etherscan
-            </b-link>
-          </b-col>
-        </b-row>
-        <b-row >
-          <b-col sm="3" class="text-sm-left"><b>Token Contract address: </b></b-col>
-          <b-col sm="6" class="text-sm-left">{{row.item.address}}
-
-          </b-col>
-          <b-col sm="3" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.address)" variant="danger">
-              Etherscan
-            </b-link></b-col>
-        </b-row>
-        <b-row  >
-          <b-col sm="3" class="text-sm-left"><b>ICO Sale address: </b></b-col>
-          <b-col sm="6" class="text-sm-left">{{row.item.saleAddress}}
-
-          </b-col>
-          <b-col sm="3" class="text-sm-left">  <b-link target="_blank" class="text-primary" v-bind:href="etherscanToken(row.item.saleAddress)" variant="danger">
-              Etherscan
-            </b-link></b-col>
         </b-row>
         </b-col>
     </b-row>
-
-    <br>
-    <b-row >
-      <b-col xs="2" class="text-sm-left"><b>Description:</b></b-col>
-      <b-col xs="6" class="text-sm-left"><b></b></b-col>
-    </b-row>
-      <b-row>
-        <b-col xs="6" class="text-sm-left" >
-          <p style="text-align:justify;padding:15px; height:100%;word-wrap: break-word;;border-style:solid;border-width:1px;border-color:#aaa;;border-radius:5px">  {{row.item.Description}}</p>
+      <b-row class="detailsRow">
+        <b-col sm="12" class="text-justify" >
+          <p style="">  {{row.item.Description}}</p>
           </b-col>
-          <b-col>
+      </b-row>
+      <b-row class="detailsRow">
+        <b-col  v-if="row.item.playable" sm="6" class="embedTD">
             <!-- <b-link>{{row.item.soundcloud}}</b-link> -->
-            <div v-html="row.item.iFrameEmbed"> </div>
-            </b-col>
+            <div v-if="row.item.playable" v-html="row.item.iFrameEmbed"> test </div>
+        </b-col>
+        <b-col  v-if="row.item.playable"  sm="6" class="embedTD">
+            <!-- <b-link>{{row.item.soundcloud}}</b-link> -->
+            <div  v-if="row.item.playable" v-html="row.item.iFrameEmbed"> </div>
+        </b-col>
       </b-row>
 
-    <br>
-         <b-button size="sm" @click="row.toggleDetails">Hide Details</b-button>
+    <b-row class="detailsRow" >
+      <b-col sm="12" class="text-sm-center">
+        <b-button v-if="tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)" variant="info" class="buyCoinButton">BUY  COIN</b-button>
+      </b-col>
+    </b-row>
       </b-card>
     </template>
   </b-table>

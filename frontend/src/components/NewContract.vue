@@ -1,13 +1,16 @@
 <template>
   <div>
-    <b-tabs card class="contractTabs"   v-model="index">
-      <b-tab title="General" class="contractTab">
+    <b-container>
+    <b-tabs card class="contractTabs"   v-model="index" nav-class="contractTabsNav" nav-wrapper-class="contractTabsNavBar">
+      <b-tab title="General" class="contractTab" title-item-class="newContractTitle" title-link-class="newContractTitle grey1" >
     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
       <div class="newContractFormContainer">
       <b-form-group id="typeGroup"
                     label="Type:"
                     label-for="typeGroup"
-                    description="Music,Project or Influencer ?">
+                    description="Music,Project or Influencer ?"
+                    class="newContractLabel"
+                    >
         <b-form-radio-group id="typeGroup"
                     buttons
                     button-variant="outline-primary"
@@ -16,11 +19,15 @@
                     @change="UnSave()"
                     v-model="form.type"
                     :options="entryTypeOptions"
-                    name="radioBtnOutline" />
+                    name="radioBtnOutline"
+                    style="width:300px;"
+                     />
       </b-form-group>
       <b-form-group id="nameInputGroup"
                     label="Name:"
-                    label-for="nameInput">
+                    label-for="nameInput"
+                    class="newContractLabel"
+                    >
         <b-form-input id="nameInput"
                       type="text"
                       v-model="form.name"
@@ -28,63 +35,80 @@
                       optional
                       size="sm"
                       placeholder="Enter name"
-
+                      class="newContractInput"
                       >
         </b-form-input>
       </b-form-group>
       <b-form-group id="authorNameGroup"
                     label="Author:"
-                    label-for="authorName">
+                    label-for="authorName"
+                    class="newContractLabel"
+                    >
         <b-form-input size="sm" id="authorName"
                       type="text"
                       v-model="form.author"
                       @keydown.native = "UnSave()"
                       optional
-                      placeholder="Enter author's name">
+                      placeholder="Enter author's name"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
       <b-form-group id="websiteLink"
                     label="Website:"
-                    label-for="website">
+                    label-for="website"
+                    class="newContractLabel"
+                    >
         <b-form-input id="website"
                       type="text"
                       v-model="form.website"
                       optional
                       @keydown.native = "UnSave()"
                       size="sm"
-                      placeholder="Enter website link">
+                      placeholder="Enter website link"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="websiteLink"
                     label="Soundcloud:"
-                    label-for="soundcloud">
+                    label-for="soundcloud"
+                    class="newContractLabel"
+                    >
         <b-form-input id="soudncloud"
                       type="text"
                       v-model="form.soundcloud"
                       optional
                       @keydown.native = "UnSave()"
                       size="sm"
-                      placeholder="Enter soundcloud link">
+                      placeholder="Enter soundcloud link"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="symbolGroup"
                     label="Token Symbol:"
-                    label-for="symbol">
+                    label-for="symbol"
+                    class="newContractLabel"
+                    >
         <b-form-input id="symbol"
                       type="text"
                       @keydown.native = "UnSave()"
                       v-model="form.symbol"
                       optional
                       size="sm"
-                      placeholder="Enter symbol">
+                      placeholder="Enter symbol"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
       <b-form-group id="supplyGroup"
                     label="Total Supply [TOKEN]:"
                     label-for="totalSupply"
                     :description="totalSupplyDesc"
+                    class="newContractLabel"
                     >
         <b-form-input id="totalSupply"
                       type="text"
@@ -94,13 +118,17 @@
                       v-model="form.totalSupply"
                       required
                       size="sm"
-                      placeholder="Enter symbol">
+                      placeholder="Enter symbol"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="decimalsGroup"
                     label="Decimals (Max:18) [NUMBER]:"
-                    label-for="decimalsInput">
+                    label-for="decimalsInput"
+                    class="newContractLabel"
+                    >
         <b-form-input id="decimalsInput"
                       type="number"
                       step="1"
@@ -109,54 +137,68 @@
                       v-model="form.decimals"
                       required
                       size="sm"
-                      placeholder="Enter decimals">
+                      placeholder="Enter decimals"
+                      class="newContractInput"
+                      >
         </b-form-input>
       </b-form-group>
 
       <b-form-group id="pictureGroup"
-                    label="Album Image"
-                    label-for="picture">
+                    label="Album Image:"
+                    label-for="picture"
+                    class="newContractLabel"
+                    >
       <b-form-file id="picture"
                       accept=".jpg, .png, .gif"
                       v-model="form.picture"
                       optional
                       ref="picName"
                       @change.native="ReadPicture($event,this)"
-                      style="font-size:12px; font-weight:600;height:30px"
-                      placeholder="Please provide album image">
+                      placeholder="Please provide album image"
+                      class="newContractInput"
+                      >
         </b-form-file>
       </b-form-group>
 
       <b-form-group id="exampleInputGroup3" style="grid-row:4"
                     label="Genre:"
-                    label-for="exampleInput3">
+                    label-for="exampleInput3"
+                    class="newContractLabel"
+                    >
         <b-form-select id="exampleInput3"
                       :options="genres"
                       optional
                       v-model="form.genre"
                       size="sm"
                       @change="UnSave()"
-                      placeholder="Select genre">
+                      placeholder="Select genre"
+                      class="newContractInput"
+                      style="color:#fafafa;"
+                      >
 
         </b-form-select>
       </b-form-group>
-      <div style="grid-column:3/4;grid-row:4/6;padding:10px 40px;">
-        <img ref="picPreview" style="width:200px;height:200px"></img>
+      <div style="grid-column:3/4;grid-row:4/5;margin:-30px 0px 0px 0px;text-align:right;">
+        <img ref="picPreview" style="width:100%;"></img>
 
       </div>
-      <div style="grid-column:1/3;grid-row:5;">
+      <div style="grid-column:1/4;grid-row:5;">
       <b-form-group  id="descriptionGroup"
                     label="Description:"
                     label-for="description"
-                    v-bind:description="numCharacters">
+                    v-bind:description="numCharacters"
+                    class="newContractLabel"
+                    >
         <b-form-textarea id="description"
                       v-model="form.description"
                       @input="LimitText()"
-                      rows=3
+                      rows=4
                       no-resize
                       wrap
                       max-rows = 6
-                      placeholder="Description (Max: 200 characters)">
+                      placeholder="Description (Max: 200 characters)"
+                      class="newContractInput"
+                      >
 
         </b-form-textarea>
 
@@ -171,16 +213,17 @@
     </div>
     </b-form>
   </b-tab>
-  <b-tab   :title="ICOTitle"  class="contractTab">
+  <b-tab  title-item-class="newContractTitle" title-link-class="newContractTitle grey2" :title="ICOTitle"  class="contractTab">
     <ICOContract/>
   </b-tab>
-  <b-tab  :disabled="BonusDisabled" :title="'Bonuses ('+ this.BonusYesOrNo +')'"  class="contractTab">
+  <b-tab   title-item-class="newContractTitle" title-link-class="newContractTitle grey3 " :disabled="BonusDisabled" :title="'Bonuses ('+ this.BonusYesOrNo +')'"  class="contractTab">
     <Bonuses/>
   </b-tab>
-  <b-tab title="Summary & Create" class="contractTab">
+  <b-tab  title-item-class="newContractTitle" title-link-class="newContractTitle grey4" title="Summary & Create" class="contractTab">
     <SummaryNewContract/>
   </b-tab>
 </b-tabs>
+</b-container>
 <!-- {{unsaved}} -->
   </div>
 </template>
@@ -315,7 +358,7 @@ export default {
     ICOTitle: function () {
       var isICO = 'No'
       if (this.$store.state.formI.ico === 'Yes') isICO = 'Yes'
-      return 'ICO Contract (' + isICO + ')'
+      return 'Token Sale (' + isICO + ')'
     },
     numCharacters: function () {
       return 'Characters:' + this.form.description.length

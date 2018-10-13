@@ -11,8 +11,9 @@
         </b-form-checkbox> -->
 
         <b-form-group id="ICOYesNoGroup"
-                      label="Create ICO Contract ?"
+                      label="Create Token Sale ?"
                       label-for="ICOYesNoGroup"
+                      class="newContractLabel"
                       >
           <b-form-radio-group id="ICOYesNoGroup"
                       button-variant="outline-info"
@@ -28,11 +29,13 @@
         </b-form-group>
       <b-form-group id="nameInputGroup"
                     label="Contribution Wallet Ethereum Address:"
+                    class="newContractLabel"
                     label-for="wallet">
         <b-form-input id="nameInput"
                       type="text"
                       v-model="form.wallet"
                       required
+                      class="newContractInput"
                       :disabled="ICODisabled"
                       size="sm"
                       @keydown.native = "UnSave()"
@@ -45,12 +48,14 @@
       <b-form-group id="teamtokensInputGroup"
                     label="Tokens for a team [TOKEN]:"
                     label-for="teamtokens"
+                    class="newContractLabel"
                     :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
                       type="number"
                       v-model="form.teamtokens"
                       @change = "UnSave()"
                       :disabled="ICODisabled"
+                      class="newContractInput"
                       optional
                       @keydown.native = "UnSave()"
                       size="sm"
@@ -62,6 +67,7 @@
       <b-form-group id="saleTokensInputGroup"
                     label="Tokens assigned to Sale Contract [TOKEN]:"
                     label-for="saleTokens"
+                    class="newContractLabel"
                     :description = "totalSupplyInfo">
         <b-form-input id="teamtokens"
                       type="text"
@@ -69,6 +75,7 @@
                       @change = "UnSave()"
                       :disabled="ICODisabled"
                       optional
+                      class="newContractInput"
                       @keydown.native = "UnSave()"
                       size="sm"
                       step="0.1"
@@ -78,11 +85,13 @@
 
       <b-form-group id="minpresaleGroup"
                     label="Minimum Contribution PreSale [ETH]:"
+                     class="newContractLabel"
                     label-for="minpresale">
         <b-form-input id="minpersale"
                       type="number"
                       v-model="form.minpresale"
                       :disabled="ICODisabled"
+                      class="newContractInput"
                       @keydown.native = "UnSave()"
                       @change = "UnSave()"
                       optional
@@ -94,12 +103,14 @@
 
       <b-form-group id="minmainSaleGroup"
                     label="Minimum Contribution MainSale [ETH]:"
+                     class="newContractLabel"
                     label-for="minmainsale">
         <b-form-input id="minmainsale"
                       type="number"
                       v-model="form.minmainsale"
                       :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
+                      class="newContractInput"
                       @change = "UnSave()"
                       optional
                       size="sm"
@@ -110,12 +121,14 @@
 
       <b-form-group id="maxETHGroup"
                     label="Maximum ICO Contribution [ETH]: "
+                     class="newContractLabel"
                     label-for="maxETH">
         <b-form-input id="maxETH"
                       type="number"
                       v-model="form.maxETH"
                       :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
+                      class="newContractInput"
                       @change = "UnSave()"
                       optional
                       size="sm"
@@ -126,10 +139,12 @@
 
       <b-form-group id="maxcapgroup"
                     label="Maximum Cap [TOKEN]:"
+                     class="newContractLabel"
                     label-for="maxcap">
         <b-form-input id="maxcap"
                       type="number"
                       @keydown.native = "UnSave()"
+                      class="newContractInput"
                       :disabled="ICODisabled"
                       @change = "UnSave()"
                       v-model="form.maxcap"
@@ -142,11 +157,13 @@
 
       <b-form-group id="mincapgroup"
                     label="Minimum Cap [TOKEN]:"
+                    class="newContractLabel"
                     label-for="mincap">
         <b-form-input id="mincap"
                       type="number"
                       v-model="form.mincap"
                       @keydown.native = "UnSave()"
+                      class="newContractInput"
                       :disabled="ICODisabled"
                       @change = "UnSave()"
                       optional
@@ -159,12 +176,14 @@
 
       <b-form-group id="priceETHGroup"
                     label="Rate [Mini Token/WEI]"
+                    class="newContractLabel"
                     label-for="priceETH"
                     >
         <b-form-input id="priceETH"
                       type="number"
                       v-model="form.priceETH"
                       @keydown.native = "UnSave()"
+                      class="newContractInput"
                       :disabled="ICODisabled"
                       @change="UnSave()"
                       optional
@@ -177,12 +196,14 @@
 
       <b-form-group id="durationDaysGroup"
                     label="Main Campaign Duration [DAY]:"
+                    class="newContractLabel"
                     label-for="campaignDuration">
         <b-form-input id="campaignDuration"
                       type="number"
                       v-model="form.campaignDuration"
                       @change="UnSave()"
                       :disabled="ICODisabled"
+                      class="newContractInput"
                       @keydown.native = "UnSave()"
                       optional
                       size="sm"
@@ -193,11 +214,13 @@
 
       <b-form-group id="presaledurationDaysGroup"
                     label="Presale Duration [DAY]:"
+                    class="newContractLabel"
                     label-for="presalecampaignDuration">
         <b-form-input id="presalecampaignDuration"
                       type="number"
                       v-model="form.presaleDuration"
                       @change="UnSave()"
+                      class="newContractInput"
                       :disabled="ICODisabled"
                       @keydown.native = "UnSave()"
                       optional
@@ -347,6 +370,13 @@ export default {
 }
 </script>
 <style lang="css">
-
+  .form-control:disabled {
+    background-color:#909090;
+    opacity:0.7;
+  }
+.text-muted {
+  color:#a0a0a0 !important;
+  font-size:12px;
+}
 </style>
 <!-- b-form-1.vue -->

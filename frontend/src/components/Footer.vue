@@ -18,28 +18,20 @@ export default {
 
 .localFooter
 {
-  /* margin:30px 0px 0px 0px; */
   background-color: #303030;
-  padding:10px 10%;
-  line-height: 1.8;
+  /* padding:10px 10%; */
+  line-height: 3.8;
   width:100%;
   text-align: center;
-  font-weight:200;
+  font-weight:400;
+  letter-spacing:2px;
   font-size:16px;
   color:#fafafa;
-  /* padding:30px; */
-  /* position */
-  /* position:fixed; */
-  /* bottom:0px; */
   z-index:999;
-  color:white;
+  color:#fafafa;
   height:80px;
-  /* bottom:-400px; */
-  /* box-shadow: -1px -2px 10px black; */
-  /* box-shadow: 0px -2px 2px black; */
+  font-family:Roboto;
 
-
-  /* position:relative; */
 }
 
 </style>

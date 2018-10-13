@@ -4,72 +4,74 @@
 
     <h4>Contract Summary</h4>
 
-    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px" variant="primary">Create Contract</b-button> <span style="font-size:13px;color:red;padding:0px;margin:0px" v-if="web3undefined"><br>It looks like Metamask is not installed in this browser.<br><br></span>
-          <b-card no-body class="mb-1 aCard">
-            <b-card-header header-tag="header" class="p-1" role="tab" style="padding:10px;">
-              <b-btn block href="#" v-b-toggle.accordion1 variant="info">General</b-btn>
+    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px;background-color:#17a2b8" >Create Contract</b-button> <span style="font-size:13px;color:red;padding:0px;margin:0px" v-if="web3undefined"><br>It looks like Metamask is not installed in this browser.<br><br></span>
+          <b-card no-body class="mb-1 summarySectionTitle">
+            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab" style="">
+              <div v-b-toggle.accordion1 class="summarySectionTitle" >General</div>
             </b-card-header>
             <b-collapse  id="accordion1" visible accordions="my-accordion" role="tabpanel">
               <b-card-body class="summaryContainer contractTab">
 
-                <div class="summaryElement">
-                  <div class="summaryTitle">Type:</div>
-                  <div class="summaryContent">{{SongOrBand(form.type)}}</div>
-                </div>
-
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Name:</div>
-                  <div class="summaryContent">{{form.name}}</div>
-                </div>
-
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Author:</div>
-                  <div class="summaryContent">{{form.author}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Website:</div>
-                  <div class="summaryContent">{{form.website}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Token symbol:</div>
-                  <div class="summaryContent">{{form.symbol}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Total supply:</div>
-                  <div class="summaryContent">{{localNumber(form.totalSupply)}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Decimals:</div>
-                  <div class="summaryContent">{{localNumber(form.decimals)}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="summaryTitle">Genre:</div>
-                  <div class="summaryContent">{{form.genre}}</div>
-                </div>
-
-                <div class="summaryElement" style="grid-column:1/2;">
-                  <div class="summaryTitle" v-if="pictureValid" ></div>
-                  <div class="summaryContent"><img v-if="pictureValid" style="width:200px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
+                <div class="summaryElement" style="grid-row:1/6">
+                  <div class="newContractLabel" v-if="pictureValid" ></div>
+                  <div class=""><img v-if="pictureValid" style="width:150px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
                   <span style="color:red;font-weight:600;" v-if="!pictureValid">Picture is missing</span>
                   </div>
                 </div>
 
-                <div class="summaryElement"  style="grid-column:2/4;margin-top:10px;padding:0px 10px 0px 0px;">
-                  <div class="summaryTitle"></div>
-                  <div style="width:100%"class="summaryContent" v-html="embedHtml"> {{embedHtml}}</div>
+                <div class="summaryElement">
+                  <div class="newContractLabel">Type:</div>
+                  <div class="summaryValue">{{SongOrBand(form.type)}}</div>
+                </div>
+
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Name:</div>
+                  <div class="summaryValue">{{form.name}}</div>
+                </div>
+
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Author:</div>
+                  <div class="summaryValue">{{form.author}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Website:</div>
+                  <div class="summaryValue">{{form.website}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Token symbol:</div>
+                  <div class="summaryValue">{{form.symbol}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Total supply:</div>
+                  <div class="summaryValue">{{localNumber(form.totalSupply)}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Decimals:</div>
+                  <div class="summaryValue">{{localNumber(form.decimals)}}</div>
+                </div>
+
+                <div class="summaryElement">
+                  <div class="newContractLabel">Genre:</div>
+                  <div class="summaryValue">{{form.genre}}</div>
+                </div>
+
+
+
+                <div class="summaryElement"  style="grid-column:3/5;">
+                  <div class="newContractLabel"></div>
+                  <div style="width:100%"class="embedTD" v-html="embedHtml"> {{embedHtml}}</div>
                   <!-- <div style="grid-column:1/4;" >{{form.soundcloud}}</div> -->
                 </div>
 
                 <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
-                  <div class="summaryTitle">Description:</div>
-                  <div class="summaryContent">{{form.description}}</div>
+                  <div class="newContractLabel">Description:</div>
+                  <div class="summaryValue">{{form.description}}</div>
                 </div>
 
 
@@ -330,6 +332,7 @@ export default {
       for (var key in this.$store.state.formB) {
         lForm[key] = this.$store.state.formB[key]
       }
+      console.log(lForm)
       return lForm
     },
     pictureName: function () {
@@ -347,7 +350,7 @@ export default {
       // var exp = '/test/'
       var match = this.form.soundcloud.match(exp)
       if (match !==null && match[0] === this.form.soundcloud){
-        SC.oEmbed(this.form.soundcloud, {auto_play: false,height: 166, maxheight: 81}).then(function (embed) {
+        SC.oEmbed(this.form.soundcloud, {auto_play: false,height: 300, maxheight: 300}).then(function (embed) {
           that.embedHtml = embed.html
         }).catch(function (err) {
           that.embedHtml= that.form.soundcloud + " - link is invalid"
