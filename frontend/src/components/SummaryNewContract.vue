@@ -12,10 +12,12 @@
             <b-collapse  id="accordion1" visible accordions="my-accordion" role="tabpanel">
               <b-card-body class="summaryContainer contractTab">
 
-                <div class="summaryElement" style="grid-row:1/6">
+                <div class="summaryElement" style="grid-row:1/6;">
                   <div class="newContractLabel" v-if="pictureValid" ></div>
-                  <div class=""><img v-if="pictureValid" style="width:150px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
-                  <span style="color:red;font-weight:600;" v-if="!pictureValid">Picture is missing</span>
+                  <div class="" style="margin-left:0px;"><img v-if="pictureValid" style="width:150px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
+                   <font-awesome-icon icon="question"  class="fa-6x" v-if="!pictureValid"/>
+                 <br>
+                  <span class="missingPicture" v-if="!pictureValid">Picture is required</span>
                   </div>
                 </div>
 
@@ -65,11 +67,10 @@
 
                 <div class="summaryElement"  style="grid-column:3/5;">
                   <div class="newContractLabel"></div>
-                  <div style="width:100%"class="embedTD" v-html="embedHtml"> {{embedHtml}}</div>
-                  <!-- <div style="grid-column:1/4;" >{{form.soundcloud}}</div> -->
+                  <div style="width:100%"class="embedTD" v-html="embedHtml"></div>
                 </div>
 
-                <div class="summaryElement" style="grid-column:1/4;margin-top:10px;padding:0px 10px 0px 0px">
+                <div class="summaryElement" style="grid-column:1/5;margin-top:10px;padding:0px 10px 0px 0px;text-align:justify;">
                   <div class="newContractLabel">Description:</div>
                   <div class="summaryValue">{{form.description}}</div>
                 </div>
@@ -78,107 +79,108 @@
               </b-card-body>
             </b-collapse>
           </b-card>
-          <b-card no-body class="mb-1  ">
-            <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn :disabled="form.ico=='No'"  block href="#" v-b-toggle.accordion2 variant="info">ICO Contract ({{form.ico}}) <span v-if="!isICOValid" style="color:red"> (Invalid data) </span></b-btn>
+          <b-card no-body class="mb-1  summarySectionTitle">
+            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
+              <div v-b-toggle.accordion2 class="summarySectionTitle">ICO Contract ({{form.ico}}) <span v-if="!isICOValid" style="color:red"> (Invalid data) </span></div>
             </b-card-header>
       <b-collapse id="accordion2"  accordions="my-accordion" role="tabpanel" :visible="form.ico=='Yes'">
         <b-card-body  class="summaryContainer contractTab">
 
 
-          <div class="summaryElement" style="grid-column:1/4">
-            <div class="summaryTitle" style="font-size:16px">Wallet Address:</div>
-            <div class="summaryContent" style="font-size:16px">{{form.wallet}}
+          <div class="summaryElement" style="grid-column:1/3">
+            <div class="newContractLabel">Wallet Address:</div>
+            <div class="summaryValue">{{form.wallet}}
               <span v-if="isValidWalletAddress" style="color:green"> (Checksum correct) </span>
               <span v-if="!isValidWalletAddress" style="color:red;font-weight:600" v-b-tooltip.hover title="This is not correct ethereum account address or checksum is wrong."> (Invalid) </span> <br><br> </div>
           </div>
+          <div/><div/>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Tokens for a team:</div>
-            <div class="summaryContent">{{form.teamtokens}}</div>
+            <div class="newContractLabel">Tokens for a team:</div>
+            <div class="summaryValue">{{form.teamtokens}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Minimum Contribution PreSale:</div>
-            <div class="summaryContent">{{form.minpresale}}</div>
+            <div class="newContractLabel">Minimum Contribution PreSale:</div>
+            <div class="summaryValue">{{form.minpresale}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Minimum Contribution MainSale:</div>
-            <div class="summaryContent">{{form.minmainsale}}</div>
+            <div class="newContractLabel">Minimum Contribution MainSale:</div>
+            <div class="summaryValue">{{form.minmainsale}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Maximum Contribution Ether:</div>
-            <div class="summaryContent">{{form.maxETH}}</div>
+            <div class="newContractLabel">Maximum Contribution Ether:</div>
+            <div class="summaryValue">{{form.maxETH}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Maximum Cap:</div>
-            <div class="summaryContent">{{form.maxcap}}</div>
+            <div class="newContractLabel">Maximum Cap:</div>
+            <div class="summaryValue">{{form.maxcap}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle">Minimum Cap:</div>
-            <div class="summaryContent">{{form.mincap}}</div>
+            <div class="newContractLabel">Minimum Cap:</div>
+            <div class="summaryValue">{{form.mincap}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle"  v-bind:class="{errorMessage: !isPriceValid}">Token Price ETH:</div>
-            <div class="summaryContent">{{form.priceETH}}
+            <div class="newContractLabel"  v-bind:class="{errorMessage: !isPriceValid}">Token Price ETH:</div>
+            <div class="summaryValue">{{form.priceETH}}
             </div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle"  v-bind:class="{errorMessage: !isCampaignDurationValid}">Campaign Duration Days:</div>
-            <div class="summaryContent">{{form.campaignDuration}}</div>
+            <div class="newContractLabel"  v-bind:class="{errorMessage: !isCampaignDurationValid}">Campaign Duration Days:</div>
+            <div class="summaryValue">{{form.campaignDuration}}</div>
           </div>
 
           <div class="summaryElement">
-            <div class="summaryTitle" v-bind:class="{errorMessage: !isPreSaleDurationValid}">Pre-sale duration Days:</div>
-            <div class="summaryContent">{{form.presaleDuration}}</div>
+            <div class="newContractLabel" v-bind:class="{errorMessage: !isPreSaleDurationValid}">Pre-sale duration Days:</div>
+            <div class="summaryValue">{{form.presaleDuration}}</div>
           </div>
 
 
         </b-card-body>
       </b-collapse>
       </b-card>
-          <b-card no-body class="mb-1  ">
-            <b-card-header header-tag="header" class="p-1" role="tab">
-              <b-btn  :disabled="bonusesYesOrNo=='No'" block href="#" v-b-toggle.accordion3 variant="info">Bonuses ({{bonusesYesOrNo}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></b-btn>
+          <b-card no-body class="mb-1 summarySectionTitle ">
+            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
+              <div v-b-toggle.accordion3 class="summarySectionTitle" >Bonuses ({{bonusesYesOrNo}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></div>
             </b-card-header>
       <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel" :visible="bonusesVisible">
         <b-card-body   class="summaryContainer contractTab">
           <div class="summaryElement">
-            <div class="summaryTitle">Presale Period [days]:</div>
-            <div class="summaryContent">{{form.presalePeriod}}</div>
+            <div class="newContractLabel">Presale Period [days]:</div>
+            <div class="summaryValue">{{form.presalePeriod}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Presale Period Bonus [%]:</div>
-            <div class="summaryContent">{{form.presalePeriodBonus}}</div>
+            <div class="newContractLabel">Presale Period Bonus [%]:</div>
+            <div class="summaryValue">{{form.presalePeriodBonus}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">First Period [days]:</div>
-            <div class="summaryContent">{{form.firstPeriod}}</div>
+            <div class="newContractLabel">First Period [days]:</div>
+            <div class="summaryValue">{{form.firstPeriod}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">First Period Bonus [%]:</div>
-            <div class="summaryContent">{{form.firstPeriodBonus}}</div>
+            <div class="newContractLabel">First Period Bonus [%]:</div>
+            <div class="summaryValue">{{form.firstPeriodBonus}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Second Period [days]:</div>
-            <div class="summaryContent">{{form.secondPeriod}}</div>
+            <div class="newContractLabel">Second Period [days]:</div>
+            <div class="summaryValue">{{form.secondPeriod}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Second Period Bonus [%]:</div>
-            <div class="summaryContent">{{form.secondPeriodBonus}}</div>
+            <div class="newContractLabel">Second Period Bonus [%]:</div>
+            <div class="summaryValue">{{form.secondPeriodBonus}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Third Period [days]:</div>
-            <div class="summaryContent">{{form.thirdPeriod}}</div>
+            <div class="newContractLabel">Third Period [days]:</div>
+            <div class="summaryValue">{{form.thirdPeriod}}</div>
           </div>
           <div class="summaryElement">
-            <div class="summaryTitle">Third Period Bonus[%]:</div>
-            <div class="summaryContent">{{form.thirdPeriodBonus}}</div>
+            <div class="newContractLabel">Third Period Bonus[%]:</div>
+            <div class="summaryValue">{{form.thirdPeriodBonus}}</div>
           </div>
 
         </b-card-body>
@@ -226,6 +228,13 @@ export default {
     ICOContract,
     Bonuses,
     Transactions
+  },
+  watch: {
+    form: function(val)
+    {
+      console.log('New Form:', val)
+      this.loadEmbed()
+}
   },
   created: function () {
     this.loadEmbed()
@@ -328,11 +337,12 @@ export default {
 
       for (var key in this.$store.state.formG) {
         lForm[key] = this.$store.state.formG[key]
+        console.log(this.$store.state.formG[key])
       }
       for (var key in this.$store.state.formB) {
         lForm[key] = this.$store.state.formB[key]
       }
-      console.log(lForm)
+      console.log("New Form 1", lForm)
       return lForm
     },
     pictureName: function () {
@@ -359,7 +369,7 @@ export default {
       } else if (this.form.soundcloud.length > 0) {
         this.embedHtml = 'Inccorect Link s- \'' + this.form.soundcloud + '\''
       } else {
-        this.embedHtml='No soundcloud link was provided...' + this.form.soundcloud
+        this.embedHtml='<br><br>No soundcloud link was provided...' + this.form.soundcloud
       }
     },
   localNumber: function (val) {

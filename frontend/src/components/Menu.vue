@@ -1,13 +1,10 @@
 <style lang="css">
-
 a {
-  color:#fafafa;
+  color: #fafafa;
   /* font-family:'Gothic'; */
   /* font-size:32px; */
   /* font-stretch:  expanded; */
 }
-
-
 </style>
 
 <template lang="html">
@@ -66,85 +63,78 @@ a {
 </template>
 
 <script>
-
-import Transactions from './Transactions'
+import Transactions from "./Transactions";
 
 export default {
-  name: 'Menu',
+  name: "Menu",
   components: {
     Transactions
   },
-  data () {
+  data() {
     return {
       networkId: 0,
-      metaMaskAccount: 'ddd'
-    }
+      metaMaskAccount: "ddd"
+    };
   },
-  created: function () {
-    var that = this
-    if (typeof(web3) === 'undefined')
-    {
-      this.metaMaskAccount = undefined
+  created: function() {
+    var that = this;
+    if (typeof web3 === "undefined") {
+      this.metaMaskAccount = undefined;
+    } else {
+      web3.currentProvider.publicConfigStore.on("update", function(err, res) {
+        that.metaMaskAccount = web3.eth.defaultAccount;
+      });
+
+      web3.version.getNetwork(function(err, res) {
+        that.networkId = parseInt(res);
+      });
+
+      this.metaMaskAccount = web3.eth.defaultAccount;
     }
-    else {
-    web3.currentProvider.publicConfigStore.on('update', function(err,res){
-      that.metaMaskAccount = web3.eth.defaultAccount
-    });
-
-    web3.version.getNetwork(function(err,res){
-      that.networkId = parseInt(res);
-    })
-
-    this.metaMaskAccount = web3.eth.defaultAccount
-  }
   },
   watch: {
     soundCloudLink: function(val) {
-        this.loadEmbed()
+      this.loadEmbed();
     },
     updatedTransactions: function(val) {
       if (val === true) {
-        this.$refs.AddSongModal.show()
-        this.$store.dispatch('clearUpdatedTransactions')
+        this.$refs.AddSongModal.show();
+        this.$store.dispatch("clearUpdatedTransactions");
       }
     }
   },
-  computed:
-  {
-    updatedTransactions: function () {
-      return this.$store.state.updatedTransactions
+  computed: {
+    updatedTransactions: function() {
+      return this.$store.state.updatedTransactions;
     },
-    transactions: function () {
-      return this.$store.state.transactions
+    transactions: function() {
+      return this.$store.state.transactions;
     },
-    ethereumAddress: function () {
-      return this.$store.state.contractAddress
+    ethereumAddress: function() {
+      return this.$store.state.contractAddress;
     },
-    loggedIn: function () {
-      if(typeof this.metaMaskAccount=== 'undefined') {
-        this.$store.state.metaMaskLoggedOut = true
-        return false
-      }
-      else {
-        this.$store.state.metaMaskLoggedOut = false
-        return true
-      }
-    },
-    contractAddress: function () {
-      return this.$store.state.web3contract.address
-    },
-    metaMaskUninstalled: function () {
-      if (typeof web3 === 'undefined')
-      {
-        return true
+    loggedIn: function() {
+      if (typeof this.metaMaskAccount === "undefined") {
+        this.$store.state.metaMaskLoggedOut = true;
+        return false;
       } else {
-        if (web3.currentProvider.constructor.name == 'MetamaskInpageProvider') return false
-        else return true
+        this.$store.state.metaMaskLoggedOut = false;
+        return true;
       }
     },
-      // return web3.version.network
+    contractAddress: function() {
+      return this.$store.state.web3contract.address;
+    },
+    metaMaskUninstalled: function() {
+      if (typeof web3 === "undefined") {
+        return true;
+      } else {
+        if (web3.currentProvider.constructor.name == "MetamaskInpageProvider")
+          return false;
+        else return true;
+      }
+    }
+    // return web3.version.network
   }
-
-}
-
+};
 </script>

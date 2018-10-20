@@ -80,7 +80,7 @@
                       type="text"
                       v-model="form.soundcloud"
                       optional
-                      @keydown.native = "UnSave()"
+                      @keyup.native = "UnSave()"
                       size="sm"
                       placeholder="Enter soundcloud link"
                       class="newContractInput"
@@ -318,12 +318,11 @@ export default {
   created: function () {
     /* global musicGenres */
     this.genres = musicGenres
-    console.log('Music Genres:', this.genres)
     this.UnSave()
   },
   watch: {
     form: function (val) {
-      console.log('Form:', val)
+      console.log(`Change in form: ${val}`, val)
     }
   },
   computed: {
@@ -337,7 +336,6 @@ export default {
         fractionGroupSize: 0
       }
       BigNumber.config({'FORMAT': format})
-      console.log('MAGIER4 ', this.form.decimals, this.form.totalSupply)
       let supply = BigNumber(this.form.totalSupply)
       let decimals = parseInt(this.form.decimals)
       let total = supply.shiftedBy(decimals).toFormat()
@@ -373,14 +371,10 @@ export default {
     },
     ReadPicture (input) {
       var that = this
-      console.log('This is some input:', input)
       if (input.target.files && input.target.files[0]) {
         var reader = new FileReader()
         reader.onload = function (e) {
-          console.log(that.$ids)
-          console.log(that.$refs)
           that.displayPic = true
-          console.log('PicName: ', that.$refs.picName)
           // that.$refs.picPreview.style.width = '100%'
           that.$refs.picPreview.style.height = '8%'
           that.$refs.picPreview.src = '/static/loading.gif'
@@ -399,7 +393,6 @@ export default {
       }
     },
     test () {
-      console.log('test: ', this.index)
     },
     LimitText () {
       this.form.description = this.form.description.substring(0, 200)
@@ -407,22 +400,22 @@ export default {
       this.UnSave()
     },
     UnSave () {
-      console.log('Decimals: ', this.form.decimals)
       if (parseInt(this.form.decimals) > 18) this.form.decimals = 18
       if (parseInt(this.form.decimals) === 0) this.form.decimals = 0
-      let tmpForm = this.form
-      let form = {}
-      this.form = form
-      form['picSrc'] = tmpForm.picSrc
-      for (var key in tmpForm) {
-        console.log('12345form[' + key + '] = ' + tmpForm[key])
-        form[key] = tmpForm[key]
-        this.$store.state.formG[key] = form[key]
-      }
-      this.$store.state.formG = form
-      this.$store.state.formG.picSrc = form['picSrc']
+      // let tmpForm = this.form
+      // let form = {}
       // this.form = form
-      console.log('Stored form: ', this.$store.state.form)
+      // form['picSrc'] = tmpForm.picSrc
+      // for (var key in tmpForm) {
+      //   form[key] = tmpForm[key]
+      //   this.$store.state.formG[key] = form[key]
+      // }
+      // this.$store.state.formG = this.form
+      this.$store.state.formG.soundcloud = this.form.soundcloud
+      this.$store.commit('UpdateFormG', this.form)
+      console.log('Form:', this.form.soundcloud)
+      this.$store.state.formG.picSrc = this.form['picSrc']
+      // this.form = form
       this.unsaved = true
     },
     onSubmit (evt) {

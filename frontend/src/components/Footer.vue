@@ -30,7 +30,11 @@ export default {
   z-index:999;
   color:#fafafa;
   height:80px;
+  /* min-height:100%; */
+  /* border-style:solid; */
   font-family:Roboto;
+  position:sticky;
+  bottom:0px;
 
 }
 

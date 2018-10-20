@@ -69,6 +69,9 @@ export const store = new Vuex.Store({
     }
   },
   mutations: {
+    UpdateFormG(state, payload) {
+      state.formG = payload
+    },
     IncreaseTransactionIndex(state) {
       state.transactionIndex++
       return 7

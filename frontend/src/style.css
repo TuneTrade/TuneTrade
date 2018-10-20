@@ -1,3 +1,18 @@
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing:content-box;
+  width:100%;
+  background-color:#1b1b1b;
+  color:white;
+  min-height:100%;
+  /* border-style:solid; */
+  /* border-color:red; */
+
+}
+
+
 body {
   /* background: */
   /* url('./assets/background.png')  no-repeat; */
@@ -11,8 +26,9 @@ body {
    /* font-family: 'Montserrat'; */
    font-family: 'Roboto';
    background-color:#1b1b1b;
-
-
+   height:800px;
+   /* border-style:solid; */
+   /* border-color:green; */
 }
 content
 {
@@ -68,6 +84,10 @@ content
   padding-left:20px;
   font-style:italic;
   /* border-radius:2px; */
+  text-align:right;
+  margin-right:10px;
+  /* border-style:solid; */
+  text-align: right;
 }
 
 .newContractInput:disbaled {
@@ -141,6 +161,12 @@ content
   border-top-right-radius: 0px;
 }
 
+.newContractTitle .disabled {
+  pointer-events: none !important;
+  color: #666 !important;
+  text-decoration-line: line-through;
+}
+
 
 .contractTab {
   background-color:#353535;
@@ -190,11 +216,12 @@ content
   color:#fafafa !important;
 }
 
-
-.nav-link active {
-  background-color:red;
+.missingPicture {
+  color:#ff5447;
+   font-family: Roboto;
+  text-transform: uppercase;
+  font-size:12px;
 }
-
 .summaryContainer {
   display: grid;
   grid-template-columns: auto 1fr 1fr 1fr;
@@ -369,6 +396,7 @@ padding-top:15px;
   border:none;
   font-family: Roboto;
 }
+
 .pagination  {
   position: relative;
   bottom:59px;
@@ -596,11 +624,11 @@ grid-column: 2/3;
   color:#C20E00;
   color:#FF5447;
   font-family: Roboto;
-  padding:22px;
+  padding:20px 0px;
+  text-transform: uppercase;
   font-weight:100;
   width:100%;
-  text-align:right;
-
+  text-align:center;
 }
 
 .detailsButton {
@@ -626,8 +654,18 @@ grid-column: 2/3;
   /* box-shadow:none; */
 }
 
+.card {
+  border-style:solid;
+  border-color:#1b1b1b;
+  border-width:1px;
+  margin:none;
+  margin-bottom: 0px !important;
+  border-radius:0px;
+}
 .card-body {
   padding:25px;
+  /* border-style:solid; */
+  background-color:
 }
 .detailsRow {
   /* padding-top:5px; */
@@ -679,4 +717,6 @@ grid-column: 2/3;
   text-align:center;
   font-size:16px;
   letter-spacing:1px;
+  pointer-events:all;
+  cursor: pointer;  
 }
