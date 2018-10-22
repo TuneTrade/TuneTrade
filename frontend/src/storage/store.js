@@ -40,6 +40,8 @@ const API = 'https://tunetrade-backend.herokuapp.com'
 
 export const store = new Vuex.Store({
   state: {
+
+    refreshing: false,
     web3contract: {},
     web3account: '',
     owner: '',
@@ -241,7 +243,10 @@ export const store = new Vuex.Store({
       })
     },
     GetSongs (store) {
-      store.state.songsReady = false
+      store.state.refreshing = true
+      if (store.state.songs.length === 0) {
+        store.state.songsReady = false
+      }
       var totalSongs = 0
       var songsProcessed = 0
       axios.get(API+'/getSongs').then(function(res) {
@@ -323,13 +328,15 @@ export const store = new Vuex.Store({
             songsProcessed++
             if (totalSongs == songsProcessed)
             {
+              store.state.songs = songsList.sort(sortFunction)
               store.state.songsReady = true
+              store.state.refreshing = false
+
             } else {
-              store.state.songsReady = false
+              if (store.state.songs.length === 0) store.state.songsReady = false
             }
           })
         }
-        store.state.songs = songsList.sort(sortFunction)
       }).catch(function(err){
 
       })

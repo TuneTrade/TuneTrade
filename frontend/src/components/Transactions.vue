@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="">
+  <div class="transactionsModal">
     <!-- <b-button @click="addTransaction()"> Add </b-button> -->
     <b-button @click="cleanTransactions()"> Clean </b-button>
     <!-- {{pending}} -->

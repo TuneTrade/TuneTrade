@@ -7,6 +7,7 @@ store.js
 ./src/components/SongList.vue
 Menu.vue
 SongList.vue
+SongDetails.vue
 src/musicGenres.js
 SummaryNewContract.vue
 ./src/components/NewContract.vue

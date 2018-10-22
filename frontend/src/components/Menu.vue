@@ -10,7 +10,8 @@ a {
 <template lang="html">
 
 <div class="">
-  <b-modal hide-header ref="AddSongModal"  size="lg" centered  ok-only ok-title="Close">
+  <b-modal hide-header ref="AddSongModal"  class="transactionsModal" size="lg" centered  body-bg-variant="secondary" 
+  header-bg-variant="secondary"    ok-only ok-title="Close">
     <Transactions v-bind:pending='true'/>
   </b-modal >
     <!-- <b-container> -->
@@ -35,7 +36,7 @@ a {
             <router-link  exact  class="router-link"   :to="{ name: 'NewContract', params: {} }">Create Token </router-link>
         </b-navbar-brand>
         <b-navbar-brand class="menuElement">
-            <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {} }">Token Exchange</router-link>
+            <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {filterProp: 'All', contractProp: ''} }">Token Exchange</router-link>
         </b-navbar-brand>
         <b-navbar-brand class="menuElement">
             <router-link   exact class="router-link"    :to="{ name: 'SongDetails', params: {song: {}} }">Song Details</router-link>

@@ -6,10 +6,11 @@ import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee, faAngleUp, faAngleDown, faSearch, faQuestion } from '@fortawesome/free-solid-svg-icons'
+import { faCoffee, faAngleUp, faAngleDown, faSearch, faQuestion, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faCoffee)
 library.add(faAngleUp)
+library.add(faSpinner)
 library.add(faAngleDown)
 library.add(faSearch)
 library.add(faQuestion)

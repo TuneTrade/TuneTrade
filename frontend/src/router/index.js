@@ -25,7 +25,8 @@ export default new Router({
       component: About
     },
     {
-      path: '/tokenexchange',
+      path: '/tokenexchange/:filterProp/:contractProp',
+      props: true,
       name: 'TokenExchange',
       component: TokenExchange
     },
