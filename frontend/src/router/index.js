@@ -7,12 +7,13 @@ import TokenExchange from '../components/TokenExchange'
 import NewContract from '../components/NewContract'
 import ICOContract from '../components/ICOContract'
 import Transactions from '../components/Transactions'
-import SongDetails from '../components/SongDetails'
+// import SongDetails from '../components/SongDetails'
 import About from '../components/About'
 
 Vue.use(Router)
 
 export default new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/SongList',
@@ -20,12 +21,12 @@ export default new Router({
       component: SongList
     },
     {
-      path: '/',
+      path: '/about',
       name: 'About',
       component: About
     },
     {
-      path: '/tokenexchange/:filterProp/:contractProp',
+      path: '/tokenexchange',
       props: true,
       name: 'TokenExchange',
       component: TokenExchange
@@ -45,12 +46,12 @@ export default new Router({
       props: true,
       name: 'Transactions',
       component: Transactions
-    },
-    {
-      path: '/songdetails/:song',
-      props: true,
-      name: 'SongDetails',
-      component: SongDetails
     }
+    // {
+    //   path: '/songdetails',
+    //   props: true,
+    //   name: 'SongDetails',
+    //   component: SongDetails
+    // }
   ]
 })

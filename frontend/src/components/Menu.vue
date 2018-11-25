@@ -11,8 +11,8 @@ a {
 
 <div class="">
   <b-modal hide-header ref="AddSongModal"  class="transactionsModal" size="lg" centered  body-bg-variant="secondary" 
-  header-bg-variant="secondary"    ok-only ok-title="Close">
-    <Transactions v-bind:pending='true'/>
+  header-bg-variant="secondary"   @ok='ClosedTransactions()' ok-only ok-title="Close">
+    <Transactions  v-bind:pending='true'/>
   </b-modal >
     <!-- <b-container> -->
 
@@ -29,6 +29,13 @@ a {
       <!-- <img src="../assets/singing2.jpg" class="rounded-picture invert"> -->
       <!-- <img src="../assets/singing3.jpg" class="rounded-picture"> -->
       <!-- <img src="../assets/singing4.jpg" class="rounded-picture"> -->
+          <div class="placeHolder" id="syncIcon">
+          <font-awesome-icon  icon="spinner" class="fa-2x fa-pulse refreshIcon" v-bind:class="{refreshShow: refreshing, refreshHide: !refreshing}"/>
+          <font-awesome-icon id="checkIcon" @click.stop="refreshSongs" icon="check-circle" class="fa-2x refreshIcon checkedIcon" v-bind:class="{refreshShow: songsOk, refreshHide: !songsOk}"/>
+          <font-awesome-icon id="failedIcon" @click.stop="refreshSongs" icon="exclamation-circle" class="fa-2x refreshIcon failedIcon" v-bind:class="{refreshShow: songsNotOk, refreshHide: !songsNotOk}"/>
+          <b-tooltip target="syncIcon" placement="left" variant="info"> Refresh data. </b-tooltip>
+          <!-- <br> <span  v-bind:class="{refreshShow: refreshing, refreshHide: !refreshing}">SYNCING </span> -->
+        </div>
         <b-navbar-brand class="menuElement">
             <router-link exact class="router-link" :to="{ name: 'SongList', params: {} }">List</router-link>
         </b-navbar-brand>
@@ -38,22 +45,24 @@ a {
         <b-navbar-brand class="menuElement">
             <router-link   exact class="router-link"    :to="{ name: 'TokenExchange', params: {filterProp: 'All', contractProp: ''} }">Token Exchange</router-link>
         </b-navbar-brand>
-        <b-navbar-brand class="menuElement">
-            <router-link   exact class="router-link"    :to="{ name: 'SongDetails', params: {song: {}} }">Song Details</router-link>
-        </b-navbar-brand>
+
         <b-navbar-brand class="menuElement">
             <router-link   exact class="router-link"    :to="{ name: 'Transactions', params: {pending: false} }">Transactions</router-link>
         </b-navbar-brand>
         <b-navbar-brand class="menuElement">
             <router-link  exact class="router-link"     :to="{ name: 'About', params: {} }">About</router-link>
         </b-navbar-brand>
-        <div class ="metamaskInfo" v-if="!loggedIn && !metaMaskUninstalled"><b>Please login to Metamask</b></div>
+        <div class="metamaskInfo">
+          <div class ="metamaskInfo" v-if="!loggedIn && !metaMaskUninstalled"><b>Please login to Metamask</b></div>
+        </div>
         <div class="debug">
         {{metaMaskUninstalled}}
+
         {{metaMaskAccount}}
         {{contractAddress}}
         {{loggedIn}}
       </div>
+
       <div/>
 
       <!-- {{ethereumAddress}} -->
@@ -77,13 +86,26 @@ export default {
       metaMaskAccount: "ddd"
     };
   },
+  methods: {
+    refreshSongs: function () {
+    this.$store.state.songsHash=''
+    this.$store.dispatch("GetSongs")
+    },
+    ClosedTransactions: function() {
+      this.$store.dispatch('DoNotRefreshTransactions')
+    }
+  },
   created: function() {
+    this.$store.dispatch("GetSongs")
+
     var that = this;
     if (typeof web3 === "undefined") {
       this.metaMaskAccount = undefined;
     } else {
       web3.currentProvider.publicConfigStore.on("update", function(err, res) {
         that.metaMaskAccount = web3.eth.defaultAccount;
+        that.$store.state.web3account = that.metaMaskAccount
+        that.$store.dispatch("GetSongs")
       });
 
       web3.version.getNetwork(function(err, res) {
@@ -105,6 +127,22 @@ export default {
     }
   },
   computed: {
+    web3account: function () {
+      return this.$store.state.web3account
+    },
+    refreshing: function () {
+      return this.$store.state.refreshing
+    },
+    songsFailed: function () {
+      return this.$store.state.songsFailed
+    },
+    songsOk: function () {
+      return (!this.refreshing && !this.songsFailed )
+    },
+    songsNotOk: function () {
+      return (!this.refreshing && this.songsFailed )
+    },
+
     updatedTransactions: function() {
       return this.$store.state.updatedTransactions;
     },

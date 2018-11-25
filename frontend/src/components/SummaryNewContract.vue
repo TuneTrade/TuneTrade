@@ -467,7 +467,9 @@ export default {
         that.$store.dispatch('AddTransaction',{title: 'Adding New Song in Blockchain'})
         var songtx = that.$store.getters.getTransactionIndex
         console.log(totalSupply, decimals,form.name, form.author )
+        console.log('Contract: ', contract.address)
         contract.AddSong(form.name, form.author, form.genre, form.type, form.website, totalSupply, form.symbol, form.description, form.soundcloud, true, decimals, newid, function (err, res) {
+          console.log('Error from Add Song: ', err)
           if (res !== undefined) {
             that.$store.dispatch('UpdateTransactionMining', {index: songtx, number: res})
           } else {
@@ -476,8 +478,8 @@ export default {
         })
 
 
-      }).catch (function(err){
-        console.log('Problem with connection to backend: ', err)
+      }).catch (function(err2){
+        console.log('Problem with connection to backend: ', err2)
       })
 
     },

@@ -4,18 +4,12 @@ import Vue from 'vue'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
 Vue.use(axios);
+var md5 = require('js-md5');
 
-// import vueAxios from 'vue-axios'
-// import smartContract from './contractdef.js'
-// import {web3} from 'web3'
 var Web3 = require('web3')
-// import web3 from 'web3'
 require('./contractdef')
-// var VueWeb3 = require('vue-web3')
-// Vue.use(VueWeb3, { web3: new Web3(web3.currentProvider) })
-// import web3 from 'web3'
+require('./exchangedef.js')
 Vue.use(Vuex)
-// Vue.use(web3)
 Vue.use(vueResource)
 var URI = require("uri-js");
 
@@ -43,9 +37,12 @@ export const store = new Vuex.Store({
 
     refreshing: false,
     web3contract: {},
-    web3account: '',
+    web3exchangeContract: {},
+    web3account: 'ssdsvsdvs',
+    songsFailed: false,
     owner: '',
     songs: [],
+    positions: [],
     formI: {},
     formB: {},
     formG: {},
@@ -57,7 +54,10 @@ export const store = new Vuex.Store({
     transactions: [],
     transactionIndex: 0,
     updatedTransactions: false,
-    intervalNumber: 0
+    refreshTransactions: true,
+    intervalNumber: 0,
+    songsHash: '',
+    positionsHash: ''
   },
   getters: {
     getCountryList: state => {
@@ -68,6 +68,12 @@ export const store = new Vuex.Store({
     },
     getTransactionIndex: function(state) {
       return state.transactionIndex
+    },
+    getSong: (state) => (address) => {
+      console.log(state.songs.length)
+      console.log(state.songs)
+      var song = state.songs.find(song => song.address === address)
+      return song
     }
   },
   mutations: {
@@ -153,6 +159,7 @@ export const store = new Vuex.Store({
       tx.id = 1 // 1 - AddSong awaiting for confirmation for confirmation
       tx.index = store.getters.getTransactionIndex
       store.state.transactions.push(tx)
+      store.state.refreshTransactions = true
       store.dispatch('SortTransactions')
       return tx.index
     },
@@ -189,6 +196,7 @@ export const store = new Vuex.Store({
       store.state.transactions[i].id = 5
       store.state.transactions[i].blockNumber = res.blockNumber
       store.state.transactions[i].gasUsed = res.gasUsed
+      
       store.dispatch('SortTransactions')
     },
     UpdateTransactionMining (store, payload)
@@ -210,6 +218,7 @@ export const store = new Vuex.Store({
       store.state.transactions[i].msg = payload.msg
       store.state.transactions[i].id = 3
       store.state.transactions[i].status = 'Cancelled'
+
       store.dispatch('SortTransactions')
 
     },
@@ -231,7 +240,7 @@ export const store = new Vuex.Store({
         if (a.index < b.index) return 1
         else return -1
       })
-      store.state.updatedTransactions = true
+      if(store.state.refreshTransactions === true) store.state.updatedTransactions = true
     },
     updateBlockChainData (state) {
       store.state.currentStorageVersion = store.state.storageVersion
@@ -242,10 +251,15 @@ export const store = new Vuex.Store({
       }).catch(function(err) {
       })
     },
+    DoNotRefreshTransactions(store) {
+    store.state.refreshTransactions = false
+    },
     GetSongs (store) {
       store.state.refreshing = true
       if (store.state.songs.length === 0) {
         store.state.songsReady = false
+        store.state.songsFailed = false
+        store.state.refreshing = false
       }
       var totalSongs = 0
       var songsProcessed = 0
@@ -253,12 +267,16 @@ export const store = new Vuex.Store({
         var sList = res.data
         var songsList = []
         totalSongs = sList.length
-        if(sList.length == 0 ) store.state.songsReady = true
+        if(sList.length == 0 ) {
+        store.state.songsReady = true
+        }
         for(var i = 0;i<sList.length;i++) {
           var tmpSong = {}
           tmpSong.address = sList[i]
           songsList.push(tmpSong)
-          axios.get(API+'/getSongInformation?song='+sList[i]).then(function(res){
+          let myAccount = web3.eth.defaultAccount
+          console.log()
+          axios.get(API+'/getSongInformation?song='+sList[i]+'&address=' + myAccount).then(function(res){
             var tmp = {}
             tmp.address = res.data.address
             var searchAddress = tmp.address
@@ -276,13 +294,15 @@ export const store = new Vuex.Store({
             songsList[index].Id = res.data.id
             songsList[index].Decimals = res.data.decimals
             songsList[index].Contribution = res.data.contribution
+            songsList[index].ownedTokens = res.data.myBalance
             songsList[index].soundcloud = res.data.soundcloud
             let uriParsed = URI.parse(res.data.soundcloud)
             console.log(uriParsed)
             if (uriParsed.path.length > 0) {
               if(uriParsed.scheme === undefined)
               console.log(uriParsed)
-              songsList[index].soundcloud = 'https://'+res.data.soundcloud
+              // songsList[index].soundcloud = 'https://'+res.data.soundcloud
+              songsList[index].soundcloud = res.data.soundcloud
             } else {
               songsList[index].soundcloud = ''
 
@@ -300,7 +320,7 @@ export const store = new Vuex.Store({
               songsList[indexSoundCloud].iFrameEmbed = embed.html
               console.log('Embed: ', embed)
               songsList[indexSoundCloud].playable = true
-              songsList.sort(sortFunction)
+              // songsList.sort(sortFunction)
 
             }).catch(function (err) {
               var indexSoundCloud = songsList.findIndex(function(el,el1,el2){
@@ -322,15 +342,30 @@ export const store = new Vuex.Store({
             songsList[index].Bonus = res.data.bonus
             songsList[index].Description = res.data.description
             songsList[index].address = searchAddress
-            if (index == sList.length -1 ) {
-              songsList.sort(sortFunction)
-            }
+            // if (index == sList.length -1 ) {
+            //   songsList.sort(sortFunction)
+            // }
             songsProcessed++
-            if (totalSongs == songsProcessed)
+            if (totalSongs === songsProcessed)
             {
-              store.state.songs = songsList.sort(sortFunction)
               store.state.songsReady = true
+              
+              store.dispatch("GetPositions");
+              store.state.songsFailed = false
               store.state.refreshing = false
+              var tmpString
+              var checkSongs = songsList.sort(sortFunction)
+              for (i = 0; i < checkSongs.length; i++) {
+                  tmpString = tmpString + checkSongs[i].address
+                  tmpString = tmpString + checkSongs[i].ownedTokens
+                  tmpString = tmpString + checkSongs[i].FreeTokens
+                
+              }
+              console.log('HASH: ', store.state.songsHash)
+              if (store.state.songsHash !== md5(tmpString)) {
+                store.state.songsHash = md5(tmpString)
+                store.state.songs = songsList.sort(sortFunction)
+              }
 
             } else {
               if (store.state.songs.length === 0) store.state.songsReady = false
@@ -338,16 +373,122 @@ export const store = new Vuex.Store({
           })
         }
       }).catch(function(err){
+        store.state.songsFailed = true
+        store.state.refreshing = false
+
+
+      })
+    },
+    // { key: 'type', sortable: true, label: 'Type:' },
+    // { key: 'date', sortable: true, label: 'Date:' },
+    // { key: 'name', sortable: true, label: 'Name:' },
+    // { key: 'symbol', sortable: true, label: 'Symbol:' },
+    // { key: 'price', sortable: true, label: 'Price:' },
+    // { key: 'volume', sortable: true, label: 'Volume:' },
+    // { key: 'cost', sortable: true, label: 'Cost:' },
+    // { key: 'owner', sortable: true, label: 'Owner' },
+    // { key: 'show_details', sortable: true, label: '' }
+    // function GetPositionData(uint256 _index) public view returns (
+    //   0 address _token, 
+    //   1 uint256 _volume, 
+    //   2 bool _buySell, 
+    //   3 uint256 _created, 
+    //   4 uint256 _cost, 
+    //   5 address _customer, 
+    //   6 address _managerAddress
+    //   ) 
+    GetPositions (store) {
+      var positionsProcessed = 0
+      store.state.refreshing = true
+      console.log('GetPositions')
+      axios.get(API+'/getPositions').then(function(res) {
+        var positionsCount = parseInt(res.data.length)
+        var positionsAdr = res.data
+        var positionsList = []
+        console.log('How many positions: ', res.data.length, positionsCount)
+
+        for (var i = 0 ; i < positionsCount ; i++) {
+          var tmpPosition = {}
+          tmpPosition.index = i
+          tmpPosition.address = positionsAdr[i]
+          positionsList.push(tmpPosition)
+          axios.get(API + '/getPositionInformation?position='+ positionsAdr[i]).then(function(res){
+            console.log('Index i: ', i, res)
+            var index = positionsList.findIndex(function(el,el1,el2){
+              return (el.address === res.data[6])
+            })
+            console.log('Index: ', index)
+            // positionsList[index].cost = res.data[1]
+            positionsList[index].token = res.data[0]
+            // positionsList[index].address = res.data[0]
+            positionsList[index].volume = res.data[1]
+            positionsList[index].type = res.data[2]
+            positionsList[index].date = res.data[3]
+            positionsList[index].cost = res.data[4]
+            positionsList[index].owner = res.data[5]
+            positionsList[index].active = res.data[7]
+            positionsList[index].tokenBalance = res.data[8]
+            positionsList[index].weiBalance = res.data[9]
+            positionsProcessed++
+            if(positionsProcessed === positionsAdr.length)
+            {
+
+              var tmpString
+              for (i = 0; i < positionsList.sort(sortFunction).length; i++) {
+                for (var j in positionsList[i]) {
+                  tmpString = tmpString + positionsList[i][j]
+                }
+              }
+              console.log('Positions HASH: ', store.state.positionsHash)
+              if (store.state.positionsHash !== md5(tmpString)) {
+                store.state.positionsHash = md5(tmpString)
+                store.state.positions = positionsList
+                store.state.positions.sort(sortFunction)
+                // store.state.positions = positionsList
+              }
+            }
+            
+          }).catch(function(err){
+            console.log('Position Information Failed ', err)
+          })
+        }
+
+      store.state.refreshing = false
+
+      }).catch(function(err){
+        store.state.refreshing = false
+        console.log('Get Positions Failed', err)
+
 
       })
     },
     ConnectToContract (store) {
-      axios.get(API+'/getContract').then(function(res) {
-        store.state.contractAddress = res.data
+      // axios.get(API+'/getABIs').then(function(res){
+      //  console.log('MAINABI:', res.data.main)
+      //  var definition = res.data.main
+      var definition
+      
+
+      // }).catch(function(err){
+      //   console.log('err:', err)
+      // })
+      console.log('WEB3: ', web3)
+      web3.currentProvider.enable()
+      // store.state.web3account = 'dfdsfsd'
+      axios.get(API+'/getContract').then(function(res2) {
+        store.state.contractAddress = res2.data
         var contractDefinition =  web3.eth.contract(smartContract)
-        store.state.web3contract = contractDefinition.at(res.data)
+        // var contractDefinition =  web3.eth.contract(definition)
+        console.log('Definitions:',smartContract, definition)
+        var exchangeContractDefinition =  web3.eth.contract(exchangeSmartContract)
+
+        store.state.web3contract = contractDefinition.at(res2.data.main)
+        // console.log()
+        store.state.web3exchangeContract = exchangeContractDefinition.at(res2.data.exchange)
       }).catch(function(err) {
-      })
+        console.log('Problem connectting to Contract: ', err)
+      }) 
+
     }
   },
   created: function () {

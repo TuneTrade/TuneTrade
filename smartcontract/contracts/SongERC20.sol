@@ -4,6 +4,9 @@ pragma solidity ^0.4.24;
 import "./StandardToken.sol";
 import "./Ownable.sol";
 
+interface TTManager {
+    function tokenFallback(address _tokenSender, uint _value, bytes _data) public;
+}
 
 contract SongERC20 is StandardToken, Ownable
 {
@@ -64,5 +67,22 @@ contract SongERC20 is StandardToken, Ownable
     return (owner,totalSupply_,name,symbol,decimals,creationTime);
   }
 
+  function transfer(address to, uint256 value) public returns (bool){
+    super.transfer(to,value);
+    if(isContract(to)) {
+      bytes memory empty;
+      TTManager(to).tokenFallback(msg.sender,value,empty);
+    }
+  }
+
+
+  function isContract(address _addr) internal view returns (bool is_contract) {
+      uint length;
+      assembly {
+            //retrieve the size of the code on target address, this needs assembly
+            length := extcodesize(_addr)
+    }
+    return (length>0);
+}
 
 }

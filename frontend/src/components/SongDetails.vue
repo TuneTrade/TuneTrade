@@ -1,5 +1,66 @@
 <template>
     <b-card style='background-color:inheritfont-size:11px' class='detailsRowCard'>
+          <b-modal v-if="currentItem != null" @ok.prevent="BuyTokens()" hide-header ref="BuyTokensModal" size="lg" centered
+      ok-title="Buy" :ok-disabled="cantBuyTokens" class="buyModal">
+      <center>
+        <img style="height:50px" src="../assets/metamask.png"></img><br><br>
+      </center>
+      <div class = "buyModal" style="font-family:Courier;margin:15px 0px;border-radius:4px;padding:10px 20px;">
+        <div style="display:grid;grid-template-columns:auto auto 1fr;grid-column-gap:10px;margin:0px 0px 2rem 0px;">
+          <div><b>Name:</b></div>
+          <div> {{currentItem.Name}}</div>
+          <div />
+          <div><b>Rate [{{currentItem.Symbol}}/ETH]: </b></div>
+          <div> {{tokensForEth(currentItem.Price, currentItem.Decimals)}}</div>
+          <div />
+          <div><b>Rate [{{currentItem.Symbol}}/WEI]: </b></div>
+          <div> {{tokensForWei(currentItem.Price, currentItem.Decimals)}}</div>
+          <div />
+          <div><b>Current bonus: </b></div>
+          <div> +{{currentItem.Bonus}}%</div>
+          <div />
+          <div><b>Sale Contract Address:</b></div>
+          <div> {{currentItem.saleAddress}}</div>
+          <div />
+          <div><b>Token Contract Address:</b></div>
+          <div> {{currentItem.address}}</div>
+          <div />
+          <div><b>Available tokens [{{currentItem.Symbol}}]:</b></div>
+          <div> {{availableTokens}}</div>
+          <div />
+          <div><b>Decimals: </b></div>
+          <div> {{localNumber(currentItem.Decimals)}}</div>
+          <div />
+          <div><b>Minimum amount to buy:</b></div>
+          <div> {{tokensStep(currentItem.Price,currentItem.Decimals)}}</div>
+          <div />
+        </div>
+        <b-form style="text-align:center">
+          <center>
+            <b-form-input style="width:200px; height:2rem" id="tokensToBuyInput" type="text" v-model="tokensToBuy"
+              required size="sm" placeholder="How many tokens ?">
+            </b-form-input>
+          </center>
+          <b-form-group style="padding:10px 0px 0px 0px;margin:0px;" id="tokensToBuyGroup" label="How many tokens ?"
+            label-for="tokenstoBuyInput">
+          </b-form-group>
+          <div style="height:3rem;;margin:0px;padding:0px">
+            <center> <span style="color:red;font-weight:800">{{cantBuyTokensMsg}}</span> </center>
+          </div>
+        </b-form>
+        <div style="display:grid;grid-template-columns:auto 1fr;text-align:right;grid-column-gap:10px;">
+          <div><b>Including bonus: [TOKEN]: </b></div>
+          <div style="text-align:left"> {{tokensAndBonus}} </div>
+          <div><b>You will pay [ETH]: </b></div>
+          <div style="text-align:left"> {{tokensPriceEth()}} </div>
+          <div><b>[WEI]: </b></div>
+          <div style="text-align:left;"> {{tokensPriceWei(currentItem.Price, tokensToBuy)}} </div>
+          <div />
+        </div>
+      </div>
+    </b-modal>
+  <b-button v-if="navigate" @click.stop="GoBack()" size="sm" variant="">Back </b-button>  
+  <br><br>
     <b-row>
       <b-col sm='2' class='text-sm-left'>
         <!-- <img v-bind:src='picLink(item.Id)' width=140px height=140px></img> -->
@@ -91,7 +152,7 @@
               </b-row>
               <b-row class='detailsRow'>
                   <b-col sm='12' class='text-sm-center'>
-                    <p style='font-size:14px'><br><b>Your balance:</b> {{item.ownedTokens}} 0 {{item.Symbol}}</p>
+                    <p style='font-size:14px'><br><b>Your balance:</b> {{BigValue(item.ownedTokens, item.Decimals)}} {{item.Symbol}}</p>
                   </b-col>
                 </b-row>
                 <b-row class='detailsRow'>
@@ -100,11 +161,11 @@
                         variant='info' class='buyCoinButton'>
                         BUY COIN
                       </b-button>
-                      <b-button  :to='{name: 'TokenExchange', params: {filterProp: 'Sale', contractProp: item.address}}'
+                      <b-button  v-if="!navigate" :to="{name: 'TokenExchange', params: {filterProp: 'Sale', contractProp: item.address}}"
                         variant='info' class='buyCoinButton'>
                         Buy on the Market
                       </b-button>
-                      <b-button :to='{name: 'TokenExchange', params: {filterProp: 'Purchase', contractProp: item.address}}'
+                      <b-button v-if="!navigate" :to="{name: 'TokenExchange', params: {filterProp: 'Purchase', contractProp: item.address}}"
                         variant='info' class='buyCoinButton'>
                         Sell on the Market
                       </b-button>
@@ -284,13 +345,19 @@ export default {
     }
   },
   props: {
-  song: Object
+  song: String,
+  navigate: Boolean
   },
   created: function () {
-    this.$store.dispatch('GetSongs')
-    this.item = this.song
+    this.item = this.$store.getters.getSong(this.song)
+    console.log('Adres: ', this.song)
+    console.log(this.item)
+
   },
   methods: {
+    GoBack: function () {
+      this.$router.go(-1)
+    },
     showHideFilters: function () {
       this.showFilters = !this.showFilters
     },
@@ -580,6 +647,7 @@ export default {
         return null
       }
       return this.$store.state.API + '/getPicture?id=' + id
+      console.log('Picture ID')
       // return 'https://source.unsplash.com/random/480x480'
     },
     isPlaying: function (rowNumber) {
@@ -682,16 +750,4 @@ export default {
 }
 </script>
 <style lang='css'>
-.player:hover {
-  filter: invert(100%) hue-rotate(120deg);
-}
-
-a {
-  color: #fafafa;
-}
-
-.unPlayable {
-  opacity: 0;
-  pointer-events: none;
-}
 </style>

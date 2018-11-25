@@ -1,4 +1,4 @@
-smartContract =[
+smartContract = [
   {
     "constant": true,
     "inputs": [],

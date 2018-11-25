@@ -5,9 +5,10 @@ module.exports = {
   networks: {
     development: {
       host: '127.0.0.1',
-      port: 8545,
+      port: 7545,
       network_id: '5777', // Match any network id
-      gas: 914366353
+      gas: 914366353,
+      gasPrice: 1
     },
     rinkeby: {
       host: 'https://rinkeby.infura.io/FiZkooYHIsk3keP6qjT7',

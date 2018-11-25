@@ -21,7 +21,7 @@
                     :options="entryTypeOptions"
                     name="radioBtnOutline"
                     style="width:300px;"
-                     />
+                    />
       </b-form-group>
       <b-form-group id="nameInputGroup"
                     label="Name:"

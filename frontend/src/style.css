@@ -240,7 +240,7 @@ content {
 }
 
 .menuContainer {
-  background-image: url('/static/logotunetradesmall.png');
+  background-image: url('/static/whitelogo.png');
   background-color: #1b1b1b;
   background-position: 10px 3px;
   background-attachment: scroll;
@@ -544,7 +544,7 @@ content {
   position: relative;
   bottom: 22px;
   z-index: 100;
-  transition: all 1s;
+  transition: all 0.5s;
   color: #fafafa;
   letter-spacing: 1px;
 }
@@ -592,7 +592,8 @@ content {
   text-transform: uppercase;
   font-weight: 100;
   width: 100%;
-  text-align: center;
+  text-align: left;
+  /* right:30px; */
 }
 
 .detailsButton {
@@ -647,9 +648,10 @@ content {
 .detailsRowCard {
   padding: 0px;
   border: none;
+  background-color:#353535;
 }
 .detailsRowCard:hover {
-  background-color: red;
+  /* background-color: red; */
 }
 
 .buyCoinButton {
@@ -686,7 +688,23 @@ content {
 }
 
 .transactionsModal {
-  background-color: #1b1b1b;
+  background-color: #353535;
+  /* margin-bottom: 20px; */
+  /* margin-top:20px; */
+  padding-left:0px;
+  padding-right:0px;
+  /* padding-bottom:20px; */
+  
+}
+
+.transaction {
+  background-color: #555;
+  padding:20px;
+  font-family: Roboto;
+  margin-left:0px;
+  border-top: solid 1px #aaa;
+  border-bottom: solid 1px #aaa;
+
 }
 
 .myTokenAddress {
@@ -694,21 +712,74 @@ content {
 }
 
 .refreshIcon {
-  color: #fafafa;
-  left:10px;
-  position:relative;
-  font-size:10px;
+  color: #17a2b8;
+  top:20px;
+  position:absolute;
+  /* font-size:10px; */
   text-align: center;
   font-family: Roboto;
-  line-height: 2;
+  /* line-height: 2; */
+  /* width:120px; */
+  /* border-style:solid; */
+  cursor: default;
 }
+
+.checkedIcon {
+color:#15C443;
+cursor: pointer;
+}
+
+.failedIcon {
+color:red;
+cursor: pointer;
+}
+
 
 .refreshHide {
 transition: all 0.5s;
-opacity: 0.0;
+opacity: 0;
+transform: rotate(0deg);
+cursor: default;
+
+
 }
 
 .refreshShow {
   transition: all 0.5s;
   opacity: 1;
+  transform: rotate(360deg);
+
+
+}
+
+.placeHolder {
+  display:block;
+  position:relative;
+  width:120px;
+}
+
+.buyModal {
+  background-color:#353535 !important;
+}
+
+.createContractModal {
+  background-color:#353535 !important;
+}
+
+.modal-body {
+  background-color:#353535 !important;
+  border-style:solid;
+  border-width:1px;
+  border-color: #aaa;
+  /* border-bottom: none; */
+
+}
+
+.modal-footer {
+  background-color:#353535 !important;
+  border-style:solid;
+  border-width:1px;
+  border-color: #aaa;
+  border-top: none;
+
 }

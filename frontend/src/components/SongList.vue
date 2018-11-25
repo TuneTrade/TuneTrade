@@ -86,17 +86,14 @@
               </div>
               <!-- <b-form-input size="sm"  class="mr-sm-2" type="text" placeholder="Search"/> -->
               <b-button size="sm" v-on:click="filterType(3)" class="my-2 my-sm-0 typeButton" v-bind:class="{selectedType: typeDrop==3}"
-                type="submit">ALL</b-button>
+                type="submit">ALL </b-button>
               <b-button size="sm" v-on:click="filterType(2)" class="my-2 my-sm-0 typeButton" v-bind:class="{selectedType: typeDrop==2}"
                 type="submit">INFLUENCER</b-button>
               <b-button size="sm" v-on:click="filterType(1)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==1}">MUSIC</b-button>
               <b-button size="sm" v-on:click="filterType(0)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==0}">PROJECT</b-button>
               <b-button size="sm" v-on:click="filterType(4)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==4}">CREATED TOKENS</b-button>
               <b-button size="sm" v-on:click="filterType(5)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==5}">OWNED TOKENS</b-button>
-              <div class="refreshIcon" v-bind:class="{refreshShow: refreshing, refreshHide: !refreshing}">
-                  <font-awesome-icon icon="spinner" class="fa-2x fa-pulse"/>
-                  <br> SYNCING
-              </div>
+
             </b-nav-form>
           </b-navbar>
           <div />
@@ -122,10 +119,6 @@
     row.detailsShowing ? 'Hide' : 'Show'}} Details
   </b-button>
 
-  <b-button size="sm" :to="{name: 'SongDetails', params: {song: row.item}}" variant="info" class="detailsButton">
-    Test Details
-  </b-button>
-  <br>
   <!-- {{tokensForEth(row.item.Price,row.item.Decimals)}} -->
 </template>
         <template slot="TotalSupply" slot-scope="row">{{BigValue (row.item.TotalSupply,row.item.Decimals)}}</template>
@@ -159,206 +152,8 @@
         <template slot="Name" slot-scope="row">&quot;{{row.item.Name}}&quot;</template>
         <template slot="Created" slot-scope="row">{{ getLocalTime(row.item.Created)}}</template>
         <template slot="row-details" slot-scope="row" style="padding:0px;">
-  <b-card style="background-color:inherit;font-size:11px;" class="detailsRowCard">
-    <b-row>
-      <b-col sm="2" class="text-sm-left">
-        <!-- <img v-bind:src="picLink(row.item.Id)" width=140px height=140px></img> -->
-        <b-img blank-color="#777" v-bind:src="picLink(row.item.Id)" width="150"/>
-      </b-col>
-      <b-col sm="10">
-        <b-row>
-          <b-col sm="8">
-            <b-row class="detailsRow">
-              <b-col sm="6">
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Type:</b-col>
-                  <b-col
-                    sm="8"
-                    class="text-sm-left detailsInformation"
-                  >{{ SongOrBand(row.item.Type) }}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Name:</b-col>
-                  <b-col
-                    sm="8"
-                    class="text-sm-left detailsInformation"
-                  >&quot;{{ row.item.Name }}&quot;</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Author:</b-col>
-                  <b-col sm="8" class="text-sm-left detailsInformation">{{ row.item.Author }}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Price [{{row.item.Symbol}}/ETH]:</b-col>
-                  <b-col
-                    sm="8"
-                    class="text-sm-left detailsInformation"
-                  >{{tokensForEth(row.item.Price,row.item.Decimals)}}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Phase:</b-col>
-                  <b-col sm="8" class="text-sm-left detailsInformation">{{Phase(row.item.State)}}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="4" class="text-sm-left">Website:</b-col>
-                  <b-col sm="8" class="text-sm-left detailsInformation">
-                    <b-link
-                      class="text-primary"
-                      target="_blank"
-                      v-bind:href="WebsiteLink(row.item.Website)"
-                      variant="danger"
-                    >{{WebsiteLink(row.item.Website)}}</b-link>
-                  </b-col>
-                </b-row>
-              </b-col>
-              <b-col sm="6">
-                <b-row class="detailsRow">
-                  <b-col sm="5" class="text-sm-left">Contribution [ETH]:</b-col>
-                  <b-col
-                    sm="7"
-                    class="text-sm-left detailsInformation"
-                  >{{ Price(row.item.Contribution) }}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="5" class="text-sm-left">Volume [{{row.item.Symbol}}]:</b-col>
-                  <b-col sm="7" class="text-sm-left detailsInformation">
-                    {{BigValue(row.item.Volume,row.item.Decimals)
-                    }}
-                  </b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="5" class="text-sm-left">Total Supply [{{row.item.Symbol}}]:</b-col>
-                  <b-col sm="7" class="text-sm-left detailsInformation">
-                    {{BigValue(row.item.TotalSupply,row.item.Decimals) }}
-                  </b-col>
-                </b-row>
-                  <b-row class="detailsRow">
-                    <b-col sm="5" class="text-sm-left">Decimals:</b-col>
-                    <b-col sm="7" class="text-sm-left detailsInformation">{{row.item.Decimals}}</b-col>
-                  </b-row>
-                  <b-row class="detailsRow">
-                    <b-col sm="5" class="text-sm-left">Genre:</b-col>
-                    <b-col sm="7" class="text-sm-left detailsInformation">{{ row.item.Genre }}</b-col>
-                  </b-row>
-                  <b-row class="detailsRow">
-                    <b-col sm="5" class="text-sm-left">Created:</b-col>
-                    <b-col
-                      sm="7"
-                      class="text-sm-left detailsInformation"
-                    >{{ getLocalTime( row.item.Created )}}</b-col>
-                </b-row>
-              </b-col>
-              </b-row>
-              <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-center">
-                    <p style="font-size:14px"><br><b>Your balance:</b> {{row.item.ownedTokens}} 0 {{row.item.Symbol}}</p>
-                  </b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-center">
-                      <b-button v-if="tokenOnSale(row.item.State)" @click.stop="ShowBuyModal(row.item)"
-                        variant="info" class="buyCoinButton">
-                        BUY COIN
-                      </b-button>
-                      <b-button  :to="{name: 'TokenExchange', params: {filterProp: 'Sale', contractProp: row.item.address}}"
-                        variant="info" class="buyCoinButton">
-                        Buy on the Market
-                      </b-button>
-                      <b-button :to="{name: 'TokenExchange', params: {filterProp: 'Purchase', contractProp: row.item.address}}"
-                        variant="info" class="buyCoinButton">
-                        Sell on the Market
-                      </b-button>
-                      <br>
-                  </b-col>
-                </b-row>
-              </b-col>
-              
-              <b-col sm="4">
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">Owner <span v-if="isMyToken(row.item.Owner)" class=""> (My token)</span>:</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left detailsInformation" v-bind:class="{myTokenAddress: isMyToken(row.item.Owner)}">{{row.item.Owner}}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">
-                    <b-link
-                      target="_blank"
-                      style="text-align:left"
-                      class="text-primary"
-                      v-bind:href="etherscanAddress(row.item.Owner)"
-                      variant="danger"
-                    >Etherscan</b-link>
-                  </b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">Token address:</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left detailsInformation">{{row.item.address}}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">
-                    <b-link
-                      target="_blank"
-                      style="text-align:left"
-                      class="text-primary"
-                      v-bind:href="etherscanToken(row.item.address)"
-                      variant="danger"
-                    >Etherscan</b-link>
-                  </b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">Sale address:</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left detailsInformation">{{row.item.saleAddress}}</b-col>
-                </b-row>
-                <b-row class="detailsRow">
-                  <b-col sm="12" class="text-sm-left">
-                    <b-link
-                      target="_blank"
-                      style="text-align:left"
-                      class="text-primary"
-                      v-bind:href="etherscanToken(row.item.saleAddress)"
-                      variant="danger"
-                    >Etherscan</b-link>
-                  </b-col>
-                </b-row>
-              </b-col>
-            </b-row>
-          </b-col>
-         </b-row>
-  
-        <b-row class="detailsRow">
-          <b-col sm="12" class="text-justify">
-            <p style="">{{row.item.Description}}</p>
-          </b-col>
-        </b-row>
-        <b-row class="detailsRow">
-          <b-col v-if="row.item.playable" sm="6" class="embedTD">
-            <!-- <b-link>{{row.item.soundcloud}}</b-link> -->
-            <div v-if="row.item.playable" v-html="row.item.iFrameEmbed">test</div>
-          </b-col>
-          <b-col v-if="row.item.playable" sm="6" class="embedTD">
-            <!-- <b-link>{{row.item.soundcloud}}</b-link> -->
-            <div v-if="row.item.playable" v-html="row.item.iFrameEmbed"></div>
-          </b-col>
-        </b-row>
-        <b-row class="detailsRow">
-          <b-col sm="12" class="text-sm-center">
-            <b-button
-              v-if="tokenOnSale(row.item.State)"
-              @click.stop="ShowBuyModal(row.item)"
-              variant="info"
-              class="buyCoinButton"
-            >BUY COIN</b-button>
-          </b-col>
-        </b-row>
-      </b-col>
-    </b-row>
-  </b-card>
-</template>
+          <SongDetails v-bind:song='row.item.address'/>
+        </template>
       </b-table>
       <b-pagination v-if="songsReady && !noSongs" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage"
         class="robert">
@@ -395,6 +190,8 @@ var BigNumber = require("bignumber.js");
 var SC = require("soundcloud");
 
 require("./saleContractdef.js");
+import SongDetails from './SongDetails'
+
 
 SC.initialize("rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P");
 
@@ -405,6 +202,9 @@ var URI = require("uri-js");
 var Web3 = require("web3");
 
 export default {
+  components: { 
+    SongDetails
+  },
   data() {
     return {
       sortBy: "Created",
@@ -525,6 +325,8 @@ export default {
   created: function () {
     // this.$store.dispatch('ConnectToContract')
     this.$store.dispatch("GetSongs");
+    console.table(this.$store.state.songs);
+
   },
 
   methods: {
@@ -738,6 +540,12 @@ export default {
         if (!this.isMyToken(item.Owner)) return false
         // console.log(web3.eth.defaultAccount)
       }
+
+      if (this.typeDrop == 5) {
+        if (item.ownedTokens === 0) return false
+        // console.log(web3.eth.defaultAccount)
+      }
+
       for (var val in item) {
         // console.log(item[val])
 

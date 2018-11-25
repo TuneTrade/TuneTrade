@@ -6,14 +6,18 @@ import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee, faAngleUp, faAngleDown, faSearch, faQuestion, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationCircle, faCheckCircle, faCoffee, faAngleUp, faAngleDown, faSearch, faQuestion, faSpinner, faSync, faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faCoffee)
 library.add(faAngleUp)
 library.add(faSpinner)
+library.add(faSync)
+library.add(faExclamationCircle)
+library.add(faSyncAlt)
 library.add(faAngleDown)
 library.add(faSearch)
 library.add(faQuestion)
+library.add(faCheckCircle)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 import Menu from './components/Menu'
@@ -22,6 +26,8 @@ import NewContract from './components/NewContract'
 import ICOContract from './components/ICOContract'
 import Transactions from './components/Transactions'
 import SongDetails from './components/SongDetails'
+import PositionDetails from './components/PositionDetails'
+import NewPosition from './components/NewPosition'
 import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -42,7 +48,9 @@ new Vue({
     NewContract,
     ICOContract,
     Transactions,
-    SongDetails
+    SongDetails,
+    PositionDetails,
+    NewPosition
   },
   created: function () {
     store.dispatch('ConnectToContract')
