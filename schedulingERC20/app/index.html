@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Meta Tags -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, post-check=0, pre-check=0" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+
+		<meta name="robots" content="index, follow">
+		<meta name="description" content="ERC20 Token Schedule Calls Dapp">
+		<meta name="keywords" content="erc20,schedule,token,ethereum,dapp">
+		<meta name="author" content="Ararat Tonoyan">
+
+		<meta name="msapplication-TileColor" content="#0087d6">
+		<meta name="theme-color" content="#ffffff">
+
+		<title>DApp for Scheduling ERC20 Tokens</title>
+		<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+		<script type="text/javascript" src="./app.js"></script>
+		<script src="https://semantic-ui.com/dist/semantic.min.js"></script>
+	</head>
+	<body>
+		<!-- START HEADER SECTION -->
+		<div class="ui inverted menu">
+			<div class="ui container">
+				<a href="https://tunetrade.io/" class="item" target="_blank">
+					<img class="ui" width="40px" height="40px" src="https://tunetrade.io/wp-content/uploads/2018/11/TXT-coin.png">
+				</a>
+				<a id="myaccount" class="item right" target="_blank"><i class="user icon"></i></a>
+				<a id="contollerAddress" class="item right" target="_blank">dApp smart contract - 0x0000000000000000000000000000000000000000</a>
+			</div>
+		</div>
+		<!-- START HEADER SECTION -->
+
+		<div class="row">
+			<div class="ui centered container">
+				<div class="column">
+					<!-- START INFORMATION SECTION -->
+					<div class="ui raised segment">
+						<div class="ui huge label">My Schedule Contract</div>
+						<table id=accountdetails class="ui single line small table">
+							<thead>
+								<tr>
+									<th>Scheduling Contract Address</th>
+									<th>Schedules Amounts</th>
+									<th>Execution Balance (ETH)</th>
+									<th>Network Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- END INFORMATION SECTION -->
+
+					<div class="ui raised segment" id="owner_area">
+						<div class="ui huge label">Change fee area (only for owner)</div>
+						<i class="current-fee"></i>
+						<div class="ui segment no-border">
+							<form id="changeFeeForm" class="ui compact small form">
+								<div class="ui grid">
+									<div class="wide column">
+										<div class="ui grid">
+											<div class="eight wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label">Fee in <a href="https://etherconverter.online/" target="_blank">gWei</a> *</div>
+														<input type="number" name="fee" placeholder='ex. 100000' min="0" step="1">
+													</div>
+												</div>
+												<div class="ui error message"></div>
+											</div>
+											<div class="eight wide column">
+												<button class="ui fluid blue submit button" type="submit">
+													Change
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<!-- START ADD SCHEDULE TRANSACTION SECTION -->
+					<div class="ui raised segment">
+						<div class="ui huge label">Add Schedule Transaction
+							<div class="ui button info" data-position="right center">
+								<i class="info circle icon"></i>
+							</div>
+						</div>
+						<div class="ui segment no-border">
+							<form id="addSchedule" class="ui compact small form">
+								<div class="ui grid">
+									<div class="eight wide column">
+										<div class="ui grid bordered-right">
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> To *</div>
+														<input type="text" name="receiver" placeholder="Address">
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Tokens Per Delay *</div>
+														<input type="number" name="tokens" placeholder='Amount' min=1 step=1>
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Transfer every *</div>
+														<input style=width:35% name="delay" type="number" min=1 step=0.5 placeholder="10">
+														<div style=width:35% class="field">
+															<select class="ui dropdown" name="interval">
+																<option value="min">Minutes</option>
+																<option value="hour">Hours</option>
+																<option value="day">Days</option>
+																<option value="year">Years</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Total Executions *</div>
+														<input type="number" name="executions" placeholder='How many times to execute scheduled transfers' min=1 step="1">
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="ui error message"></div>
+											</div>
+										</div>
+									</div>
+									<div class="eight wide column">
+										<div class="ui grid">
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Token contract *</div>
+														<input type="text" name="tokenAddr" placeholder='ex. 0x2b348aAe30E1183Cf98ac6E23AaEF79B52717846'>
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Note</div>
+														<input type="text" name="note" placeholder='ex. "Monthly salery of Bob"'>
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<div class="field">
+													<div class="ui labeled input">
+														<div style=width:30% class="ui label"> Begin schedule after</div>
+														<input style=width:35% name="fsdelay" type="number" min=1 step=0.5 placeholder="10">
+														<div style=width:35% class="field">
+															<select class="ui dropdown" name="fsinterval">
+																<option value="min">Minutes</option>
+																<option value="hour">Hours</option>
+																<option value="day">Days</option>
+																<option value="year">Years</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="sixteen wide column">
+												<button class="ui fluid blue submit button" type="submit">
+													Submit
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<table id=submitedTxs class="ui single line small table">
+							<thead>
+								<tr>
+									<th>Recent transactions (tx)</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+					<!-- END ADD SCHEDULE TRANSACTION SECTION -->
+
+					<!-- START TRANSACTION HISTORY SECTION -->
+					<div class="ui raised segment">
+						<div class="ui huge label">Schedules History</div>
+						<button class="ui red button right floated" id="emergencyExit" onclick="App.emergencyExit()" disabled> <i class="ban icon"></i> Emergency Stop All</button>
+						<table id=activeTxs class="ui single line small table">
+							<thead>
+								<th>Note</th>
+								<th>Token</th>
+								<th>Receiver</th>
+								<th>Status</th>
+								<th>Tokens / Interval </th>
+								<th>Schedules done</th>
+								<th>Creation date</th>
+								<th>Schedule start</th>
+								<th>Action</th>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+					<!-- END TRANSACTION HISTORY SECTION -->
+				</div>
+			</div>
+		</div>
+
+		<!-- START FOOTER SECTION -->
+		<div class="ui inverted vertical footer segment form-page">
+			<div class="ui container">
+				<a href="https://github.com/TuneTrade/TuneTradePublic" target="_blank" style="color: white">TuneTrade ERC20 Token Scheduler - Github</a>
+			</div>
+		</div>
+		<!-- START FOOTER SECTION -->
+
+	</body>
+</html>

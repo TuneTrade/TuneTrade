@@ -1,0 +1,10 @@
+node_modules/
+.idea/*
+node*
+npm-debug.log
+.env
+*.json
+.babelrc
+.eslintignore
+.eslintrc
+webpack.config.js
