@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 
 /**
@@ -7,7 +7,7 @@ pragma solidity ^0.4.24;
  * functions, this simplifies the implementation of "user permissions".
  */
 contract Ownable {
-  address public owner;
+  address payable public owner;
 
   constructor() public {
     owner = msg.sender;
@@ -19,7 +19,7 @@ contract Ownable {
   }
 
 
-  function transferOwnership(address _newOwner) public {
+  function transferOwnership(address payable _newOwner) public {
     require(_newOwner != address(0));
     owner = _newOwner;
   }

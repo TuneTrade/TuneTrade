@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./Ownable.sol";
 
@@ -26,14 +26,14 @@ contract TTPositionManager is Ownable {
     uint256 created;
     uint256 cost;
     address tokenReceiver;
-    address tokenSender;
+    address payable tokenSender;
     address tokenExchange;
 
         // TTPositionManager manager = new TTPositionManager(token, volume, BuySell, now, cost, msg.sender);
 
-    function tokenFallback(address _tokenSender, uint _value, bytes _data) public {
+    function tokenFallback(address payable _tokenSender, uint _value, bytes memory _data) public {
         require(msg.sender == token, "Tokens can be accepted only from designated token conract"); 
-        uint256 balance = TokenContract(token).balanceOf(this);
+        uint256 balance = TokenContract(token).balanceOf(address(this));
         require(balance == volume, "Contract only accepts exact token amount equal to volume");
         
         if (buySell == true ) {
@@ -62,7 +62,7 @@ contract TTPositionManager is Ownable {
         emit PositionClosed();
     }
     
-    constructor(address _token, uint256 _volume, bool _buySell, uint256 _cost, address _owner) public payable {
+    constructor(address _token, uint256 _volume, bool _buySell, uint256 _cost, address payable _owner) public payable {
         require(_buySell == false || msg.value == _cost,"Buying positions must be created with ETH");
         token = _token;
         volume = _volume; 
@@ -76,11 +76,11 @@ contract TTPositionManager is Ownable {
     function RemoveFromExchange() internal  
     {
         Exchange(tokenExchange).TerminatePosition(true);
-        suicide(owner); //send available funds to the owner
+        selfdestruct(owner); //send available funds to the owner
     }
 
     function CancelPosition() public onlyOwner {
-        uint256 balance  = TokenContract(token).balanceOf(this);
+        uint256 balance  = TokenContract(token).balanceOf(address(this));
         if (buySell == true) { //buyig position. we have to send ETHEREUM back to the owner. 
         //the question is what to do when by any chance there are tokens from token contract on this position. 
         // We send it to Token Exchange Contract for manual action to be taken. 
@@ -105,7 +105,7 @@ contract TTPositionManager is Ownable {
         bool _buySell, 
         uint256 _created, 
         uint256 _cost, 
-        address _customer, 
+        address payable _customer, 
         address _managerAddress,
         bool    _active,
         uint256 _tokenBalance,
@@ -114,7 +114,7 @@ contract TTPositionManager is Ownable {
     {
         bool active;
         uint256 weiBalance = address(this).balance;
-        uint256 tokenBalance = TokenContract(token).balanceOf(this);
+        uint256 tokenBalance = TokenContract(token).balanceOf(address(this));
         if (buySell == true) {  // this a position when somebody wants to buy tokens. They have to send ETH to make it happen.
             if ( weiBalance >= cost) active = true;
             else active = false;
@@ -123,7 +123,7 @@ contract TTPositionManager is Ownable {
             else active = false;
 
         }
-        return (token, volume, buySell, created, cost, owner, this, active, tokenBalance, weiBalance);
+        return (token, volume, buySell, created, cost, owner, address(this), active, tokenBalance, weiBalance);
     }
 
 

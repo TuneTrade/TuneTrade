@@ -4,3 +4,5 @@ webpackTokenContract/build
 smartcontract/build
 # Word temporary
 ~$*.doc*
+_old
+.vscode

@@ -1,103 +1,124 @@
 <template>
   <div>
-    <b-card style='background-color:inheritfont-size:11px' class='detailsRowCard'>
-      <b-row  class='detailsRow'>
-        <b-col sm="1" class="text-sm-right">
-          Name:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{songName(position.token)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Symbol:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{songSymbol(position.token)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Created:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{getLocalTime(position.date)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Type:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{BuyOrSell(position.type)}}
-        </b-col>
-
+    <b-container class="detailsRowCard mx-auto px-0">
+      <b-row class="detailsRow mx-auto px-0 pt-3">
+        <b-col lg="1" sm="2" cols="5" class="text-right">Name:</b-col>
+        <b-col
+          sm="4"
+          lg="2"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{songName(position.token)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Symbol:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{songSymbol(position.token)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Created:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{getLocalTime(position.date)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Type:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{BuyOrSell(position.type)}}</b-col>
       </b-row>
 
-      <b-row  class='detailsRow'>
-        <b-col sm="1" class="text-sm-right">
-          Price:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{positionPrice(position.volume, position.cost, position.token)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Volume:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{positionVolume(position.token, position.volume)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Cost:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{positionCost(position.cost)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Active:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{YesNo(position.active)}}
-        </b-col>
-        </b-row>
-    <b-row><b-col><br></b-col></b-row>
-      <b-row  class='detailsRow'>
-        <b-col sm="1" class="text-sm-right">
-          ETH Deposit:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{positionCost(position.weiBalance)}}
-        </b-col>
-        <b-col sm="1" class="text-sm-left">
-          Token Deposit:
-        </b-col>
-        <b-col sm="2" class="text-sm-left detailsInformation">
-          {{positionVolume(position.token, position.tokenBalance)}}
-        </b-col>
-
-        </b-row>
-     <br>
-      <b-row>
-        <b-col sm="1" class="text-sm-right">
-          Owner:
-        </b-col>
-        <b-col sm="11" class="text-sm-left detailsInformation">
-          {{position.owner}}
+      <b-row class="detailsRow mx-0 px-0">
+        <b-col lg="1" sm="2" cols="5" class="text-right">Price:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{positionPrice(position.volume, position.cost, position.token)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Volume:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{positionVolume(position.token, position.volume)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Cost:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{positionCost(position.cost)}}</b-col>
+        <b-col lg="1" sm="2" cols="5" class="text-right">Active:</b-col>
+        <b-col
+          lg="2"
+          sm="4"
+          cols="7"
+          class="text-left detailsInformation"
+        >{{YesNo(position.active)}}</b-col>
+      </b-row>
+      <b-row class="mx-0 px-0">
+        <b-col cols="12" class="mx-0 px-0">
+          <br>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col sm="1" class="text-sm-right">
-          Address:
-        </b-col>
-        <b-col sm="11" class="text-sm-left detailsInformation">
-          {{position.address}}
+
+      <b-row class="mx-0 px-0 detailsRow">
+        <b-col
+          lg="1"
+          sm="2"
+          cols="5"
+          class="text-sm-left text-right text-lg-right pl-4"
+        >ETH Deposit:</b-col>
+        <b-col
+          sm="4"
+          cols="7"
+          lg="2"
+          class="text-left detailsInformation"
+        >{{positionCost(position.weiBalance)}}</b-col>
+        <b-col sm="2" cols="5" lg="1" class="text-sm-left text-right text-lg-right">Token Deposit:</b-col>
+        <b-col
+          sm="4"
+          cols="7"
+          lg="2"
+          class="text-left detailsInformation"
+        >{{positionVolume(position.token, position.tokenBalance)}}</b-col>
+      </b-row>
+      <br>
+      <b-row class="p-0 m-0">
+        <b-col sm="2" lg="1" cols="12" class="text-sm-right">Owner:</b-col>
+        <b-col
+          sm="10"
+          lg="5"
+          cols="12"
+          class="text-sm-left text-center detailsInformation p-0 px-0 mx-0 text-truncate"
+        >{{position.owner}}</b-col>
+        <b-col sm="2" lg="1" cols="12" class="text-sm-right text-center">Address:</b-col>
+        <b-col
+          sm="10"
+          lg="5"
+          cols="12"
+          class="text-sm-left text-center detailsInformation px-0 mx-0"
+        >{{position.address}}</b-col>
+      </b-row>
+      <b-row class="p-0 m-0">
+        <b-col cols="12" class="mb-3 text-sm-center">
+          <br>
+          <b-button v-if="position.active" @click.stop="AcceptPosition()" variant="info">Accept</b-button>
+          <b-button
+            v-if="!position.active && !position.type"
+            @click.stop="DepositTokens()"
+            variant="info"
+          >Deposit Tokens</b-button>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col sm="12" class="text-sm-center">
-        <br>
-        <b-button v-if="position.active" @click.stop="AcceptPosition()" variant="info"> Accept </b-button>
-        <b-button v-if="!position.active && !position.type" @click.stop="DepositTokens()" variant="info"> Deposit Tokens </b-button>
-        </b-col>
-    </b-row>
-  </b-card>
-</div>
-
+    </b-container>
+  </div>
 </template>
 
 <script>
@@ -116,10 +137,10 @@ var URI = require('uri-js')
 var Web3 = require('web3')
 
 export default {
-  components: { 
+  components: {
     SongDetails
   },
-  data () {
+  data() {
     return {
       item: {},
       sortBy: 'Created',
@@ -190,108 +211,111 @@ export default {
     }
   },
   props: {
-  position: Object
+    position: Object
+
   },
   created: function () {
- 
-   
+
+
   },
   methods: {
-    AcceptPosition: function() {
-          var that = this
-          var cost = this.position.cost
-          var contractDefinition =  web3.eth.contract(positionDefinition)
-          var positionContract = contractDefinition.at(this.position.address)
+    AcceptPosition: function () {
+      var that = this
+      var cost = this.position.cost
+      var contractDefinition = web3.eth.contract(positionDefinition)
+      var positionContract = contractDefinition.at(this.position.address)
 
-          contractDefinition =  web3.eth.contract(songDefinition)
-          var songContract = contractDefinition.at(this.position.token)
+      contractDefinition = web3.eth.contract(songDefinition)
+      var songContract = contractDefinition.at(this.position.token)
+      // var volume = BigNumber(this.volume).shiftedBy(this.item.Decimals).toString()
 
-            // var volume = BigNumber(this.volume).shiftedBy(this.item.Decimals).toString()
-            
-            this.$store.dispatch('AddTransaction', {
-                title: `Accept ${this.type} Position`
-            })
-            var txind = this.$store.getters.getTransactionIndex
-            var type
-            if (this.type === 'Buy') {
-              var volume = this.position.volume
+      this.$store.dispatch('AddTransaction', {
+        title: `Accept ${that.BuyOrSell(that.position.type)} "${that.songName(that.position.token)}" Position`
+      })
+      var txind = this.$store.getters.getTransactionIndex
+      this.$store.dispatch('ShowTokenExchangeTransaction', { address: this.position.address, index: this.position.index, txId: txind })
 
-              songContract.transfer(this.position.address,volume, 
-                  function (err, res) {
-                  if (res !== undefined) {
-                      that.$store.dispatch('UpdateTransactionMining', {
-                      index: txind,
-                      number: res
-                      })
-                  } else {
-                      that.$store.dispatch('UpdateTransactionCancelled', {
-                      index: txind,
-                      msg: err.message
-                      })
-                  }
-                  }
-              )
-                
+      var type
+      if (this.position.type) {
+        var volume = this.position.volume
+
+        songContract.transfer(this.position.address, volume,
+          function (err, res) {
+            if (res !== undefined) {
+              that.$store.dispatch('UpdateTransactionMining', {
+                index: txind,
+                number: res
+              })
+            } else {
+              that.$store.dispatch('UpdateTransactionCancelled', {
+                index: txind,
+                msg: err.message
+              })
             }
-            else {
-                type = false
-                var valuecost = cost
-              positionContract.BuyTokens({value: valuecost}, 
-                  function (err, res) {
-                  if (res !== undefined) {
-                      that.$store.dispatch('UpdateTransactionMining', {
-                      index: txind,
-                      number: res
-                      })
-                  } else {
-                      that.$store.dispatch('UpdateTransactionCancelled', {
-                      index: txind,
-                      msg: err.message
-                      })
-                  }
-                  }
-              )
+          }
+        )
 
+      }
+      else {
+        type = false
+        var valuecost = cost
+        positionContract.BuyTokens({ value: valuecost },
+          function (err, res) {
+            if (res !== undefined) {
+              that.$store.dispatch('UpdateTransactionMining', {
+                index: txind,
+                number: res
+              })
+            } else {
+              that.$store.dispatch('UpdateTransactionCancelled', {
+                index: txind,
+                msg: err.message
+              })
             }
+          }
+        )
+
+      }
 
     },
-    DepositTokens: function() {
-      if(this.position.type == true) return
+    DepositTokens: function () {
+      console.log('Deposit')
+      if (this.position.type == true) return
 
-          var that = this
-          var cost = this.position.cost
-          var contractDefinition =  web3.eth.contract(positionDefinition)
-          var positionContract = contractDefinition.at(this.position.address)
+      var that = this
+      var cost = this.position.cost
+      var contractDefinition = web3.eth.contract(positionDefinition)
+      var positionContract = contractDefinition.at(this.position.address)
 
-          contractDefinition =  web3.eth.contract(songDefinition)
-          var songContract = contractDefinition.at(this.position.token)
+      contractDefinition = web3.eth.contract(songDefinition)
+      var songContract = contractDefinition.at(this.position.token)
 
-            // var volume = BigNumber(this.volume).shiftedBy(this.item.Decimals).toString()
-            
-              var volume = this.position.volume
-            this.$store.dispatch('AddTransaction', {
-                title: `Activating Position. Transfering ${volume} tokens`
+
+      var volume = this.position.volume
+      this.$store.dispatch('AddTransaction', {
+        title: `Activating Position. Transfering ${volume} tokens`
+      })
+      var txind = this.$store.getters.getTransactionIndex
+      this.$store.dispatch('ShowTokenExchangeTransaction', { address: this.position.address, index: this.position.index, txId: txind })
+      console.log(this.$store.state.showTokenExchangeTransactions)
+      songContract.transfer(this.position.address, volume,
+        function (err, res) {
+          if (res !== undefined) {
+            that.$store.dispatch('UpdateTransactionMining', {
+              index: txind,
+              number: res
             })
-            var txind = this.$store.getters.getTransactionIndex
-
-              songContract.transfer(this.position.address,volume, 
-                  function (err, res) {
-                  if (res !== undefined) {
-                      that.$store.dispatch('UpdateTransactionMining', {
-                      index: txind,
-                      number: res
-                      })
-                  } else {
-                      that.$store.dispatch('UpdateTransactionCancelled', {
-                      index: txind,
-                      msg: err.message
-                      })
-                  }
-                  }
-              )
+          } else {
+            that.$store.dispatch('UpdateTransactionCancelled', {
+              index: txind,
+              msg: err.message
+            })
+          }
+        }
+      )
     },
-    YesNo: function(val) {
-      if(val == true) return 'Yes'
+    YesNo: function (val) {
+      if (val == true) return 'Yes'
       else return 'No'
     },
     getLocalTime: function (val) {
@@ -300,9 +324,9 @@ export default {
     },
     ShowSongDetails: function () {
       console.log(this.position.address)
-      this.$router.push({name: 'SongDetails', params: {song: this.position.address, navigate: true}})
+      this.$router.push({ name: 'SongDetails', params: { song: this.position.address, navigate: true } })
     },
-        BuyOrSell: function (type) {
+    BuyOrSell: function (type) {
       if (type === true) return 'Buy'
       else return 'Sell'
     },
@@ -335,7 +359,7 @@ export default {
       return this.$store.getters.getSong(token)
     },
   }
-  
+
 }
 </script>
 <style lang='css'>

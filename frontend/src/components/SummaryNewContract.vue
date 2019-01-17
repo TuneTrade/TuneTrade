@@ -1,194 +1,408 @@
 <template>
   <div class="newContractForm">
+    <h4>Token Summary</h4>
+    <b-container class="px-0">
+      <b-row class="mb-4">
+        <b-col md="auto" cols="12">
+          <b-button
+            :disabled="!isFormValid"
+            type="submit"
+            @click="onSubmit()"
+            style="margin:10px 0px;background-color:#17a2b8"
+          >Create My Tokens</b-button>
+          <!-- IcoTX: {{icotx}} SongTx: {{songtx}} -->
+        </b-col>
+        <b-col cols="12" lg="4" md="6" class>
+          <OneTransaction v-bind:id="songtx" style="background-color:#223749"/>
+        </b-col>
+        <b-col cols="12" lg="4" md="6">
+          <OneTransaction v-bind:id="icotx" style="background-color:#223749"/>
+        </b-col>
+      </b-row>
+    </b-container>
+    <span style="font-size:13px;color:red;padding:0px;margin:0px" v-if="web3undefined">
+      <br>It looks like Metamask is not installed in this browser.
+      <br>
+      <br>
+    </span>
+    <b-card no-body class="mb-1 summarySectionTitle m-0">
+      <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab" style>
+        <div v-b-toggle.accordion1 class="summarySectionTitle">General</div>
+      </b-card-header>
+      <b-collapse id="accordion1" visible accordions="my-accordion" role="tabpanel" class="p-0 m-0">
+        <b-card-body class="contractTab m-0">
+          <b-container>
+            <!-- GENERAL SUMMARY CONTAINER -->
+            <b-row class="pl-sm-4">
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Type:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{SongOrBand(form.type)}}</b-col>
+                </b-row>
+              </b-col>
 
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Token Name:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{form.name}}</b-col>
+                </b-row>
+              </b-col>
 
-    <h4>Contract Summary</h4>
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Author:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{form.author}}</b-col>
+                </b-row>
+              </b-col>
 
-    <b-button :disabled="!isFormValid" type="submit" @click="onSubmit()" style="margin:10px 0px;background-color:#17a2b8" >Create Contract</b-button> <span style="font-size:13px;color:red;padding:0px;margin:0px" v-if="web3undefined"><br>It looks like Metamask is not installed in this browser.<br><br></span>
-          <b-card no-body class="mb-1 summarySectionTitle">
-            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab" style="">
-              <div v-b-toggle.accordion1 class="summarySectionTitle" >General</div>
-            </b-card-header>
-            <b-collapse  id="accordion1" visible accordions="my-accordion" role="tabpanel">
-              <b-card-body class="summaryContainer contractTab">
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Website:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{form.website}}</b-col>
+                </b-row>
+              </b-col>
 
-                <div class="summaryElement" style="grid-row:1/6;">
-                  <div class="newContractLabel" v-if="pictureValid" ></div>
-                  <div class="" style="margin-left:0px;"><img v-if="pictureValid" style="width:150px;border-style:solid;border-width:2px;border-color:#555" v-bind:src="pictureHtml"></img>
-                   <font-awesome-icon icon="question"  class="fa-6x" v-if="!pictureValid"/>
-                 <br>
-                  <span class="missingPicture" v-if="!pictureValid">Picture is required</span>
-                  </div>
-                </div>
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Token symbol:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{form.symbol}}</b-col>
+                </b-row>
+              </b-col>
 
-                <div class="summaryElement">
-                  <div class="newContractLabel">Type:</div>
-                  <div class="summaryValue">{{SongOrBand(form.type)}}</div>
-                </div>
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Total supply:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{localNumber(form.totalSupply)}}</b-col>
+                </b-row>
+              </b-col>
 
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Decimals:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{localNumber(form.decimals)}}</b-col>
+                </b-row>
+              </b-col>
 
-                <div class="summaryElement">
-                  <div class="newContractLabel">Name:</div>
-                  <div class="summaryValue">{{form.name}}</div>
-                </div>
+              <b-col xl="4" md="6">
+                <b-row>
+                  <b-col sm="4" class="text-left">
+                    <span class="summaryLabel">Category:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="8">{{form.genre}}</b-col>
+                </b-row>
+              </b-col>
 
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Author:</div>
-                  <div class="summaryValue">{{form.author}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Website:</div>
-                  <div class="summaryValue">{{form.website}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Token symbol:</div>
-                  <div class="summaryValue">{{form.symbol}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Total supply:</div>
-                  <div class="summaryValue">{{localNumber(form.totalSupply)}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Decimals:</div>
-                  <div class="summaryValue">{{localNumber(form.decimals)}}</div>
-                </div>
-
-                <div class="summaryElement">
-                  <div class="newContractLabel">Genre:</div>
-                  <div class="summaryValue">{{form.genre}}</div>
-                </div>
-
-
-
-                <div class="summaryElement"  style="grid-column:3/5;">
-                  <div class="newContractLabel"></div>
-                  <div style="width:100%"class="embedTD" v-html="embedHtml"></div>
-                </div>
-
-                <div class="summaryElement" style="grid-column:1/5;margin-top:10px;padding:0px 10px 0px 0px;text-align:justify;">
-                  <div class="newContractLabel">Description:</div>
-                  <div class="summaryValue">{{form.description}}</div>
-                </div>
-
-
-              </b-card-body>
-            </b-collapse>
-          </b-card>
-          <b-card no-body class="mb-1  summarySectionTitle">
-            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
-              <div v-b-toggle.accordion2 class="summarySectionTitle">ICO Contract ({{form.ico}}) <span v-if="!isICOValid" style="color:red"> (Invalid data) </span></div>
-            </b-card-header>
-      <b-collapse id="accordion2"  accordions="my-accordion" role="tabpanel" :visible="form.ico=='Yes'">
-        <b-card-body  class="summaryContainer contractTab">
-
-
-          <div class="summaryElement" style="grid-column:1/3">
-            <div class="newContractLabel">Wallet Address:</div>
-            <div class="summaryValue">{{form.wallet}}
-              <span v-if="isValidWalletAddress" style="color:green"> (Checksum correct) </span>
-              <span v-if="!isValidWalletAddress" style="color:red;font-weight:600" v-b-tooltip.hover title="This is not correct ethereum account address or checksum is wrong."> (Invalid) </span> <br><br> </div>
-          </div>
-          <div/><div/>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Tokens for a team:</div>
-            <div class="summaryValue">{{form.teamtokens}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Minimum Contribution PreSale:</div>
-            <div class="summaryValue">{{form.minpresale}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Minimum Contribution MainSale:</div>
-            <div class="summaryValue">{{form.minmainsale}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Maximum Contribution Ether:</div>
-            <div class="summaryValue">{{form.maxETH}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Maximum Cap:</div>
-            <div class="summaryValue">{{form.maxcap}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel">Minimum Cap:</div>
-            <div class="summaryValue">{{form.mincap}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel"  v-bind:class="{errorMessage: !isPriceValid}">Token Price ETH:</div>
-            <div class="summaryValue">{{form.priceETH}}
-            </div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel"  v-bind:class="{errorMessage: !isCampaignDurationValid}">Campaign Duration Days:</div>
-            <div class="summaryValue">{{form.campaignDuration}}</div>
-          </div>
-
-          <div class="summaryElement">
-            <div class="newContractLabel" v-bind:class="{errorMessage: !isPreSaleDurationValid}">Pre-sale duration Days:</div>
-            <div class="summaryValue">{{form.presaleDuration}}</div>
-          </div>
-
-
+              <b-col lg="12" class="mb-5">
+                <b-row>
+                  <b-col cols="12" class="text-left">
+                    <span class="summaryLabel">Description:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" cols="12">{{form.description}}</b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+            <b-row class="p-0">
+              <b-col cols="12" lg="3"></b-col>
+              <b-col cols="12" lg="6" class="p-0 mt-3 align-middle">
+                <img
+                  class="img img-responsive img-thumbnail d-table-cell"
+                  v-if="pictureValid"
+                  v-bind:src="pictureHtml"
+                >
+                <font-awesome-icon icon="question" class="fa-6x" v-if="!pictureValid"/>
+                <br>
+                <span class="missingPicture" v-if="!pictureValid">Picture is required</span>
+              </b-col>
+              <b-col cols="12" lg="3"></b-col>
+              <b-col cols="12" lg="2" v-if="form.soundcloud"></b-col>
+              <b-col cols="12" lg="8" class="embedTD mt-3 mx-0 px-0" v-if="form.soundcloud">
+                <div style class v-html="embedHtml"></div>
+              </b-col>
+              <b-col cols="12" lg="2" v-if="form.soundcloud"></b-col>
+              <b-col cols="12" lg="2"></b-col>
+              <b-col cols="12" lg="8" class="mt-3 px-0" style="height:50%">
+                <center>
+                  {{youtubeId}}
+                  <b-embed tag="div" :src="youtubeId" class v-if="youtubeCorrect"></b-embed>
+                  <span
+                    class="text-center text-danger"
+                    style="font-size:16px;"
+                    v-if="!youtubeCorrect"
+                  >
+                    <br>
+                    <br>YOUTUBE LINK IS INCORRECT !
+                  </span>
+                </center>
+              </b-col>
+              <b-col cols="12" lg="2"></b-col>
+            </b-row>
+          </b-container>
         </b-card-body>
       </b-collapse>
-      </b-card>
-          <b-card no-body class="mb-1 summarySectionTitle ">
-            <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
-              <div v-b-toggle.accordion3 class="summarySectionTitle" >Bonuses ({{bonusesYesOrNo}}) <span v-if="!isBonusValid" style="color:red"> (Invalid data) </span></div>
-            </b-card-header>
-      <b-collapse id="accordion3"  accordions="my-accordion" role="tabpanel" :visible="bonusesVisible">
-        <b-card-body   class="summaryContainer contractTab">
-          <div class="summaryElement">
-            <div class="newContractLabel">Presale Period [days]:</div>
-            <div class="summaryValue">{{form.presalePeriod}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">Presale Period Bonus [%]:</div>
-            <div class="summaryValue">{{form.presalePeriodBonus}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">First Period [days]:</div>
-            <div class="summaryValue">{{form.firstPeriod}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">First Period Bonus [%]:</div>
-            <div class="summaryValue">{{form.firstPeriodBonus}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">Second Period [days]:</div>
-            <div class="summaryValue">{{form.secondPeriod}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">Second Period Bonus [%]:</div>
-            <div class="summaryValue">{{form.secondPeriodBonus}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">Third Period [days]:</div>
-            <div class="summaryValue">{{form.thirdPeriod}}</div>
-          </div>
-          <div class="summaryElement">
-            <div class="newContractLabel">Third Period Bonus[%]:</div>
-            <div class="summaryValue">{{form.thirdPeriodBonus}}</div>
-          </div>
+    </b-card>
+    <b-card no-body class="mb-1 summarySectionTitle">
+      <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
+        <div v-b-toggle.accordion2 class="summarySectionTitle">
+          Token Sale ({{form.ico}})
+          <span v-if="!isICOValid" style="color:red">(Invalid data)</span>
+        </div>
+      </b-card-header>
+      <b-collapse
+        id="accordion2"
+        accordions="my-accordion"
+        role="tabpanel"
+        :visible="form.ico=='Yes'"
+      >
+        <b-card-body class="contractTab">
+          <b-container>
+            <b-row>
+              <b-col lg="12" md="12">
+                <b-row>
+                  <b-col sm="12" md="4" xl="2" class="text-left">
+                    <span class="summaryLabel">Wallet Address:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="12" md="8" xl="10">
+                    {{form.wallet}}
+                    <br>
+                    <span v-if="isValidWalletAddress" style="color:green">(Checksum correct)</span>
+                    <span
+                      v-if="!isValidWalletAddress"
+                      style="color:red;font-weight:600"
+                      v-b-tooltip.hover
+                      title="This is not correct ethereum account address or checksum is wrong."
+                    >(Invalid)</span>
+                  </b-col>
+                </b-row>
+              </b-col>
 
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Tokens for a team:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.teamtokens}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Minimum Contribution PreSale:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.minpresale}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Minimum Contribution MainSale:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.minmainsale}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Maximum Contribution Ether:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.maxETH}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Maximum Cap:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.maxcap}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span class="summaryLabel">Minimum Cap:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.mincap}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span
+                      v-bind:class="{errorMessage: !isPriceValid}"
+                      class="summaryLabel"
+                    >Token Price ETH:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.priceETH}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span
+                      v-bind:class="{errorMessage: !isCampaignDurationValid}"
+                      class="summaryLabel"
+                    >Campaign Duration Days:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.campaignDuration}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col xl="6" md="12">
+                <b-row>
+                  <b-col sm="8" md="6" class="text-left">
+                    <span
+                      v-bind:class="{errorMessage: !isPreSaleDurationValid}"
+                      class="summaryLabel"
+                    >Pre-sale duration Days:</span>
+                  </b-col>
+                  <b-col class="text-left summaryValue" sm="4" md="6">{{form.presaleDuration}}</b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
         </b-card-body>
       </b-collapse>
-      </b-card>
+    </b-card>
+    <b-card no-body class="mb-1 summarySectionTitle">
+      <b-card-header header-tag="header" class="p-1 summarySectionTitle" role="tab">
+        <div v-b-toggle.accordion3 class="summarySectionTitle">
+          Bonuses ({{bonusesYesOrNo}})
+          <span v-if="!isBonusValid" style="color:red">(Invalid data)</span>
+        </div>
+      </b-card-header>
+      <b-collapse
+        id="accordion3"
+        accordions="my-accordion"
+        role="tabpanel"
+        :visible="bonusesVisible"
+        visible
+      >
+        <b-card-body class="summaryContainer contractTab py-1">
+          <b-container class="m-0">
+            <b-row class="p-0">
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Presale Period [days]:</span>
+                  </b-col>
+                  <b-col
+                    cols="4"
+                    sm="5"
+                    md="3"
+                    class="summaryValue text-left"
+                  >{{form.presalePeriod}}</b-col>
+                </b-row>
+              </b-col>
 
-<!-- </b-card-group> -->
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Presale Period Bonus [%]:</span>
+                  </b-col>
+                  <b-col
+                    cols="4"
+                    sm="5"
+                    md="3"
+                    class="summaryValue text-left"
+                  >{{form.presalePeriodBonus}}</b-col>
+                </b-row>
+              </b-col>
 
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">First Period [days]:</span>
+                  </b-col>
+                  <b-col cols="4" sm="5" md="3" class="summaryValue text-left">{{form.firstPeriod}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">First Period Bonus [%]:</span>
+                  </b-col>
+                  <b-col
+                    cols="4"
+                    sm="5"
+                    md="3"
+                    class="summaryValue text-left"
+                  >{{form.firstPeriodBonus}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Second Period [days]:</span>
+                  </b-col>
+                  <b-col cols="4" sm="5" md="3" class="summaryValue text-left">{{form.secondPeriod}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Second Period Bonus [%]:</span>
+                  </b-col>
+                  <b-col
+                    cols="4"
+                    sm="5"
+                    md="3"
+                    class="summaryValue text-left"
+                  >{{form.secondPeriodBonus}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Third Period [days]:</span>
+                  </b-col>
+                  <b-col cols="4" sm="5" md="3" class="summaryValue text-left">{{form.thirdPeriod}}</b-col>
+                </b-row>
+              </b-col>
+
+              <b-col md="6" lg="4" class>
+                <b-row>
+                  <b-col cols="8" sm="7" md="9" class="m-0 text-left">
+                    <span class="summaryLabel text-right">Third Period Bonus[%]:</span>
+                  </b-col>
+                  <b-col
+                    cols="4"
+                    sm="5"
+                    md="3"
+                    class="summaryValue text-left"
+                  >{{form.thirdPeriodBonus}}</b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-card-body>
+      </b-collapse>
+    </b-card>
+
+    <!-- </b-card-group> -->
   </div>
 </template>
 
@@ -196,19 +410,23 @@
 // import musicGenres from '../musicGenres'
 import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
-import Transactions from './Transactions'
+import OneTransaction from './OneTransaction'
 import axios from 'axios'
 import vueAxios from 'vue-axios'
 var Web3 = require('web3')
 var BigNumber = require('bignumber.js')
-var SC = require('soundcloud')
-SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
+// var SC = require('soundcloud')
+// SC.initialize('rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P')
 
 
 export default {
-  data () {
+  data() {
     return {
       show: true,
+      playerVars: {
+        autoplay: 0
+      },
+      youtubeId: '',
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
       information: '',
       txNumber: null,
@@ -216,25 +434,41 @@ export default {
       status: '',
       errMsg: null,
       blockNumber: 0,
+      youtubeCorrect: false,
       gasUsed: '',
       embedHtml: null,
       txNumberShow: null,
       index: 0,
       bonuses: [],
-      API: ''
+      API: '',
+      icotx: 0,
+      songtx: 0
     }
   },
   components: {
     ICOContract,
     Bonuses,
-    Transactions
+    OneTransaction
+  },
+  errorCaptured(err, vm, info) {
+    console.log('Some error')
   },
   watch: {
-    form: function(val)
-    {
-      console.log('New Form:', val)
+    form: function (val) {
+      // console.log('New Form:', val)
       this.loadEmbed()
-}
+      console.log('MAGIER:', this.$refs.youtube)
+      if (this.$youtube.getIdFromUrl(val.youtube)) {
+        this.youtubeId = 'https://youtube.com/embed/' + this.$youtube.getIdFromUrl(val.youtube)
+        this.youtubeCorrect = true
+      } else {
+        this.youtubeId = null
+        this.youtubeCorrect = false
+      }
+      this.$refs.youtube.updatePlayer()
+
+
+    }
   },
   created: function () {
     this.loadEmbed()
@@ -245,8 +479,13 @@ export default {
   },
 
   computed: {
+    videoId: function () {
+
+      return this.$youtube.getIdFromUrl(this.form.youtube)
+
+    },
     bonusesVisible: function () {
-      return (this.form.bonuses=='Yes' && this.form.ico=='Yes')
+      return (this.form.bonuses == 'Yes' && this.form.ico == 'Yes')
     },
     bonusesYesOrNo: function () {
       if (this.bonusesVisible) return 'Yes'
@@ -260,7 +499,7 @@ export default {
       if (isNaN(parseInt(this.form.presaleDuration))) {
         return false
       }
-      if (this.form.presaleDuration <=0) return false
+      if (this.form.presaleDuration <= 0) return false
       return true
     },
 
@@ -268,7 +507,7 @@ export default {
       if (isNaN(parseInt(this.form.campaignDuration))) {
         return false
       }
-      if (this.form.campaignDuration <=0) return false
+      if (this.form.campaignDuration <= 0) return false
       return true
     },
 
@@ -278,13 +517,13 @@ export default {
 
     isPriceValid: function () {
       if (isNaN(parseInt(this.form.priceETH))) return false
-      if (this.form.priceETH <=0) return false
+      if (this.form.priceETH <= 0) return false
       return true
     },
     isICOValid: function () {
       if (this.form.ico == 'No') return true
       if (!this.isValidWalletAddress) return false
-      if (this.form.teamtokens < 0 ) return false
+      if (this.form.teamtokens < 0) return false
       if (!this.isPriceValid) return false
       if (this.form.campaignDuration <= 0) return false
       if (!this.isPreSaleDurationValid) return false
@@ -300,9 +539,8 @@ export default {
         return false
       }
     },
-    web3undefined: function ()
-    {
-      var web3undefined = (typeof(web3) === 'undefined')
+    web3undefined: function () {
+      var web3undefined = (typeof (web3) === 'undefined')
       return web3undefined
     },
     isBonusValid: function () {
@@ -359,26 +597,26 @@ export default {
       var exp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
       // var exp = '/test/'
       var match = this.form.soundcloud.match(exp)
-      if (match !==null && match[0] === this.form.soundcloud){
-        SC.oEmbed(this.form.soundcloud, {auto_play: false,height: 300, maxheight: 300}).then(function (embed) {
+      if (match !== null && match[0] === this.form.soundcloud) {
+        SC.oEmbed(this.form.soundcloud, { auto_play: false, maxheight: 200 }).then(function (embed) {
           that.embedHtml = embed.html
         }).catch(function (err) {
-          that.embedHtml= that.form.soundcloud + " - link is invalid"
+          that.embedHtml = that.form.soundcloud + " - link is invalid"
           // console.log('Embed: ',err)
         })
       } else if (this.form.soundcloud.length > 0) {
         this.embedHtml = 'Inccorect Link s- \'' + this.form.soundcloud + '\''
       } else {
-        this.embedHtml='<br><br>No soundcloud link was provided...' + this.form.soundcloud
+        this.embedHtml = '<br><br>No soundcloud link was provided...' + this.form.soundcloud
       }
     },
-  localNumber: function (val) {
-    if (isNaN(val)) return 0
-    var entry = parseFloat(val)
-    var num = entry.toLocaleString()
-    return num
-  },
-  SongOrBand: function (val) {
+    localNumber: function (val) {
+      if (isNaN(val)) return 0
+      var entry = parseFloat(val)
+      var num = entry.toLocaleString()
+      return num
+    },
+    SongOrBand: function (val) {
       switch (parseInt(val)) {
         case 0: return 'Song'
         case 1: return 'Band'
@@ -386,28 +624,29 @@ export default {
         default: return 'Error'
       }
     },
-    GetNewSongId(store)
-    {
-      axios.get(this.API+'/getNewSongId').then(function(res){
+    GetNewSongId(store) {
+      axios.get(this.API + '/getNewSongId').then(function (res) {
         return res.data.song.newid
-      }).catch (function(err){
+      }).catch(function (err) {
+        console.log('get new song id err:', err)
         return -1
       })
     },
-    onSubmit () {
+    onSubmit() {
       // evt.preventDefault()
       // alert(JSON.stringify(this.form))
       var that = this
 
-      axios.get(this.API+'/getNewSongId').then(function(res){
+      axios.get(this.API + '/getNewSongId').then(function (res) {
         console.log('Submit')
-        var newid =  res.data.song.newid
+        var newid = res.data.song.newid
         var sendForm = new FormData()
-        sendForm.append('pic',new Blob([that.form.picture],{type:that.form.picture.type}))
-        sendForm.append('symbol',that.form.symbol)
-        sendForm.append('id',newid)
-        that.$store.dispatch('UploadPicture',sendForm)
+        sendForm.append('pic', new Blob([that.form.picture], { type: that.form.picture.type }))
+        sendForm.append('symbol', that.form.symbol)
+        sendForm.append('id', newid)
+        that.$store.dispatch('UploadPicture', sendForm)
         var contract = that.$store.state.web3contract
+        console.log('Contract object:', contract)
 
         var form = that.form
         //Adjust some values by decimals
@@ -449,36 +688,41 @@ export default {
 
 
         // function AddICO(address _wallet,uint256 _teamTokens,uint256 _minpresale, uint256 _minMainSale, uint256 _maxEth, uint256  _maxCap, uint256 _minCap, uint256 _price, uint256 _durationDays, uint _presaleduration)
-        if(form.ico === 'Yes') {
+        that.icotx = null
+        that.songtx = null
+        if (form.ico === 'Yes') {
           var title = 'Adding ICO to Blockchain'
           if (form.bonuses === 'Yes') title = 'Adding ICO and Bonuses to Blockchain'
-          that.$store.dispatch('AddTransaction', {title: title})
+          that.$store.dispatch('AddTransaction', { title: title })
           var icotx = that.$store.getters.getTransactionIndex
-          contract.AddICO(form.wallet, teamTokens, constraints, form.priceETH, form.campaignDuration, form.presaleDuration,bonuses, saleTokens, function(err,res){
-            if(res)
-            {
-              that.$store.dispatch('UpdateTransactionMining',{index: icotx, number: res})
-            } else
-            {
-              that.$store.dispatch('UpdateTransactionCancelled',{index: icotx, msg: err.message})
+          that.icotx = icotx
+          contract.AddICO(form.wallet, teamTokens, constraints, form.priceETH, form.campaignDuration, form.presaleDuration, bonuses, saleTokens, function (err, res) {
+            console.log('In ADDICO')
+            if (res) {
+              that.$store.dispatch('UpdateTransactionMining', { index: icotx, number: res })
+            } else {
+              that.$store.dispatch('UpdateTransactionCancelled', { index: icotx, msg: err.message })
             }
           })
         }
-        that.$store.dispatch('AddTransaction',{title: 'Adding New Song in Blockchain'})
+        that.$store.dispatch('AddTransaction', { title: 'Adding New Song in Blockchain' })
         var songtx = that.$store.getters.getTransactionIndex
-        console.log(totalSupply, decimals,form.name, form.author )
+        that.songtx = songtx
+        console.log(totalSupply, decimals, form.name, form.author)
         console.log('Contract: ', contract.address)
-        contract.AddSong(form.name, form.author, form.genre, form.type, form.website, totalSupply, form.symbol, form.description, form.soundcloud, true, decimals, newid, function (err, res) {
-          console.log('Error from Add Song: ', err)
-          if (res !== undefined) {
-            that.$store.dispatch('UpdateTransactionMining', {index: songtx, number: res})
-          } else {
-            that.$store.dispatch('UpdateTransactionCancelled',{index: songtx, msg: err.message})
-          }
-        })
+        console.log('Form:', form)
+        contract.AddSong(form.name, form.author, form.genre, form.type, form.website, totalSupply, form.symbol, form.description, form.soundcloud, form.youtube, true, decimals, newid
+          , function (err, res) {
+            console.log('Error from Add Song: ', err)
+            if (res !== undefined) {
+              that.$store.dispatch('UpdateTransactionMining', { index: songtx, number: res })
+            } else {
+              that.$store.dispatch('UpdateTransactionCancelled', { index: songtx, msg: err.message })
+            }
+          })
 
 
-      }).catch (function(err2){
+      }).catch(function (err2) {
         console.log('Problem with connection to backend: ', err2)
       })
 
@@ -489,7 +733,7 @@ export default {
       var num = entry.toLocaleString()
       return num
     },
-    onReset (evt) {
+    onReset(evt) {
       evt.preventDefault()
       /* Reset our form values */
       this.form.email = ''
@@ -510,9 +754,8 @@ export default {
 </script>
 <style lang="css">
 .aCard {
-  opacity:1;
-  border-style:solid;
+  opacity: 1;
+  border-style: solid;
 }
-
 </style>
 <!-- b-form-1.vue -->

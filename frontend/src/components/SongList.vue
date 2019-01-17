@@ -1,114 +1,75 @@
 <template lang="html">
   <div class="" style="margin:0px 0px;min-height:600px">
-    <b-modal v-if="currentItem != null" @ok.prevent="BuyTokens()" hide-header ref="BuyTokensModal" size="lg" centered
-      ok-title="Buy" :ok-disabled="cantBuyTokens">
-      <center>
-        <img style="height:50px" src="../assets/metamask.png"></img><br><br>
-      </center>
-      <div style="font-family:Courier;margin:15px 0px;background-color:#ddd;border-radius:4px;padding:10px 20px;">
-        <div style="display:grid;grid-template-columns:auto auto 1fr;grid-column-gap:10px;margin:0px 0px 2rem 0px;">
-          <div><b>Name:</b></div>
-          <div> {{currentItem.Name}}</div>
-          <div />
-          <div><b>Rate [{{currentItem.Symbol}}/ETH]: </b></div>
-          <div> {{tokensForEth(currentItem.Price, currentItem.Decimals)}}</div>
-          <div />
-          <div><b>Rate [{{currentItem.Symbol}}/WEI]: </b></div>
-          <div> {{tokensForWei(currentItem.Price, currentItem.Decimals)}}</div>
-          <div />
-          <div><b>Current bonus: </b></div>
-          <div> +{{currentItem.Bonus}}%</div>
-          <div />
-          <div><b>Sale Contract Address:</b></div>
-          <div> {{currentItem.saleAddress}}</div>
-          <div />
-          <div><b>Token Contract Address:</b></div>
-          <div> {{currentItem.address}}</div>
-          <div />
-          <div><b>Available tokens [{{currentItem.Symbol}}]:</b></div>
-          <div> {{availableTokens}}</div>
-          <div />
-          <div><b>Decimals: </b></div>
-          <div> {{localNumber(currentItem.Decimals)}}</div>
-          <div />
-          <div><b>Minimum amount to buy:</b></div>
-          <div> {{tokensStep(currentItem.Price,currentItem.Decimals)}}</div>
-          <div />
-        </div>
-        <b-form style="text-align:center">
-          <center>
-            <b-form-input style="width:200px; height:2rem" id="tokensToBuyInput" type="text" v-model="tokensToBuy"
-              required size="sm" placeholder="How many tokens ?">
-            </b-form-input>
-          </center>
-          <b-form-group style="padding:10px 0px 0px 0px;margin:0px;" id="tokensToBuyGroup" label="How many tokens ?"
-            label-for="tokenstoBuyInput">
-          </b-form-group>
-          <div style="height:3rem;;margin:0px;padding:0px">
-            <center> <span style="color:red;font-weight:800">{{cantBuyTokensMsg}}</span> </center>
-          </div>
-        </b-form>
-        <div style="display:grid;grid-template-columns:auto 1fr;text-align:right;grid-column-gap:10px;">
-          <div><b>Including bonus: [TOKEN]: </b></div>
-          <div style="text-align:left"> {{tokensAndBonus}} </div>
-          <div><b>You will pay [ETH]: </b></div>
-          <div style="text-align:left"> {{tokensPriceEth()}} </div>
-          <div><b>[WEI]: </b></div>
-          <div style="text-align:left;"> {{tokensPriceWei(currentItem.Price, tokensToBuy)}} </div>
-          <div />
-        </div>
-      </div>
-    </b-modal>
+ 
     <b-modal id="modalInfo" @hide="resetModal" ok-only show centered>
       <!-- <pre>{{ modalInfo.content }}</pre> -->
       <div v-on:load="loaded()" v-html="musicPlayerLink"> </div>
       <!-- <iframe v-on:abort="onAbort()" v-on:error="onError()" v-on:load="loaded()" width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay" v-bind:src="musicPlayerLink"></iframe> -->
     </b-modal>
-    <b-container style="height:0px;">
-      <div class="filterText">
-        <a class="filterText" v-bind:class="{filterTextUp: !showFilters || !songsReady, blockedFilter: !songsReady}"
-          href="#" v-on:click="showHideFilters()">FILTERS
-          <font-awesome-icon v-if="showFilters" icon="angle-up" class="arrow fa-2x" />
-          <font-awesome-icon v-if="!showFilters" icon="angle-down" class="arrow fa-2x" />
-        </a>
-      </div>
-    </b-container>
-    <b-container fluid class="navbarBox" v-bind:class="{navbarBox: showFilters && songsReady
-        , hiddenNavbarBox: !showFilters  || !songsReady}">
-      <b-container class="">
-        <div class="filterContainer">
-          <!-- <div v-if="!showFilters"/> -->
-          <b-navbar toggleable="md" style="padding:0px;">
-            <b-nav-form class="filterBox">
-              <div style="display:grid;grid-template-columns:1fr auto;padding:0px;">
-                <input type="text" class="searchBox" placeholder="Search" v-model="tablefilter">
-                <font-awesome-icon icon="search" class=" searchIcon" />
-              </div>
-              <!-- <b-form-input size="sm"  class="mr-sm-2" type="text" placeholder="Search"/> -->
-              <b-button size="sm" v-on:click="filterType(3)" class="my-2 my-sm-0 typeButton" v-bind:class="{selectedType: typeDrop==3}"
-                type="submit">ALL </b-button>
-              <b-button size="sm" v-on:click="filterType(2)" class="my-2 my-sm-0 typeButton" v-bind:class="{selectedType: typeDrop==2}"
-                type="submit">INFLUENCER</b-button>
-              <b-button size="sm" v-on:click="filterType(1)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==1}">MUSIC</b-button>
-              <b-button size="sm" v-on:click="filterType(0)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==0}">PROJECT</b-button>
-              <b-button size="sm" v-on:click="filterType(4)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==4}">CREATED TOKENS</b-button>
-              <b-button size="sm" v-on:click="filterType(5)" class="my-2 my-sm-0 typeButton" type="submit" v-bind:class="{selectedType: typeDrop==5}">OWNED TOKENS</b-button>
 
+      <b-container  fluid class="navbarBox h-100">
+      <b-container class="h-100">
+      <b-navbar toggleable="xl"  class="navbar-dark p-0 my-2 mx-0 ">
+              <b-container class="w-100 h-100 text-center p-0 ">
+                <b-row class=" w-100 p-0 m-0">
+                  <b-col cols=12 sm=12 md=auto lg=4 class=" text-center text-md-left" >
+                    <div style="display:inline" class="">
+                      <div style="display:inline-flex" class="">
+                        <b-form-input id ="searchInput" class="searchBox w-auto" type="text" placeholder="Search" v-model="tablefilter">
+                        </b-form-input>
+                        <div class="iconBorder">
+                          <font-awesome-icon icon="search" class="searchIcon" /> 
+                        </div>
+                      </div>
+                    </div> 
+                  </b-col>
+                  <b-col cols=12 sm=12 md=6 lg=8  class=" pl-3  text-sm-center text-center text-md-left" >
+
+              <b-dropdown class="d-xl-none d-xs-block" toggle-class="testToggle" menu-class="testMenu"  :text="filterOptions[typeDrop].text">
+                <b-dropdown-item v-bind:class="{selectedType: typeDrop==3,'bg-dark text-white': typeDrop != 3}" v-on:click="filterType(3)">All </b-dropdown-item>
+                <b-dropdown-item size="sm" v-on:click="filterType(2)"  v-bind:class="{selectedType: typeDrop==2,'bg-dark text-white': typeDrop != 2}"
+                  type="submit">Influencer</b-dropdown-item>
+                <b-dropdown-item size="sm"  v-on:click="filterType(1)"  v-bind:class="{selectedType: typeDrop==1,'bg-dark text-white': typeDrop != 1}">Music</b-dropdown-item>
+                <b-dropdown-item size="sm" v-on:click="filterType(0)"  v-bind:class="{selectedType: typeDrop==0,'bg-dark text-white': typeDrop != 0}">Misc. Project</b-dropdown-item>
+                <b-dropdown-item size="sm" v-on:click="filterType(4)"  v-bind:class="{selectedType: typeDrop==4,'bg-dark text-white': typeDrop != 4}">Created Tokens</b-dropdown-item>
+                <b-dropdown-item size="sm" v-on:click="filterType(5)"  v-bind:class="{selectedType: typeDrop==5,'bg-dark text-white': typeDrop != 5}">My Tokens</b-dropdown-item>
+              </b-dropdown>
+          <b-collapse is-nav id="searchFilters" class=" p-0 m-0" >
+            <b-nav-form class="filterBox w-100 text-right p-0 m-0">
+              <b-button size="sm" v-on:click="filterType(3)" class="mx-lg-1 mx-xl-1 typeButton" v-bind:class="{selectedType: typeDrop==3}"
+                type="submit">ALL </b-button>
+              <b-button  size="sm" v-on:click="filterType(2)" class="mx-lg-1 mx-xl-1 typeButton" v-bind:class="{selectedType: typeDrop==2}"
+                type="submit">INFLUENCER</b-button>
+              <b-button size="sm" v-on:click="filterType(1)" class="mx-lg-1 mx-xl-1  typeButton" type="submit" v-bind:class="{selectedType: typeDrop==1}">MUSIC</b-button>
+              <b-button size="sm" v-on:click="filterType(0)" class="mx-lg-1 mx-xl-1  typeButton" type="submit" v-bind:class="{selectedType: typeDrop==0}">MISC. PROJECT</b-button>
+              <b-button size="sm" v-on:click="filterType(4)" class="mx-lg-1 mx-xl-1  typeButton" type="submit" v-bind:class="{selectedType: typeDrop==4}">CREATED TOKENS</b-button>
+              <b-button size="sm" v-on:click="filterType(5)" class="mx-lg-1 mx-xl-1  typeButton" type="submit" v-bind:class="{selectedType: typeDrop==5}">MY TOKENS</b-button>
             </b-nav-form>
-          </b-navbar>
-          <div />
-        </div>
+          </b-collapse>
+                  </b-col>
+              </b-row>
+              </b-container>
+
+
+      </b-navbar>
       </b-container>
+      </b-container>
+
+
+    <b-container fluid class="navbarBox ">
     </b-container>
-    <b-container fluid class="navbarBox">
-    </b-container>
-    <b-container>
-      <div v-if="!songsReady"> 
-        <center> <img src="static/loading.gif"></img> <br> Loading... </center>
+    <b-container class="">
+      <!-- <div v-if="!songsReady">  -->
+      <div class="loadingSpin" v-if="!songsReady"> 
+        <center> 
+          <font-awesome-icon  icon="spinner" class="fa-2x fa-pulse refreshIcon" />
+          <br> Loading... </center>
       </div>
-      <div v-if="noSongs && songsReady" class="noSongs"> SONGS LIST IS EMPTY </div>
-      <b-table v-if="songsReady && !noSongs" thead-class="headerClass" thead-tr-class="headerClass" tbody-tr-class="test"
-        tbody-class="test" tbody-td-class="test" sort-direction="desc" sort-by="Created" :current-page="currentPage"
+      <div v-if="noSongs && songsReady" class="text-center text-danger" > 
+          <font-awesome-icon  icon="ban" class="fa-5x  noSongIcon" /><br>
+          <br>THERE ARE NO SONGS
+         </div>
+      <b-table  v-if="songsReady && !noSongs"  tbody-class="tableBodyClass" thead-class="headerClass" thead-tr-class="headerClass"  sort-direction="desc" sort-by="Created" :current-page="currentPage"
         :per-page="perPage" sort-desc="true" :items="songs" :fields="fields" :filter="filterFunction" class="songsTable">
         <template slot="Buy" slot-scope="row">
           <b-button size="sm" variant="info" @click.stop="info(row.item, row.index, $event.target)">Buy</b-button>
@@ -118,63 +79,75 @@
     {{
     row.detailsShowing ? 'Hide' : 'Show'}} Details
   </b-button>
-
-  <!-- {{tokensForEth(row.item.Price,row.item.Decimals)}} -->
+</template>
+        <template slot="sm_details" slot-scope="row">
+  <div @click.stop="row.toggleDetails">
+    <font-awesome-icon
+      @click.stop="row.toggleDetails"
+      v-if="!row.detailsShowing"
+      icon="angle-up"
+      class="arrow fa-2x"
+    />
+    <font-awesome-icon
+      @click.stop="row.toggleDetails"
+      v-if="row.detailsShowing"
+      icon="angle-down"
+      class="arrow fa-2x"
+    />
+  </div>
 </template>
         <template slot="TotalSupply" slot-scope="row">{{BigValue (row.item.TotalSupply,row.item.Decimals)}}</template>
-        <template slot="Volume" slot-scope="row">{{BigValue(row.item.Volume,row.item.Decimals)}}</template>
-        <template slot="Price" slot-scope="row">{{tokensForEth(row.item.Price,row.item.Decimals)}}</template>
-        <template slot="Contribution" slot-scope="row">{{Price (row.item.Contribution)}}</template>
+        <template slot="Price" slot-scope="row">
+  <span class="text-truncate px-md-1">{{tokensForEth(row.item.Price,row.item.Decimals)}}</span>
+</template>
+        <template slot="Volume" slot-scope="row">{{BigValue(row.item.Volume,row.item.Decimals)}} {{row.item.Symbol}}</template>
         <template slot="Type" slot-scope="row">{{SongOrBand (row.item.Type)}}</template>
-        <template slot="Picture" slot-scope="row">
-  <div style="display:grid;grid-template-columns:1fr ;">
-    <!-- <a v-if="!isLoading(row.item.OrderNum) && isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
-  
-        <img  src="../assets/pauseplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
-  
-          <a v-if="isLoading(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
-  
-        <img  src="../assets/loadingplayer.png" alt="" class="player" style="width:30px;margin:5px"></a>
-  
-  
-  
-        <a  v-bind:class="{unPlayable: !row.item.playable}" v-if="!isLoading(row.item.OrderNum) && !isPlaying(row.item.OrderNum)" v-on:click="playMusic(row.item.OrderNum,row.item.soundcloud)">
-  
-    <img  src="../assets/player.png" alt="" class="player" style="width:30px;margin:5px"></a>-->
-    <!-- <iframe allowtransparency="true" scrolling="no" frameborder="no" src="https://w.soundcloud.com/icon/?url=http%3A%2F%2Fsoundcloud.com%2Fflickphlack%2Fdrake-in-my-feelings-kiki-do-you-love-me-loop-1&color=orange_white&size=32" style="width: 32px; height: 32px;"></iframe>
-  
-    <iframe width="50px" height="50px" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/34019569&amp;"></iframe>-->
-
-    <b-img style="padding:0px;" v-bind:src="picLink(row.item.Id)" alt="" height="52" width="52"/>
+        <template slot="smscreen" slot-scope="row" >
+  <div class="text-left m-1 text-truncate d-block p-0 m-0" @click.stop="row.toggleDetails">
+    <b-container class="m-0">
+      <b-row class="p-0 m-0">
+        <b-col cols="10" class="mx-0 p-0">
+          Name: {{row.item.Name}}
+          <br>
+          Author: {{row.item.Author}}
+          <br>
+          Type: {{SongOrBand (row.item.Type)}}
+          <br>
+          Category: {{row.item.Genre}}
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
-  <!-- {{SongOrBand (row.item.Type)}} -->
+</template>
+        <template slot="Picture" slot-scope="row">
+  <b-img
+    style
+    class="responsiveTableImage"
+    @click.stop="row.toggleDetails"
+    v-bind:src="picLink(row.item.Id)"
+    alt
+  />
 </template>
         <template slot="Name" slot-scope="row">&quot;{{row.item.Name}}&quot;</template>
         <template slot="Created" slot-scope="row">{{ getLocalTime(row.item.Created)}}</template>
-        <template slot="row-details" slot-scope="row" style="padding:0px;">
-          <SongDetails v-bind:song='row.item.address'/>
-        </template>
+        <template slot="row-details" slot-scope="row">
+  <SongDetails
+    v-if="!showBuyCoins(row.item.address) && !showTransactions(row.item.address) && !showNewPosition(row.item.address)"
+    v-bind:song="row.item.address"
+  />
+  <BuyCoins v-if="showBuyCoins(row.item.address)" v-bind:song="row.item.address" class/>
+  <NewPosition v-if="showNewPosition(row.item.address)" v-bind:song="row.item.address"/>
+  <OneTransaction
+    v-if="showTransactions(row.item.address)"
+    v-bind:song="row.item.address"
+    v-bind:id="showTransactions(row.item.address)"
+    class
+  />
+</template>
       </b-table>
       <b-pagination v-if="songsReady && !noSongs" size="sm" :per-page="perPage" :total-rows="totalRows" v-model="currentPage"
-        class="robert">
+        class="m-0 p-0">
       </b-pagination>
-      <!-- <div style="width:100%;height:200px;border-style:solid;">
-    TEST
-    <b-row style="border-style:solid">
-      <b-col  style="border-style:solid" sm=6>
-        Row 1
-        <b-row>
-          <b-col  style="border-style:solid" sm=1>
-            Col in Col
-          </b-col>
-        </b-row>
-      </b-col>
-      <b-col  style="border-style:solid" sm=6>
-        Row 1
-      </b-col>
-
-    </b-row>
-  </div> -->
     </b-container>
   </div>
 </template>
@@ -187,13 +160,17 @@ import axios from "axios";
 
 var BigNumber = require("bignumber.js");
 
-var SC = require("soundcloud");
+// var SC = require("soundcloud");
 
 require("./saleContractdef.js");
 import SongDetails from './SongDetails'
+import BuyCoins from './BuyCoins'
+import OneTransaction from './OneTransaction'
+import NewPosition from './NewPosition'
 
 
-SC.initialize("rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P");
+
+// SC.initialize("rZY6FYrMpGVhVDfaKEHdCaY8ALekxd8P");
 
 // SC.initialize('174155989')
 
@@ -202,8 +179,11 @@ var URI = require("uri-js");
 var Web3 = require("web3");
 
 export default {
-  components: { 
-    SongDetails
+  components: {
+    SongDetails,
+    BuyCoins,
+    OneTransaction,
+    NewPosition
   },
   data() {
     return {
@@ -214,7 +194,14 @@ export default {
 
         content: ""
       },
-
+      filterOptions: [
+        { value: 0, text: 'MISC. PROJECT' },
+        { value: 1, text: 'MUSIC' },
+        { value: 2, text: 'INFLUENCER' },
+        { value: 3, text: 'ALL' },
+        { value: 4, text: 'CREATED TOKENS' },
+        { value: 5, text: 'MY TOKENS' }
+      ],
       sortDesc: false,
 
       tablefilter: "",
@@ -242,35 +229,54 @@ export default {
       typeDrop: 3,
 
       fields: [
+
         {
           key: "Picture",
-
           sortable: false,
-
-          label: ""
+          label: "",
+          thStyle: "width:100px;",
+          tdStyle: "width:52px;",
+          tdClass: ""
         },
-
+        {
+          key: "smscreen",
+          sortable: false,
+          thClass: "d-table-cell d-sm-none",
+          tdClass: "d-table-cell d-sm-none",
+          label: ''
+        },
         {
           key: "Type",
-
           sortable: false,
-
-          label: "Type"
+          label: "Type",
+          tdClass: "d-none d-sm-table-cell mx-5 pr-3",
+          thClass: "d-none d-sm-table-cell"
+          // thClass: "d-xs-table-cell d-none "
         },
         {
           key: "Name",
-          sortable: true
+          sortable: true,
+          label: 'Token Name',
+          tdClass: 'm-0 p-0 ml-0',
+          thStyle: 'width:auto;',
+          tdClass: "d-sm-table-cell d-none pr-3",
+          thClass: "d-sm-table-cell d-none "
         },
         {
           key: "Created",
+          label: 'Created',
           sortable: true,
-          sortDirection: "asc"
+          sortDirection: "asc",
+          tdClass: "d-xl-table-cell d-none pr-2",
+          thClass: "d-xl-table-cell d-none "
+
         },
 
         {
           key: "Author",
-
-          sortable: true
+          sortable: true,
+          tdClass: "d-sm-table-cell d-none",
+          thClass: "d-sm-table-cell d-none "
         },
 
         // { key: 'Phase', sortable: true },
@@ -280,17 +286,22 @@ export default {
 
           sortable: true,
 
-          label: "Rate [TOKEN/ETH]"
+          label: "Price [TOKEN/ETH]",
+          tdClass: "d-md-table-cell d-none",
+          thClass: "d-md-table-cell d-none "
+
         },
 
         // { key: 'Volume', sortable: true, label: 'Volume [TOKEN]' },
 
         {
-          key: "Contribution",
-
+          key: "Volume",
           sortable: true,
+          label: "Circulating supply",
+          tdClass: "d-xl-table-cell d-none",
+          thClass: "d-xl-table-cell d-none "
 
-          label: "Contribution [ETH]"
+
         },
 
         // { key: 'TotalSupply', sortable: true },
@@ -300,7 +311,10 @@ export default {
         {
           key: "Genre",
 
-          sortable: true
+          sortable: true,
+          tdClass: "d-lg-table-cell d-none m-0 p-0",
+          thClass: "d-lg-table-cell d-none m-0  ",
+          label: 'Category'
         },
 
         // { key: 'Website', sortable: true },
@@ -309,12 +323,17 @@ export default {
 
         {
           key: "show_details",
-
           sortable: false,
-
           label: "",
-
-          tdClass: "noPadding"
+          tdClass: "d-md-table-cell d-none m-4 noPadding ",
+          thClass: "d-md-table-cell d-none m-3 noPadding"
+        },
+        {
+          key: "sm_details",
+          sortable: false,
+          label: "",
+          tdClass: "d-table-cell d-md-none m-4 noPadding ",
+          thClass: "d-table-cell d-md-none m-3 noPadding"
         }
       ],
 
@@ -325,11 +344,21 @@ export default {
   created: function () {
     // this.$store.dispatch('ConnectToContract')
     this.$store.dispatch("GetSongs");
-    console.table(this.$store.state.songs);
 
   },
 
   methods: {
+    showBuyCoins: function (item) {
+      // console.log('Show Buy Coins', item, this.$store.getters.showBuyCoins(item))
+      return this.$store.getters.showBuyCoins(item)
+    },
+    showTransactions: function (item) {
+      console.log('Show Transactions', item, this.$store.getters.showTransactions(item))
+      return this.$store.getters.showTransactions(item)
+    },
+    showNewPosition: function (item) {
+      return this.$store.getters.showNewPosition(item)
+    },
     showHideFilters: function () {
       this.showFilters = !this.showFilters;
     },
@@ -338,7 +367,7 @@ export default {
       let uriParsed = URI.parse(address);
 
       if (uriParsed.path.length > 0) {
-        if (uriParsed.scheme === undefined) console.log(uriParsed);
+        // if (uriParsed.scheme === undefined) console.log(uriParsed);
 
         return "http://" + address;
       } else {
@@ -378,7 +407,7 @@ export default {
 
       step = BigNumber(step);
 
-      console.log("STEP: ", step.toString());
+      // console.log("STEP: ", step.toString());
 
       let numberofStep = BigNumber(this.tokensToBuy).div(step);
 
@@ -393,12 +422,13 @@ export default {
     },
 
     BuyTokens() {
+      if (web3 === undefined) return
       var saleContractDef = web3.eth.contract(saleContractDefinition);
       var saleContract = saleContractDef.at(this.currentItem.saleAddress);
       var weiAmount = this.tokensPriceWeiBigNumber();
       var that = this;
-      console.log("Wei Amount: ", weiAmount.toString());
-      console.log(this.currentItem.saleAddress);
+      // console.log("Wei Amount: ", weiAmount.toString());
+      // console.log(this.currentItem.saleAddress);
       this.$refs.BuyTokensModal.hide();
       this.$store.dispatch("AddTransaction", {
         title:
@@ -528,26 +558,22 @@ export default {
 
     isMyToken: function (adr) {
 
-      return (web3.toChecksumAddress(adr) === web3.toChecksumAddress(web3.eth.defaultAccount)) 
+      if (web3 === undefined) return false
+      return (web3.toChecksumAddress(adr) === web3.toChecksumAddress(web3.eth.defaultAccount))
     },
     filterFunction: function (item) {
       var itemStr;
 
       if (this.typeDrop < 3 && item.Type !== this.typeDrop) return false;
       if (this.typeDrop == 4) {
-        console.log('TEST ITEM:', item.Owner)
-        console.log(`${web3.toChecksumAddress(web3.eth.defaultAccount)} == ${web3.toChecksumAddress(item.Owner)}`)
         if (!this.isMyToken(item.Owner)) return false
-        // console.log(web3.eth.defaultAccount)
       }
 
       if (this.typeDrop == 5) {
         if (item.ownedTokens === 0) return false
-        // console.log(web3.eth.defaultAccount)
       }
 
       for (var val in item) {
-        // console.log(item[val])
 
         if (item[val] === undefined) continue;
 
@@ -615,10 +641,10 @@ export default {
     SongOrBand: function (val) {
       switch (parseInt(val)) {
         case 0:
-          return "Song";
+          return "Misc. Project";
 
         case 1:
-          return "Band";
+          return "Music";
 
         case 2:
           return "Influencer";
@@ -739,7 +765,7 @@ export default {
     },
 
     picLink: function (id) {
-      console.log("Pic Link:", id);
+      // console.log("Pic Link:", id);
 
       if (id === undefined) {
         return null;
@@ -757,6 +783,7 @@ export default {
   },
 
   computed: {
+
     refreshing: function () {
       return this.$store.state.refreshing
     },
@@ -792,11 +819,11 @@ export default {
 
       if (decimals.isNaN()) return true;
 
-      console.log("Decimals: ", decimals.sd());
+      // console.log("Decimals: ", decimals.sd());
 
       let maxValue = freeTokens.shiftedBy(-decimals.toNumber());
 
-      console.log("MaX:", maxValue.toFormat());
+      // console.log("MaX:", maxValue.toFormat());
 
       if (freeTokens.lt(tokensToBuy)) return true;
 
@@ -809,7 +836,7 @@ export default {
 
       if (numberofStep === null) return true;
 
-      console.log("numberofStep: ", numberofStep);
+      // console.log("numberofStep: ", numberofStep);
 
       step = BigNumber(step);
 
@@ -830,11 +857,11 @@ export default {
       let tokensAndBonus = BigNumber(this.tokensAndBonus);
 
       if (decimals.isNaN()) return null;
-      console.log("Decimals: ", decimals.sd());
+      // console.log("Decimals: ", decimals.sd());
 
       let maxValue = freeTokens.shiftedBy(-decimals.toNumber());
 
-      console.log("MaX:", maxValue.toFormat());
+      // console.log("MaX:", maxValue.toFormat());
 
       let step = this.tokensStep(
         this.currentItem.Price,
@@ -845,7 +872,7 @@ export default {
 
       if (numberofStep === null) return true;
 
-      console.log("numberofStep: ", numberofStep);
+      // console.log("numberofStep: ", numberofStep);
 
       step = BigNumber(step);
 
@@ -888,16 +915,4 @@ export default {
 };
 </script>
 <style lang="css">
-.player:hover {
-  filter: invert(100%) hue-rotate(120deg);
-}
-
-a {
-  color: #fafafa;
-}
-
-.unPlayable {
-  opacity: 0;
-  pointer-events: none;
-}
 </style>

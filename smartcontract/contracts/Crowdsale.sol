@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./ERC20.sol";
 import "./SafeMath.sol";
@@ -23,7 +23,7 @@ contract Crowdsale {
   ERC20 public token;
 
   // Address where funds are collected
-  address public wallet;
+  address payable public wallet;
 
   // How many token units a buyer gets per wei.
   // The rate is the conversion between wei and the smallest and indivisible token unit.
@@ -53,10 +53,10 @@ contract Crowdsale {
    * @param _wallet Address where collected funds will be forwarded to
    * @param _token Address of the token being sold
    */
-  constructor(uint256 _rate, address _wallet, ERC20 _token) public {
+  constructor(uint256 _rate, address payable _wallet, ERC20 _token) public {
     /* require(_rate > 0); */
     /* require(_wallet != address(0)); */
-    require(_token != address(0));
+    require(address(_token) != address(0));
 
     rate = _rate;
     wallet = _wallet;

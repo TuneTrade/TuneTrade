@@ -1,19 +1,59 @@
 <template lang="html">
-  <b-container class="transactionsModal">
+
+  <b-container fluid style="padding:0px;margin:0px;" class="py-0 my-0">
     <!-- <b-button @click="addTransaction()"> Add </b-button> -->
-    <br>
-    <center> <b-button @click="cleanTransactions()"> Clean </b-button> </center>
-    <center> <b-button @click="ClosedTransactions()"> Stop Refresh </b-button> </center>
-    <br>
+  <b-row v-if="song">
+    <b-col>
+              <b-button
+          variant="info"
+          @click.stop="ShowSongDetails()"
+          class="buyCoinButton mt-3"
+        >Song Details</b-button><br><br>
+    </b-col>
+  </b-row>
     <!-- {{pending}} -->
-    <center>
-      <img style="height:50px" src="../assets/metamask.png"></img><br><br>
-      Last update: {{lastUpdate}}
-      <p style="color:#fafafa;font-family:Roboto;font-weight:800">PLEASE ACCEPT YOUR TRANSACTION IN METAMASK</p>
+  <!-- {{transactions}} -->
+  <!-- <br><br> -->
+        <b-container fluid class="navbarBox mx-0 p-0">
+      </b-container>
+      <b-container class="mx-auto  p-0 mx-0">
 
-   </center>
-
-  <div v-for="transaction in transactions">
+    <b-table     thead-class=" headerClass text-left"  tbody-class="text-left  tableBodyClass"  thead-tr-class=" text-left TokeExchangeTableRow"  sort-direction="desc" sort-by="Created" :current-page="currentPage"
+        :per-page="perPage" sort-desc="true" :items="transactions" :fields="fields" :filter="filterFunction" class=" text-left songsTable">
+        <template slot="blockNumber" slot-scope="row">{{localNumber(row.item.blockNumber)}}</template>
+        <template slot="gasUsed" slot-scope="row">{{localNumber(row.item.gasUsed)}}</template>
+        <template slot="smscreen" slot-scope="row">
+  <b-link
+    target="_blank"
+    style="font-size:8px;"
+    class="text-primary"
+    v-bind:href="etherscanTx(row.item.txNumber)"
+    variant="danger"
+  >{{row.item.txNumber}}</b-link>
+  <br>
+  <span
+    class="text-left"
+    v-bind:class="{errorMessage: row.item.status=='Cancelled',successfulStatus: row.item.status=='Successful',successfulStatus: row.item.status=='Finished (Successful)', miningStatus: row.item.status=='Mining', failedStatus: row.item.status=='Failed'}"
+  >{{row.item.status}}</span>
+</template>
+        <template slot="txNumber" slot-scope="row">
+  <b-link
+    target="_blank"
+    style="font-size:11px;"
+    class="text-primary"
+    v-bind:href="etherscanTx(row.item.txNumber)"
+    variant="danger"
+  >{{row.item.txNumber}}</b-link>
+</template>
+        <template slot="status" slot-scope="row">
+  <span
+    v-bind:class="{errorMessage: row.item.status=='Cancelled',successfulStatus: row.item.status=='Successful',successfulStatus: row.item.status=='Finished (Successful)', miningStatus: row.item.status=='Mining', failedStatus: row.item.status=='Failed'}"
+  >{{row.item.status}}</span>
+</template>
+      
+        </b-table>
+    </b-container>
+  <!-- <div v-for="transaction in transactions">
     <div class ="transaction">
             <b-row class='detailsRow'>
               <b-col sm='1' class='text-sm-left'>Title:</b-col>
@@ -58,7 +98,7 @@
 
    
   </div>
-  </div>
+  </div> -->
 
 
 
@@ -67,9 +107,57 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      index: 0
+      index: 0,
+      fields: [
+
+        {
+          key: "title",
+          sortable: false,
+          label: "Title",
+          tdStyle: 'height:50px',
+          tdClass: "d-md-table-cell d-none py-3  px-3 text-left",
+          thClass: "d-md-table-cell d-none text-left "
+
+        },
+        {
+          key: "status",
+          sortable: false,
+          label: "Status",
+          tdClass: "d-md-table-cell d-none  text-left px-3 ",
+          thClass: "d-md-table-cell d-none text-left  "
+        },
+        {
+          key: 'smscreen',
+          sortable: false,
+          thClass: 'd-none',
+          tdClass: 'd-table-cell d-md-none py-2 text-left px-2',
+          label: 'Transactions'
+        },
+        {
+          key: "txNumber",
+          sortable: false,
+          label: "Transaction Number",
+          tdClass: "d-md-table-cell d-none  text-left px-3",
+          thClass: "d-md-table-cell d-none text-left  "
+        },
+        {
+          key: "blockNumber",
+          sortable: false,
+          label: "Block Number",
+          tdClass: "d-lg-table-cell d-none  text-left px-3",
+          thClass: "d-lg-table-cell d-none text-left  "
+        },
+        {
+          key: "gasUsed",
+          sortable: false,
+          label: "Gas Used",
+          tdClass: "d-lg-table-cell d-none  text-left px-3",
+          thClass: "d-lg-table-cell d-none text-left  "
+
+        }
+      ]
     }
   },
 
@@ -89,9 +177,18 @@ export default {
     }
   },
   props: {
-    pending: Boolean
+    pending: Boolean,
+    song: String
   },
   methods: {
+    etherscanTx: function (address) {
+      return 'https://ropsten.etherscan.io/tx/' + address
+    },
+    ShowSongDetails: function () {
+      this.$store.state.showTransactions = null
+      this.$store.state.showTransactions = {}
+      this.$store.state.showTransactions[this.song] = false
+    },
     ClosedTransactions: function () {
       this.$store.dispatch('DoNotRefreshTransactions')
     },

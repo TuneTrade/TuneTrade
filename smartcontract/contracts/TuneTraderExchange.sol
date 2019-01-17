@@ -1,7 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./Ownable.sol";
 import "./TTPositionManager.sol";
+import "./Interface.sol";
+// import "./UL.sol";
 
 
 contract TuneTraderExchange is Ownable
@@ -13,47 +15,63 @@ contract TuneTraderExchange is Ownable
     mapping (address => bool) positionExist;
     address[] positionsAddresses;
     mapping (address => uint256) positionIndex;
+    IContractStorage DS;
 
+    constructor(IContractStorage val) public {
+        DS = val;
+        owner = msg.sender;
+        DS.registerName("positions");
+        DS.registerName("positionExist");
+        DS.registerName("positionIndex");
+    }
     function AddPosition(address token, uint256 volume, bool buySell, uint256 cost) public payable 
     {
         require(buySell == false || msg.value == cost, "Buying positions must be created with ETH");
         
         TTPositionManager manager = (new TTPositionManager).value(msg.value)(token, volume, buySell, cost, msg.sender);
         // Position memory newPosition =  Position(token, volume, BuySell, now, cost, msg.sender, address(manager));
-        positionsAddresses.push(manager);
-        positionExist[address(manager)] = true;
-        positionIndex[address(manager)] = positionsAddresses.length - 1; 
+        uint index = DS.PushAddress(DS.key("positions"),address(manager));
+        DS.SetBool(DS.key(address(manager),"positionExist"),true);
+        DS.SetUint(DS.key(address(manager),"positionIndex"),index);
+        // positionExist[address(manager)] = true;
+        // positionIndex[address(manager)] = positionsAddresses.length - 1; 
         emit NewPosition(token, volume, buySell, cost, msg.sender);
     }
 
-    // function PositionsCount () public view returns (uint256) {
-    //     return positionsAddresses.length;
-    // }
+    function PositionsCount () public view returns (uint256) {
+        return DS.GetAddressTable(DS.key("positions")).length;
+    }
 
-    function GetPositions () public view returns (address[]) {
-        return positionsAddresses;
+    function GetPositions () public view returns (address[] memory ) {
+        return DS.GetAddressTable(DS.key("positions"));
     }
 
 
-    function tokenFallback(address _tokenSender, uint _value, bytes _data) public {
+    function tokenFallback(address _tokenSender, uint _value, bytes memory  _data) public {
         emit ReceivedTokens(_value, _tokenSender, msg.sender);
     }
 
 
 
     function TerminatePosition(bool closedOrCancelled) external {
-        require (positionExist[msg.sender], "Position must exist on the list");
-        uint256 index = positionIndex[msg.sender];
-        uint256 maxIndex = positionsAddresses.length - 1;
+        require ((DS.GetBool(DS.key(msg.sender,"positionExist")) == true),"Position must exist on the list");
+        uint256 index = DS.GetUint(DS.key(msg.sender,"positionIndex"));
+        uint256 maxIndex = PositionsCount() - 1;
 
         if (index < maxIndex) {
-            positionIndex[positionsAddresses[maxIndex]] = index;
-            positionsAddresses[index] = positionsAddresses[maxIndex];
+            address miAddr = DS.GetAddressFromTable(DS.key("positions"),maxIndex);
+            DS.SetUint(DS.key(miAddr,"positionIndex"),index);
+            // positionIndex[positionsAddresses[maxIndex]] = index;
+            DS.SetAddressInTable(DS.key("positions"),index,miAddr);
+            // positionsAddresses[index] = positionsAddresses[maxIndex];
         }
-        delete positionsAddresses[maxIndex];
-        delete positionIndex[msg.sender];
-        delete positionExist[msg.sender];
-        positionsAddresses.length = positionsAddresses.length - 1;
+        DS.DelLastAddressInTable(DS.key("positions"));
+        DS.DelUint(DS.key(msg.sender,"positionIndex"));
+        DS.DelBool(DS.key(msg.sender,"positionExist"));
+        // delete positionsAddresses[maxIndex];
+        // delete positionIndex[msg.sender];
+        // delete positionExist[msg.sender];
+        // positionsAddresses.length = positionsAddresses.length - 1;
 
         if (closedOrCancelled == true ) {
             emit PositionClosed(msg.sender);

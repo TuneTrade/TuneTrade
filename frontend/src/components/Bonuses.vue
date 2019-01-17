@@ -1,186 +1,222 @@
 <template>
-  <div>
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
-      <div class="newContractFormContainer">
-        <b-form-group id="BonusesYesNoGroup"
-                      label="Add bonuses ?"
-                      class="newContractLabel"
-                      label-for="BonusesYesNoGroup"
-                      :description="radioDescription"
-                      >
-          <b-form-radio-group id="BonusesYesNoGroup"
-                      button-variant="outline-info"
-                      buttons
-                      size="sm"
-                      required
-                      @change="UnSave()"
-                      :disabled="icoDisabled"
-                      v-model="form.bonuses"
-                      v-on:click.native.stop="SwitchRadio"
-                      :options="radioOptions"
-                      name="" />
-        </b-form-group>
-      <b-form-group id="presalePeriodGroup"
-                    label="Presale Period [DAY]:"
-                    class="newContractLabel"
-                    label-for="presalePeriod"
-                    :description = "PreSaleDescription"
-                    >
-        <b-form-input id="presalePeriod"
-                      type="number"
-                      v-model="form.presalePeriod"
-                      optional
-                      min=0
-                      :state="PreSalePeriodGood"
-                      class="newContractInput"
-                      @keydown.native = "UnSave()"
-                      :disabled="BonusesDisabled"
-                      @change = "UnSave()"
-                      size="sm"
-                      placeholder="Enter presale duration in days">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="presalePeriodBonusGroup"
-                    class="newContractLabel"
-                    label="Presale Period Bonus [%]:"
-                    label-for="presalePeriodBonus">
-        <b-form-input id="presalePeriodBonus"
-                      type="number"
-                      v-model="form.presalePeriodBonus"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      class="newContractInput"
-                      min=0
-                      :disabled="BonusesDisabled"
-                      optional
-                      size="sm"
-                      placeholder="Enter presale bonus">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="firstPeriodGroup"
-                    label="First Period [DAY]:"
-                    class="newContractLabel"
-                    label-for="firstPeriod"
-                    :description = "CampaignPeriodDescription"
-                    >
-        <b-form-input id="firstPeriod"
-                      type="number"
-                      v-model="form.firstPeriod"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      :disabled="BonusesDisabled"
-                      :state="CampaignPeriodGood"
-                      optional
-                      class="newContractInput"
-                      min=0
-                      size="sm"
-                      placeholder="Enter first period duration in days">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="firstPeriodBonusGroup"
-                    label="First Period Bonus [%]:"
-                    class="newContractLabel"
-                    label-for="firstPeriod">
-        <b-form-input id="firstPeriodBonus"
-                      type="number"
-                      v-model="form.firstPeriodBonus"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      :disabled="BonusesDisabled"
-                      optional
-                      class="newContractInput"
-                      min=0
-                      size="sm"
-                      placeholder="Enter first period bonus">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="secondPeriodGroup"
-                    label="Second Period [DAY]:"
-                    class="newContractLabel"
-                    label-for="secondPeriod">
-        <b-form-input id="secondPeriod"
-                      type="number"
-                      v-model="form.secondPeriod"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      :state="CampaignPeriodGood"
-                      class="newContractInput"
-                      :disabled="BonusesDisabled"
-                      optional
-                      size="sm"
-                      min=0
-                      placeholder="Enter second period duration">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="secondPeriodBonusGroup"
-                    label="Second Period Bonus [%]:"
-                    class="newContractLabel"
-                    label-for="secondPeriodBonus">
-        <b-form-input id="secondPeriodBonus"
-                      type="number"
-                      v-model="form.secondPeriodBonus"
-                      @keydown.native = "UnSave()"
-                      class="newContractInput"
-                      @change = "UnSave()"
-                      :disabled="BonusesDisabled"
-                      optional
-                      min=0
-                      size="sm"
-                      placeholder="Enter second period bonus">
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="thirdPeriodGroup"
-                    label="Third Period [DAY]:"
-                    class="newContractLabel"
-                    label-for="thirdPeriod">
-        <b-form-input id="thirdPeriod"
-                      type="number"
-                      v-model="form.thirdPeriod"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      :state="CampaignPeriodGood"
-                      class="newContractInput"
-                      :disabled="BonusesDisabled"
-                      optional
-                      min=0
-                      size="sm"
-                      placeholder="Enter third period duration in days">
-        </b-form-input>
-      </b-form-group>
-      <b-form-group id="thirdPeriodBonusGroup"
-                    label="Third Period Bonus[%]:"
-                    class="newContractLabel"
-                    label-for="thirdPeriodBonus">
-        <b-form-input id="thirdPeriodBonus"
-                      type="number"
-                      v-model="form.thirdPeriodBonus"
-                      @keydown.native = "UnSave()"
-                      @change = "UnSave()"
-                      class="newContractInput"
-                      :disabled="BonusesDisabled"
-                      min=0
-                      optional
-                      size="sm"
-                      placeholder="Enter third period bonus value">
-        </b-form-input>
-      </b-form-group>
-
-    </div>
-    </b-form>
-  </div>
+  <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
+    <b-container class="newContractFormContainer">
+      <b-row>
+        <b-col cols="12">
+          <b-form-group
+            id="BonusesYesNoGroup"
+            label="Add bonuses ?"
+            class="newContractLabel"
+            label-for="BonusesYesNoGroup"
+            :description="radioDescription"
+          >
+            <b-form-radio-group
+              id="BonusesYesNoGroup"
+              button-variant="outline-info"
+              buttons
+              size="sm"
+              required
+              @change="UnSave()"
+              :disabled="icoDisabled"
+              v-model="form.bonuses"
+              v-on:click.native.stop="SwitchRadio"
+              :options="radioOptions"
+              name
+            />
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="presalePeriodGroup"
+            label="Presale Period [DAY]:"
+            class="newContractLabel"
+            label-for="presalePeriod"
+            :description="PreSaleDescription"
+          >
+            <b-form-input
+              id="presalePeriod"
+              type="number"
+              v-model="form.presalePeriod"
+              optional
+              min="0"
+              :state="PreSalePeriodGood"
+              class="newContractInput"
+              @keydown.native="UnSave()"
+              :disabled="BonusesDisabled"
+              @change="UnSave()"
+              size="sm"
+              placeholder="Enter presale duration in days"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="presalePeriodBonusGroup"
+            class="newContractLabel"
+            label="Presale Period Bonus [%]:"
+            label-for="presalePeriodBonus"
+          >
+            <b-form-input
+              id="presalePeriodBonus"
+              type="number"
+              v-model="form.presalePeriodBonus"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              class="newContractInput"
+              min="0"
+              :disabled="BonusesDisabled"
+              optional
+              size="sm"
+              placeholder="Enter presale bonus"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="firstPeriodGroup"
+            label="First Period [DAY]:"
+            class="newContractLabel"
+            label-for="firstPeriod"
+            :description="CampaignPeriodDescription"
+          >
+            <b-form-input
+              id="firstPeriod"
+              type="number"
+              v-model="form.firstPeriod"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              :disabled="BonusesDisabled"
+              :state="CampaignPeriodGood"
+              optional
+              class="newContractInput"
+              min="0"
+              size="sm"
+              placeholder="Enter first period duration in days"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="firstPeriodBonusGroup"
+            label="First Period Bonus [%]:"
+            class="newContractLabel"
+            label-for="firstPeriod"
+          >
+            <b-form-input
+              id="firstPeriodBonus"
+              type="number"
+              v-model="form.firstPeriodBonus"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              :disabled="BonusesDisabled"
+              optional
+              class="newContractInput"
+              min="0"
+              size="sm"
+              placeholder="Enter first period bonus"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="secondPeriodGroup"
+            label="Second Period [DAY]:"
+            class="newContractLabel"
+            label-for="secondPeriod"
+          >
+            <b-form-input
+              id="secondPeriod"
+              type="number"
+              v-model="form.secondPeriod"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              :state="CampaignPeriodGood"
+              class="newContractInput"
+              :disabled="BonusesDisabled"
+              optional
+              size="sm"
+              min="0"
+              placeholder="Enter second period duration"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="secondPeriodBonusGroup"
+            label="Second Period Bonus [%]:"
+            class="newContractLabel"
+            label-for="secondPeriodBonus"
+          >
+            <b-form-input
+              id="secondPeriodBonus"
+              type="number"
+              v-model="form.secondPeriodBonus"
+              @keydown.native="UnSave()"
+              class="newContractInput"
+              @change="UnSave()"
+              :disabled="BonusesDisabled"
+              optional
+              min="0"
+              size="sm"
+              placeholder="Enter second period bonus"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="thirdPeriodGroup"
+            label="Third Period [DAY]:"
+            class="newContractLabel"
+            label-for="thirdPeriod"
+          >
+            <b-form-input
+              id="thirdPeriod"
+              type="number"
+              v-model="form.thirdPeriod"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              :state="CampaignPeriodGood"
+              class="newContractInput"
+              :disabled="BonusesDisabled"
+              optional
+              min="0"
+              size="sm"
+              placeholder="Enter third period duration in days"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col md="6" lg="4">
+          <b-form-group
+            id="thirdPeriodBonusGroup"
+            label="Third Period Bonus[%]:"
+            class="newContractLabel"
+            label-for="thirdPeriodBonus"
+          >
+            <b-form-input
+              id="thirdPeriodBonus"
+              type="number"
+              v-model="form.thirdPeriodBonus"
+              @keydown.native="UnSave()"
+              @change="UnSave()"
+              class="newContractInput"
+              :disabled="BonusesDisabled"
+              min="0"
+              optional
+              size="sm"
+              placeholder="Enter third period bonus value"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-container>
+  </b-form>
 </template>
 
 <script>
 var radioOptions = ['No', 'Yes']
 
 export default {
-  data () {
+  data() {
     return {
       form: {
         bonuses: 'No',
@@ -246,7 +282,7 @@ export default {
       }
       this.UnSave()
     },
-    UnSave () {
+    UnSave() {
       for (var key in this.form) {
         console.log('form[' + key + '] = ' + this.form[key])
         this.$store.state.formB[key] = this.form[key]
@@ -254,11 +290,11 @@ export default {
       this.$store.state.formB = this.form
       this.unsaved = true
     },
-    onSubmit (evt) {
+    onSubmit(evt) {
       evt.preventDefault()
       alert(JSON.stringify(this.form))
     },
-    onReset (evt) {
+    onReset(evt) {
       evt.preventDefault()
       /* Reset our form values */
       this.form.email = ''
@@ -279,7 +315,7 @@ export default {
 </script>
 <style lang="css">
 .footer {
-  background-color:red;
+  background-color: red;
 }
 </style>
 <!-- b-form-1.vue -->

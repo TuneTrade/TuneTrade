@@ -1,171 +1,211 @@
 <template>
   <div>
     <b-container>
-    <b-tabs card class="contractTabs"   v-model="index" nav-class="contractTabsNav" nav-wrapper-class="contractTabsNavBar">
-      <b-tab title="General" class="contractTab" title-item-class="newContractTitle" title-link-class="newContractTitle grey1" >
-    <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
-      <div class="newContractFormContainer">
-      <b-form-group id="typeGroup"
+      <b-tabs
+        card
+        class="contractTabs"
+        v-model="index"
+        nav-class="contractTabsNav d-block d-md-flex p-0 mx-0"
+        nav-wrapper-class="contractTabsNavBar  px-0"
+      >
+        <b-tab
+          title="General"
+          class="contractTab"
+          title-item-class="newContractTitle pb-1 pb-md-0"
+          title-link-class="newContractTitle grey1"
+        >
+          <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="newContractForm">
+            <b-container class>
+              <b-row>
+                <b-col cols="12">
+                  <b-form-group
+                    id="typeGroup"
                     label="Type:"
                     label-for="typeGroup"
                     description="Music,Project or Influencer ?"
                     class="newContractLabel"
-                    >
-        <b-form-radio-group id="typeGroup"
-                    buttons
-                    button-variant="outline-primary"
-                    size="sm"
-                    optional
-                    @change="UnSave()"
-                    v-model="form.type"
-                    :options="entryTypeOptions"
-                    name="radioBtnOutline"
-                    style="width:300px;"
+                  >
+                    <b-form-radio-group
+                      id="typeGroup"
+                      buttons
+                      button-variant="outline-primary"
+                      size="sm"
+                      optional
+                      @change="UnSave()"
+                      v-model="form.type"
+                      :options="entryTypeOptions"
+                      name="radioBtnOutline"
+                      style="width:300px;"
                     />
-      </b-form-group>
-      <b-form-group id="nameInputGroup"
-                    label="Name:"
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="nameInputGroup"
+                    label="Token Name:"
                     label-for="nameInput"
                     class="newContractLabel"
-                    >
-        <b-form-input id="nameInput"
+                  >
+                    <b-form-input
+                      id="nameInput"
                       type="text"
                       v-model="form.name"
-                      @keydown.native = "UnSave()"
+                      @keydown.native="UnSave()"
                       optional
                       size="sm"
-                      placeholder="Enter name"
+                      placeholder="Enter token name"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-      <b-form-group id="authorNameGroup"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="authorNameGroup"
                     label="Author:"
                     label-for="authorName"
                     class="newContractLabel"
-                    >
-        <b-form-input size="sm" id="authorName"
+                  >
+                    <b-form-input
+                      size="sm"
+                      id="authorName"
                       type="text"
                       v-model="form.author"
-                      @keydown.native = "UnSave()"
+                      @keydown.native="UnSave()"
                       optional
                       placeholder="Enter author's name"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-      <b-form-group id="websiteLink"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="websiteLink"
                     label="Website:"
                     label-for="website"
                     class="newContractLabel"
-                    >
-        <b-form-input id="website"
+                  >
+                    <b-form-input
+                      id="website"
                       type="text"
                       v-model="form.website"
                       optional
-                      @keydown.native = "UnSave()"
+                      @keydown.native="UnSave()"
                       size="sm"
                       placeholder="Enter website link"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="websiteLink"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="websiteLink"
                     label="Soundcloud:"
                     label-for="soundcloud"
                     class="newContractLabel"
-                    >
-        <b-form-input id="soudncloud"
+                  >
+                    <b-form-input
+                      id="soudncloud"
                       type="text"
                       v-model="form.soundcloud"
                       optional
-                      @keyup.native = "UnSave()"
+                      @keyup.native="UnSave()"
                       size="sm"
                       placeholder="Enter soundcloud link"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="symbolGroup"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="youtubelink"
+                    label="Youtube:"
+                    label-for="youtube"
+                    class="newContractLabel"
+                  >
+                    <b-form-input
+                      id="youtube"
+                      type="text"
+                      v-model="form.youtube"
+                      optional
+                      @keyup.native="UnSave()"
+                      size="sm"
+                      placeholder="Enter youtube link"
+                      class="newContractInput"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="symbolGroup"
                     label="Token Symbol:"
                     label-for="symbol"
                     class="newContractLabel"
-                    >
-        <b-form-input id="symbol"
+                  >
+                    <b-form-input
+                      id="symbol"
                       type="text"
-                      @keydown.native = "UnSave()"
+                      @keydown.native="UnSave()"
                       v-model="form.symbol"
                       optional
                       size="sm"
                       placeholder="Enter symbol"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-      <b-form-group id="supplyGroup"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="supplyGroup"
                     label="Total Supply [TOKEN]:"
                     label-for="totalSupply"
                     :description="totalSupplyDesc"
                     class="newContractLabel"
-                    >
-        <b-form-input id="totalSupply"
-                      type="text"
+                  >
+                    <b-form-input
+                      id="totalSupply"
+                      type="number"
                       step="1"
-                      min=0
-                      @keydown.native = "UnSave()"
+                      min="0"
+                      max="1000000000000"
+                      @keydown.native="UnSave()"
                       v-model="form.totalSupply"
                       required
                       size="sm"
-                      placeholder="Enter symbol"
+                      placeholder="Enter total supply"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="decimalsGroup"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="decimalsGroup"
                     label="Decimals (Max:18) [NUMBER]:"
                     label-for="decimalsInput"
                     class="newContractLabel"
-                    >
-        <b-form-input id="decimalsInput"
-                      type="number"
+                  >
+                    <b-form-input
+                      id="decimalsInput"
+                      type="text"
                       step="1"
-                      min=0
-                      @keyup.native = "UnSave()"
+                      min="0"
+                      @keyup.native="UnSave()"
                       v-model="form.decimals"
                       required
                       size="sm"
                       placeholder="Enter decimals"
                       class="newContractInput"
-                      >
-        </b-form-input>
-      </b-form-group>
-
-      <b-form-group id="pictureGroup"
-                    label="Album Image:"
-                    label-for="picture"
-                    class="newContractLabel"
-                    >
-      <b-form-file id="picture"
-                      accept=".jpg, .png, .gif"
-                      v-model="form.picture"
-                      optional
-                      ref="picName"
-                      @change.native="ReadPicture($event,this)"
-                      placeholder="Please provide album image"
-                      class="newContractInput"
-                      >
-        </b-form-file>
-      </b-form-group>
-
-      <b-form-group id="exampleInputGroup3" style="grid-row:4"
-                    label="Genre:"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col md="6" lg="4">
+                  <b-form-group
+                    id="exampleInputGroup3"
+                    label="Category:"
                     label-for="exampleInput3"
                     class="newContractLabel"
-                    >
-        <b-form-select id="exampleInput3"
+                  >
+                    <b-form-select
+                      id="exampleInput3"
                       :options="genres"
                       optional
                       v-model="form.genre"
@@ -174,69 +214,119 @@
                       placeholder="Select genre"
                       class="newContractInput"
                       style="color:#fafafa;"
-                      >
-
-        </b-form-select>
-      </b-form-group>
-      <div style="grid-column:3/4;grid-row:4/5;margin:-30px 0px 0px 0px;text-align:right;">
-        <img ref="picPreview" style="width:100%;"></img>
-
-      </div>
-      <div style="grid-column:1/4;grid-row:5;">
-      <b-form-group  id="descriptionGroup"
+                    ></b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col md="12" lg="6">
+                  <b-form-group
+                    id="descriptionGroup"
                     label="Description:"
                     label-for="description"
                     v-bind:description="numCharacters"
                     class="newContractLabel"
-                    >
-        <b-form-textarea id="description"
+                  >
+                    <b-form-textarea
+                      id="description"
                       v-model="form.description"
                       @input="LimitText()"
-                      rows=4
+                      rows="4"
                       no-resize
                       wrap
-                      max-rows = 6
+                      max-rows="6"
                       placeholder="Description (Max: 200 characters)"
                       class="newContractInput"
+                    ></b-form-textarea>
+                  </b-form-group>
+                </b-col>
+                <b-col md="12" lg="6">
+                  <b-row>
+                    <b-col cols="12" md="6" sm="12" lg="12">
+                      <b-form-group
+                        id="pictureGroup"
+                        label="Token Image:"
+                        label-for="picture"
+                        class="newContractLabel"
                       >
+                        <b-form-file
+                          id="picture"
+                          accept=".jpg, .png, .gif"
+                          v-model="form.picture"
+                          optional
+                          ref="picName"
+                          @change.native="ReadPicture($event,this)"
+                          placeholder="Please provide album image"
+                          class="newContractInput"
+                        ></b-form-file>
+                      </b-form-group>
+                    </b-col>
 
-        </b-form-textarea>
+                    <b-col
+                      v-bind:class="{'height-plus-200': form.picture}"
+                      cols="12"
+                      md="6"
+                      sm="12"
+                      lg="12"
+                      class="mt-4 mb-3 p-0 text-center"
+                    >
+                      <div>
+                        <img
+                          v-if="form.picture"
+                          class="img img-fluid img-responsive img-thumbnail"
+                          ref="picPreview"
+                        >
+                      </div>
+                    </b-col>
+                  </b-row>
+                </b-col>
 
-      </b-form-group>
-    </div>
-      <!-- <b-form-group id="exampleGroup4"> -->
-        <!-- <b-form-checkbox-group v-model="form.checked" id="exampleChecks"> -->
-          <!-- <b-form-checkbox value="me">Check me out</b-form-checkbox> -->
-          <!-- <b-form-checkbox value="that">Check that out</b-form-checkbox> -->
-        <!-- </b-form-checkbox-group> -->
-      <!-- </b-form-group> -->
-    </div>
-    </b-form>
-  </b-tab>
-  <b-tab  title-item-class="newContractTitle" title-link-class="newContractTitle grey2" :title="ICOTitle"  class="contractTab">
-    <ICOContract/>
-  </b-tab>
-  <b-tab   title-item-class="newContractTitle" title-link-class="newContractTitle grey3 " :disabled="BonusDisabled" :title="'Bonuses ('+ this.BonusYesOrNo +')'"  class="contractTab">
-    <Bonuses/>
-  </b-tab>
-  <b-tab  title-item-class="newContractTitle" title-link-class="newContractTitle grey4" title="Summary & Create" class="contractTab">
-    <SummaryNewContract/>
-  </b-tab>
-</b-tabs>
-</b-container>
-<!-- {{unsaved}} -->
+                <!-- <b-form-group id="exampleGroup4"> -->
+                <!-- <b-form-checkbox-group v-model="form.checked" id="exampleChecks"> -->
+                <!-- <b-form-checkbox value="me">Check me out</b-form-checkbox> -->
+                <!-- <b-form-checkbox value="that">Check that out</b-form-checkbox> -->
+                <!-- </b-form-checkbox-group> -->
+                <!-- </b-form-group> -->
+              </b-row>
+            </b-container>
+          </b-form>
+        </b-tab>
+        <b-tab
+          title-item-class="newContractTitle "
+          title-link-class="newContractTitle grey2"
+          :title="ICOTitle"
+          class="contractTab"
+        >
+          <ICOContract/>
+        </b-tab>
+        <b-tab
+          title-item-class="newContractTitle  pb-1 pb-md-0"
+          title-link-class="newContractTitle grey3 "
+          :disabled="BonusDisabled"
+          :title="'Bonuses ('+ this.BonusYesOrNo +')'"
+          class="contractTab"
+        >
+          <Bonuses/>
+        </b-tab>
+        <b-tab
+          title-item-class="newContractTitle"
+          title-link-class="newContractTitle grey4"
+          title="Summary & Create"
+          class="contractTab"
+        >
+          <SummaryNewContract/>
+        </b-tab>
+      </b-tabs>
+    </b-container>
+    <!-- {{unsaved}} -->
   </div>
 </template>
 
 <script>
 var BigNumber = require('bignumber.js')
-// import musicGenres from '../musicGenres'
 import ICOContract from './ICOContract'
 import Bonuses from './Bonuses'
 import SummaryNewContract from './SummaryNewContract'
-// require('../musicGenres')
 var musicGenres = [
-  {value: -1, text: 'Please select genre', disabled: true},
+  { value: -1, text: 'Please select genre', disabled: true },
   'Alternative',
   'Ambient',
   'Anime',
@@ -282,7 +372,7 @@ var musicGenres = [
 ]
 
 export default {
-  data () {
+  data() {
     return {
       form: {
         name: 'Test Token -Name',
@@ -297,16 +387,17 @@ export default {
         description: 'Description',
         decimals: 0,
         soundcloud: '',
-        picSrc: ''
+        picSrc: '',
+        youtube: ''
       },
       show: true,
       genres: musicGenres,
       unsaved: false,
       index: '',
       entryTypeOptions: [
-        {text: 'Project', value: 0},
-        {text: 'Music', value: 1},
-        {text: 'Influencer', value: 2}
+        { text: 'Misc Project', value: 0 },
+        { text: 'Music', value: 1 },
+        { text: 'Influencer', value: 2 }
       ]
     }
   },
@@ -335,7 +426,7 @@ export default {
         fractionGroupSeparator: ' ',
         fractionGroupSize: 0
       }
-      BigNumber.config({'FORMAT': format})
+      BigNumber.config({ 'FORMAT': format })
       let supply = BigNumber(this.form.totalSupply)
       let decimals = parseInt(this.form.decimals)
       let total = supply.shiftedBy(decimals).toFormat()
@@ -369,7 +460,7 @@ export default {
       var num = val.toLocaleString()
       return num
     },
-    ReadPicture (input) {
+    ReadPicture(input) {
       var that = this
       if (input.target.files && input.target.files[0]) {
         var reader = new FileReader()
@@ -377,29 +468,31 @@ export default {
           that.displayPic = true
           // that.$refs.picPreview.style.width = '100%'
           that.$refs.picPreview.style.height = '8%'
-          that.$refs.picPreview.src = '/static/loading.gif'
+          // that.$refs.picPreview.src = '/static/loading.gif'
           that.form.picSrc = e.target.result
           that.$store.state.formG.picSrc = e.target.result
           that.$store.state.formG['picSrc'] = e.target.result
           that.$refs.picPreview.style.border = 'none'
           setTimeout(function () {
-            that.$refs.picPreview.style.height = '200px'
+            // that.$refs.picPreview.style.height = '200px'
+            that.$refs.picPreview.style.width = '80%'
+
             that.$refs.picPreview.src = ''
             that.$refs.picPreview.src = e.target.result
             that.UnSave()
-          }, 1300)
+          }, 100)
         }
         reader.readAsDataURL(input.target.files[0])
       }
     },
-    test () {
+    test() {
     },
-    LimitText () {
-      this.form.description = this.form.description.substring(0, 200)
+    LimitText() {
+      this.form.description = this.form.description.substring(0, 500)
       this.$store.state.formG.description = this.form.description
       this.UnSave()
     },
-    UnSave () {
+    UnSave() {
       if (parseInt(this.form.decimals) > 18) this.form.decimals = 18
       if (parseInt(this.form.decimals) === 0) this.form.decimals = 0
       // let tmpForm = this.form
@@ -412,18 +505,19 @@ export default {
       // }
       // this.$store.state.formG = this.form
       this.$store.state.formG.soundcloud = this.form.soundcloud
+      this.$store.state.formG.youtube = this.form.youtube
       this.$store.commit('UpdateFormG', this.form)
       console.log('Form:', this.form.soundcloud)
       this.$store.state.formG.picSrc = this.form['picSrc']
       // this.form = form
       this.unsaved = true
     },
-    onSubmit (evt) {
+    onSubmit(evt) {
       this.unsaved = false
       evt.preventDefault()
       // alert(JSON.stringify(this.form))
     },
-    onReset (evt) {
+    onReset(evt) {
       evt.preventDefault()
       /* Reset our form values */
       this.form.email = ''

@@ -17,3 +17,9 @@ SummaryNewContract.vue
 ./src/components/NewContract.vue
 ./src/components/About.vue
 NewPosition.vue
+Test.vue
+main.js
+BuyCoins.vue
+NewContract.vue
+*.*
+
