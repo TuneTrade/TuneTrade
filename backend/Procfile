@@ -1,0 +1,1 @@
+web: gunicorn --no-sendfile --keep-alive 20 --log-level debug   tunetraderapp:app
