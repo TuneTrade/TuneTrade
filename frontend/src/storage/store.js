@@ -66,10 +66,12 @@ export const store = new Vuex.Store({
   },
   getters: {
     isWeb3Account: state => account => {
+      if (typeof (state.web3account) === 'undefined') return false
       console.log(state.web3account.toLowerCase(), '===', account.toLowerCase())
       return state.web3account.toLowerCase() === account.toLowerCase()
     },
     isContractOwner: state => () => {
+      if (typeof (state.web3account) === 'undefined') return false;
       console.log(
         state.ttContractOwner.toLowerCase(),
         '===',
